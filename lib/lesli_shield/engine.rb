@@ -31,7 +31,7 @@ Building a better future, one line of code at a time.
 =end
 
 
-# · Require engine specific gems
+# · Tools used to build the Lesli Framework
 require "devise"
 
 module LesliShield

@@ -62,10 +62,6 @@ Gem::Specification.new do |spec|
 
     spec.add_dependency "lesli", "~> 5"
 
-
-
-    # · Engine specif gems
-
     # Flexible authentication solution for Rails with Warden
     spec.add_dependency("devise", "~> 4.9.2")
 end

@@ -37,7 +37,8 @@ Building a better future, one line of code at a time.
 #   using: "Lesli::Routing.mount_login_at('auth')" so, later
 #   we will must to check if devise is already mounted before
 #   to call this method.
-LesliShield::Routing.mount_login
+# IMPORTANT: This must be mounted at main_app level
+# LesliShield::Routing.mount_login
 
 
 # · 

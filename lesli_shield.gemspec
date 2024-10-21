@@ -56,12 +56,8 @@ Gem::Specification.new do |spec|
     end
 
     # Lesli core minimum requirements
-    spec.required_ruby_version = ">= 2.7"
-
-    spec.add_dependency "rails", "~> 7.0.6"
-
-    spec.add_dependency "lesli", "~> 5"
+    spec.add_dependency("lesli", "~> 5")
 
     # Flexible authentication solution for Rails with Warden
-    spec.add_dependency("devise", "~> 4.9.2")
+    spec.add_dependency("devise", "~> 4.9")
 end

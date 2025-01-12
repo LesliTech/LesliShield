@@ -38,7 +38,7 @@ module LesliShield
     class Engine < ::Rails::Engine
         isolate_namespace LesliShield
 
-        initializer :lesli_admin do |app|
+        initializer :lesli_shield do |app|
             
             # register assets manifest
             config.assets.precompile += %w[lesli_shield_manifest.js]

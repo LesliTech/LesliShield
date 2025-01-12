@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS Development Framework.
+Lesli · Ruby on Rails SaaS development platform.
 
 Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
@@ -27,14 +27,17 @@ Building a better future, one line of code at a time.
 @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
+// ·
 =end
 
-class CreateLesliShieldDashboardComponents < ActiveRecord::Migration[6.1]
+class CreateLesliShieldActivities < ActiveRecord::Migration[6.0]
     def change
-        gem_path = Lesli::System.engine("Lesli", "dir")
-        table_base_structure = JSON.parse(File.read(File.join(gem_path, "db", "structure", "00000502_dashboard_components.json")))
-        create_table :lesli_shield_dashboard_components do |t|
+        # table_base_structure = JSON.parse(File.read(Rails.root.join('db','structure','00000004_activities.json')))
+        gem_path = Lesli::System.engine("lesli", "dir")
+
+        table_base_structure = JSON.parse(File.read(File.join(gem_path, "db", "structure", "00000004_activities.json")))
+
+        create_table :lesli_shield_activities do |t|
             table_base_structure.each do |column|
                 t.send(
                     column["type"].parameterize.underscore.to_sym,
@@ -43,11 +46,6 @@ class CreateLesliShieldDashboardComponents < ActiveRecord::Migration[6.1]
             end
             t.timestamps
         end
-
-        add_reference(
-            :lesli_shield_dashboard_components, :dashboard, 
-            foreign_key: { to_table: :lesli_shield_dashboards }, 
-            index: { name: "lesli_shield_dashboard_components_index" }
-        )
+        add_reference(:lesli_shield_activities, :user, foreign_key: { to_table: :lesli_users })
     end
 end

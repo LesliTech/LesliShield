@@ -1,17 +1,17 @@
-# 09.01 CloudBabel Database
+
+# 08.01 LesliShield Database
 
 ```plaintext
-    10.01. modules
+    08.01.00.01. shield/account  
 
-    11.01. buckets
+    08.01.00.11. shield/actions 
+    08.01.00.12. shield/activities 
+    08.01.00.13. shield/discussions 
+    08.01.00.14. shield/subscribers 
+    08.01.00.15. shield/attachments 
 
-    12.01. strings
-    12.04. string/activities
-```
+    08.01.00.20. shield/catalogs 
+    08.01.00.30. shield/dashboards 
 
-
-```mermaid
-erDiagram
-    lesli_babel_modules ||--o{ lesli_babel_buckets : has
-    lesli_babel_buckets ||--o{ lesli_babel_strings : has
+    08.01.10.11. shield/{{features}}
 ```

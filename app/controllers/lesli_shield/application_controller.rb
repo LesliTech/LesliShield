@@ -1,4 +1,4 @@
 module LesliShield
-  class ApplicationController < ActionController::Base
-  end
+    class ApplicationController < ::Lesli::ApplicationLesliController
+    end
 end

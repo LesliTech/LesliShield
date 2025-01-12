@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
 =begin
 
 Lesli
 
-Copyright (c) 2023, Lesli Technologies, S. A.
+Copyright (c) 2025, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,7 +19,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 Lesli · Ruby on Rails SaaS Development Framework.
 
-Made with ♥ by https://www.lesli.tech
+Made with ♥ by LesliTech
 Building a better future, one line of code at a time.
 
 @contact  hello@lesli.tech
@@ -41,22 +39,17 @@ class Users::SessionsController < Devise::SessionsController
         user = Lesli::User.find_for_database_authentication(email: sign_in_params[:email])
 
         # respond with a no valid credentials generic error if not valid user found
-        unless user
-            # Lesli::Account::Activity.log("core", "/session/create", "session_creation_failed", "no_valid_email", {
-            #     email: (sign_in_params[:email] || "")
-            # }) 
-            return respond_with_error(I18n.t("core.users/sessions.invalid_credentials"))
-        end
+        return respond_with_error(I18n.t("core.users/sessions.invalid_credentials")) unless user
 
         # save a invalid credentials log for the requested user
-        log = user.logs.new({ title: "session_creation_atempt" })
+        journal = user.journals.new({ title: "session_create", description:"atempt" })
 
         # check password validation
         unless user.valid_password?(sign_in_params[:password])
 
             # save a invalid credentials log for the requested user
-            log.update({
-                title: "session_creation_failed",
+            journal.update({
+                title: "session_create",
                 description: "invalid_credentials"
             })
 
@@ -71,8 +64,8 @@ class Users::SessionsController < Devise::SessionsController
             # if user do not meet requirements to login
             unless valid
 
-                log.update({
-                    title: "session_creation_failed",
+                journal.update({
+                    title: "session_create",
                     description: failures.join(", ")
                 })
 
@@ -90,7 +83,7 @@ class Users::SessionsController < Devise::SessionsController
 
         # create a new session for the user
         current_session = Lesli::UserSessionService.new(user)
-        .create(get_user_agent(false), request.remote_ip)
+        .create(get_user_agent(false), request.remote_ip).result
 
         # make session id globally available
         session[:user_session_id] = current_session[:id]
@@ -106,6 +99,12 @@ class Users::SessionsController < Devise::SessionsController
 
         # do a user login
         sign_in(:user, user)
+
+        journal.update({ 
+            title: "session_create", 
+            description: "successful", 
+            session_id: current_session[:id] 
+        })
 
         # respond successful and send the path user should go
         #respond_with_successful({ default_path: user.has_role_with_default_path?() })

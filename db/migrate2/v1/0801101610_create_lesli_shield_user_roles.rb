@@ -2,7 +2,7 @@
 
 Lesli
 
-Copyright (c) 2023, Lesli Technologies, S. A.
+Copyright (c) 2025, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 Lesli · Ruby on Rails SaaS Development Framework.
 
-Made with ♥ by https://www.lesli.tech
+Made with ♥ by LesliTech
 Building a better future, one line of code at a time.
 
 @contact  hello@lesli.tech
@@ -30,32 +30,14 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-
-# Mount the devise at the deefault path
-# TODO:
-#   The user can define the mount path for the auth framework
-#   using: "Lesli::Routing.mount_login_at('auth')" so, later
-#   we will must to check if devise is already mounted before
-#   to call this method.
-# IMPORTANT: This must be mounted at main_app level
-# LesliShield::Routing.mount_login
-
-
-# · 
-LesliShield::Engine.routes.draw do
-  
-    root to: "dashboards#show"
-
-    resource :dashboard, only: [:show]
-    resources :dashboards do
-        collection do
-            post "list" => :index
-            get :options
+class CreateLesliShieldUserRoles < ActiveRecord::Migration[6.0]
+    def change
+        create_table :lesli_shield_user_roles do |t|
+            t.datetime :deleted_at, index: true
+            t.timestamps
         end
-        scope module: :dashboard do
-            resources :components
-        end
+
+        add_reference(:lesli_shield_user_roles, :user, foreign_key: { to_table: :lesli_users })
+        add_reference(:lesli_shield_user_roles, :role, foreign_key: { to_table: :lesli_roles })
     end
-
-    resources :sessions, only: [:index]
 end

@@ -30,32 +30,20 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
+# ·
+require "rails_helper"
+require Lesli::Engine.root.join("lib/rspec/testers/request")
 
-# Mount the devise at the deefault path
-# TODO:
-#   The user can define the mount path for the auth framework
-#   using: "Lesli::Routing.mount_login_at('auth')" so, later
-#   we will must to check if devise is already mounted before
-#   to call this method.
-# IMPORTANT: This must be mounted at main_app level
-# LesliShield::Routing.mount_login
+# ·
+RSpec.describe ::Rails::HealthController, type: :request do
 
+    include_context "request user authentication"
 
-# · 
-LesliShield::Engine.routes.draw do
-  
-    root to: "dashboards#show"
+    it "test health rails controller" do
 
-    resource :dashboard, only: [:show]
-    resources :dashboards do
-        collection do
-            post "list" => :index
-            get :options
-        end
-        scope module: :dashboard do
-            resources :components
-        end
+        get("#{LESLI_SHIELD_ENGINE_MOUNTED_PATH}/up")
+
+        expect(response).to have_http_status(:success)
+        expect(response.content_type).to eq("text/html; charset=utf-8")
     end
-
-    resources :sessions, only: [:index]
 end

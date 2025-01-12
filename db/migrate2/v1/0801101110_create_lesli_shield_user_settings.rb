@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS Development Framework.
+Lesli · Ruby on Rails Development Platform.
 
 Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
@@ -27,35 +27,18 @@ Building a better future, one line of code at a time.
 @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
+// ·
 =end
 
-
-# Mount the devise at the deefault path
-# TODO:
-#   The user can define the mount path for the auth framework
-#   using: "Lesli::Routing.mount_login_at('auth')" so, later
-#   we will must to check if devise is already mounted before
-#   to call this method.
-# IMPORTANT: This must be mounted at main_app level
-# LesliShield::Routing.mount_login
-
-
-# · 
-LesliShield::Engine.routes.draw do
-  
-    root to: "dashboards#show"
-
-    resource :dashboard, only: [:show]
-    resources :dashboards do
-        collection do
-            post "list" => :index
-            get :options
+class CreateLesliShieldUserSettings < ActiveRecord::Migration[6.0]
+    def change
+        create_table :lesli_shield_user_settings do |t|
+            t.string :name
+            t.string :value
+            t.timestamps
         end
-        scope module: :dashboard do
-            resources :components
-        end
+
+        add_reference(:lesli_shield_user_settings, :user, foreign_key: { to_table: :lesli_users })
+        add_index(:lesli_shield_user_settings, %i[user_id name], unique: true)
     end
-
-    resources :sessions, only: [:index]
 end

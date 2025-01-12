@@ -1,3 +1,5 @@
+=begin
+
 Lesli
 
 Copyright (c) 2025, Lesli Technologies, S. A.
@@ -26,3 +28,29 @@ Building a better future, one line of code at a time.
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
+=end
+
+class CreateLesliShieldUserSessions < ActiveRecord::Migration[6.0]
+    def change
+        create_table :lesli_shield_user_sessions do |t|
+
+            t.string  :remote                       # IPv4 and IPv6 hosts and networks
+
+            t.string  :agent_platform
+            t.string  :agent_os
+            t.string  :agent_browser
+            t.string  :agent_version
+
+            t.string :session_token                 # authentication token
+            t.string :session_source                # session created for/with
+
+            t.integer  :usage_count                 # total number of interactions
+            t.datetime :last_used_at                # last datetime token was used
+            t.datetime :expiration_at, index: true  # auto-expire session at
+            t.datetime :deleted_at, index: true
+
+            t.timestamps
+        end
+        add_reference(:lesli_shield_user_sessions, :user, foreign_key: { to_table: :lesli_users })
+    end
+end

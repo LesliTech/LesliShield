@@ -47,15 +47,5 @@ LesliShield::Engine.routes.draw do
     root to: "dashboards#show"
 
     resource :dashboard, only: [:show]
-    resources :dashboards do
-        collection do
-            post "list" => :index
-            get :options
-        end
-        scope module: :dashboard do
-            resources :components
-        end
-    end
-
-    resources :sessions, only: [:index]
+    resources :sessions, only: [:index, :show]
 end

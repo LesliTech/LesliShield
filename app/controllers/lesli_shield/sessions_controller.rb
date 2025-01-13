@@ -4,12 +4,12 @@ module LesliShield
 
     # GET /sessions
     def index
-        @sessions = UserSessionService.new(current_user, query).index()
         respond_to do |format|
-            format.html {}
+            format.html {
+                @sessions = respond_with_pagination2(UserSessionService.new(current_user, query).index())
+            }
             format.json { 
-                #respond_with_pagination([])
-                respond_with_pagination(SessionService.new(current_user, query).index())
+                respond_with_pagination(UserSessionService.new(current_user, query).index())
             }
         end
     end

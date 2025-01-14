@@ -1,0 +1,48 @@
+
+<%
+columns = [{
+    field: "id",
+    label: "ID",
+    sort: true
+}, {
+    field: "fullname",
+    label: "name",
+    sort: true
+}, {
+    field: "email",
+    label: "email",
+    sort: true
+}, {
+    field: "rolenames",
+    label: "roles",
+    sort: true
+}, {
+    field: "active",
+    label: "status",
+    sort: true,
+    custom: true
+}, {
+    field: "current_sign_in_at_string",
+    label: "last_sign_in",
+    sort: true
+}]
+%>
+<%= render LesliView::Layout::Container.new("shield-sessions") do %>
+    <%= render LesliView::Element::Header.new("Users") do %>
+        <%= render(LesliView::Element::Button.new(icon: "add", solid:true)) do %>
+            Add new
+        <% end %>
+        <%= render(LesliView::Element::Button.new(icon: "refresh")) do %>
+            Reload
+        <% end %>
+    <% end %>
+    <%= render LesliView::Element::Toolbar.new() %>
+    <%= render(LesliView::Element::Table.new(
+        columns: columns,
+        records: @users[:records]
+    )) %>
+<% end %> 
+
+<pre><code>
+<%= @users[:records].first.as_json %>
+</code></pre>

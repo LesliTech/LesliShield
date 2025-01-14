@@ -43,9 +43,9 @@ Building a better future, one line of code at a time.
 
 # · 
 LesliShield::Engine.routes.draw do
-  
     root to: "dashboards#show"
 
     resource :dashboard, only: [:show]
     resources :sessions, only: [:index, :show]
+    resources :users, only: [:index, :show]
 end

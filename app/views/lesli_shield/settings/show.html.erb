@@ -1,0 +1,9 @@
+
+
+<%= render LesliView::Layout::Container.new("shield-settings") do %>
+    <%= render LesliView::Element::Header.new("Settings") do %>
+        <%= render(LesliView::Element::Button.new(icon: "refresh")) do %>
+            Reload
+        <% end %>
+    <% end %>
+<% end %> 

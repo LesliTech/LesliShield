@@ -48,4 +48,5 @@ LesliShield::Engine.routes.draw do
     resource :dashboard, only: [:show]
     resources :sessions, only: [:index, :show]
     resources :users, only: [:index, :show]
+    resource :settings, only: [:show]
 end

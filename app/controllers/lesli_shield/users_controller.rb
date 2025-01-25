@@ -9,6 +9,7 @@ module LesliShield
 
         # GET /users/1
         def show
+            @user = @user.show
         end
 
         # GET /users/new
@@ -33,10 +34,18 @@ module LesliShield
 
         # PATCH/PUT /users/1
         def update
-            if @user.update(user_params)
-                redirect_to @user, notice: "User was successfully updated.", status: :see_other
-            else
-                render :edit, status: :unprocessable_entity
+
+            # check if the user trully exists
+            return respond_with_not_found unless @user.found?
+
+            # update the user information
+            @user.update(user_params)
+
+            # check saved
+            if @user.successful?
+                respond_with_successful(@user.result)
+            else 
+                respond_with_error(@user.errors)
             end
         end
 
@@ -50,12 +59,28 @@ module LesliShield
 
         # Use callbacks to share common setup or constraints between actions.
         def set_user
-            @user = User.find(params.expect(:id))
+            @user = Lesli::UserService.new(current_user).find(params[:id])
         end
 
         # Only allow a list of trusted parameters through.
         def user_params
-            params.fetch(:user, {})
+            params.require(:user).permit(
+                :active,
+                :email,
+                :alias,
+                :roles_id,
+                :first_name,
+                :last_name,
+                :telephone,
+                # detail_attributes: [
+                #     :title,
+                #     :salutation,
+                #     :address,
+                #     :work_city,
+                #     :work_region,
+                #     :work_address
+                # ]
+            )
         end
     end
 end

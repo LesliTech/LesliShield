@@ -39,6 +39,7 @@ columns = [{
     <%= render LesliView::Components::Toolbar.new() %>
     <%= render(LesliView::Elements::Table.new(
         columns: columns,
-        records: @users[:records]
+        records: @users[:records],
+        link:  lambda {|user| user_path(user.id) }
     )) %>
 <% end %> 

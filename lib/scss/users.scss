@@ -1,5 +1,4 @@
-=begin
-
+/*
 Lesli
 
 Copyright (c) 2023, Lesli Technologies, S. A.
@@ -28,25 +27,32 @@ Building a better future, one line of code at a time.
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
-=end
+*/
+
+@import "Lesli/scss/templates/component";
 
 
-# Mount the devise at the deefault path
-# TODO:
-#   The user can define the mount path for the auth framework
-#   using: "Lesli::Routing.mount_login_at('auth')" so, later
-#   we will must to check if devise is already mounted before
-#   to call this method.
-# IMPORTANT: This must be mounted at main_app level
-# LesliShield::Routing.mount_login
+// · 
+.user-information-card {
+
+    .lesli-element-avatar {
+        border: 2px solid var(--lesli-color-primary, lesli-css-color(blue));
+        span {
+            color: var(--lesli-color-primary, lesli-css-color(blue)) !important;
+        }
+    }
+}
 
 
-# · 
-LesliShield::Engine.routes.draw do
-    root to: "dashboards#show"
+@include lesli-css-breakpoint-mobile {
+    .user-information-card {
 
-    resource :dashboard, only: [:show]
-    resources :sessions, only: [:index, :show]
-    resources :users #, only: [:index, :show]
-    resource :settings, only: [:show]
-end
+        .level.is-mobile {
+            justify-content: center;
+        }
+
+        p, a, h5 {
+            text-align: center;
+        }
+    }   
+}

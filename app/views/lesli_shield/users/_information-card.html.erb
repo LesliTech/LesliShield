@@ -1,0 +1,51 @@
+<div class="user-information-card level mb-4 mt-6">
+    <div class="level-left">
+        <div class="level-item">
+            <%= render LesliView::Elements::Avatar.new(
+                name: @user.full_name
+            ) %>
+        </div>
+        <div class="level-item">
+            <div>
+                <h5 class="title is-size-5 mb-0">
+                    <%= @user.full_name %>
+                </h5>
+                <p><%#= @user.dig(:detail_attributes, :title) %></p>
+                <div class="level is-mobile">
+                    <div class="level-left">
+                        <a  class="level-item"
+                            v-if="storeUser.user.email"  
+                            :href="'mailto:'+storeUser.user.email">
+                            <span class="icon is-small mr-2">
+                                <span class="material-icons">
+                                    email
+                                </span>
+                            </span>
+                            <%= @user.email %>
+                        </a>
+                        <a  class="level-item mx-2"
+                            v-if="storeUser.user.telephone"
+                            :href="'tel:'+storeUser.user.telephone">
+                            <span class="icon is-small mr-2">
+                                <span class="material-icons">
+                                    phone
+                                </span>
+                            </span>
+                            <%= @user.telephone %>
+                        </a>
+
+                        <!-- Show the max role -->
+                        <p class="level-item" v-if="storeUser.role_names">
+                            <span class="icon is-small mr-2">
+                                <span class="material-icons">
+                                    security
+                                </span>
+                            </span>
+                            <%= @user.role_names %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

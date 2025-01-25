@@ -1,4 +1,4 @@
 module LesliShield
-  class User < ApplicationRecord
+  class User < ::Lesli::User
   end
 end

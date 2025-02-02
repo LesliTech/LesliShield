@@ -1,8 +1,9 @@
 <%= form_with(model: @user, builder: LesliView::Forms::Builder) do |form| %>
+    <%= form.field(:alias) %>
+    <%= form.field(:title) %>
     <%= form.field(:email) %>
     <%= form.field(:first_name) %>
     <%= form.field(:last_name) %>
-    <%= form.field(:alias) %>
     <%= form.field(:telephone) %>
     <hr/>
     <%= form.button %>

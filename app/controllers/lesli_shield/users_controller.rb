@@ -68,18 +68,11 @@ module LesliShield
                 :active,
                 :email,
                 :alias,
+                :title,
                 :roles_id,
                 :first_name,
                 :last_name,
-                :telephone,
-                # detail_attributes: [
-                #     :title,
-                #     :salutation,
-                #     :address,
-                #     :work_city,
-                #     :work_region,
-                #     :work_address
-                # ]
+                :telephone
             )
         end
     end

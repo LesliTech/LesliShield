@@ -1,26 +1,87 @@
-<h2>Log in</h2>
+<%#
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+Lesli
 
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
-  </div>
+Copyright (c) 2025, Lesli Technologies, S. A.
 
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
-    </div>
-  <% end %>
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  <div class="actions">
-    <%= f.submit "Log in" %>
-  </div>
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see http://www.gnu.org/licenses/.
+
+Lesli · Ruby on Rails SaaS Development Framework.
+
+Made with ♥ by LesliTech
+Building a better future, one line of code at a time.
+
+@contact  hello@lesli.tech
+@website  https://www.lesli.tech
+@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
+
+// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
+// · 
+%>
+
+<% 
+if Lesli.config.demo
+    resource.email = Lesli.config.company[:email]
+    resource.password = Lesli.config.security[:password]
+end
+%>
+
+<%= render("lesli/wrappers/application-devise", title:"Welcome to Lesli") do %>
+
+    <%= form_for(
+        resource, 
+        as: resource_name, 
+        url: user_session_path,
+        builder: LesliView::Forms::Builder
+        ) do |f| %>
+
+        <% if Lesli.config.demo %>
+            <%= render("devise/shared/demo") %>
+        <% end %>
+
+        <%= f.field_build(
+            label_html:f.label(:email, "E-mail address"), 
+            control_html:f.email_field(:email, autofocus: true, autocomplete: "email", placeholder: Lesli.config.company[:email]),
+            #message_html: f.lesli_help_text("hola", "info"),
+            icon: "ri-user-line"
+        ) %>
+
+        <%= f.field_build(
+            label_html:f.label(:password), 
+            control_html:f.password_field(:password, autocomplete: "current-password", placeholder: "* * * * * *"),
+            icon: "ri-key-fill"
+        ) %>
+
+        <div class="field mb-6 mt-5">
+            <div class="control is-fullwidth">
+                <button 
+                    type="submit" 
+                    class="button is-primary is-fullwidth mb-2">
+                    Log in
+                </button>
+                <% if Lesli.config.security.dig(:allow_registration) %>
+                    <p class="account has-text-centered">
+                        Still not registered? 
+                        <%= link_to(new_user_registration_path, :class => "has-text-primary") do %>
+                            <u><b>Create account</b></u>
+                        <% end %>
+                    </p> 
+                <% end %>
+            </div>
+        </div>
+
+    <% end %>
+
+    <%= render("devise/shared/links", password_reset:true, magic_link:false, otp:false) %>  
 <% end %>
-
-<%= render "devise/shared/links" %>

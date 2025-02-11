@@ -43,7 +43,12 @@ module LesliShield
 
             # check saved
             if @user.successful?
-                respond_with_successful(@user.result)
+                success("User updated successfully!")
+                respond_to do |format|
+                    format.turbo_stream
+                    format.html { redirect_to @user }
+                end
+                #respond_with_successful(@user.result)
             else 
                 respond_with_error(@user.errors)
             end

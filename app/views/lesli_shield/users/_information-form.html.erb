@@ -1,12 +1,12 @@
 <%= form_with(model: @user, builder: LesliView::Forms::Builder) do |form| %>
     <%= form.fieldset do %>
-        <%= form.field(:alias) %>
-        <%= form.field(:title) %>
-        <%= form.field(:email) %>
-        <%= form.field(:first_name) %>
-        <%= form.field(:last_name) %>
-        <%= form.field(:telephone) %>
+        <%= form.field_control(:alias) %>
+        <%= form.field_control(:title) %>
+        <%= form.field_control(:email) %>
+        <%= form.field_control(:first_name) %>
+        <%= form.field_control(:last_name) %>
+        <%= form.field_control(:telephone) %>
         <hr/>
-        <%= form.button %>
+        <%= form.field_control_submit %>
     <% end %>        
 <% end %>

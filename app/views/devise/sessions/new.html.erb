@@ -53,33 +53,40 @@ end
         <%= form.field_control_builder(
             label_html:form.label(:email, "E-mail address"), 
             control_html:form.email_field(:email, autofocus: true, autocomplete: "email", placeholder: Lesli.config.company[:email]),
-            #message_html: f.lesli_help_text("hola", "info"),
-            icon: "ri-user-line"
+            category: flash.first&.first,
+            icon: "person"
         ) %>
 
         <%= form.field_control_builder(
             label_html:form.label(:password), 
             control_html:form.password_field(:password, autocomplete: "current-password", placeholder: "* * * * * *"),
-            icon: "ri-key-fill"
+            message_text: flash.first&.second,
+            category: flash.first&.first,
+            icon: "key"
         ) %>
 
-        <div class="field mb-6 mt-5">
+        <% if params[:r].presence %>
+            <%= tag(:input, :type => "hidden", :name => "user[redirect]", :value => params[:r]) %>
+        <% end %>
+
+        <div class="field mb-4 mt-5">
             <div class="control is-fullwidth">
                 <button 
                     type="submit" 
                     class="button is-primary is-fullwidth mb-2">
                     Log in
                 </button>
-                <% if Lesli.config.security.dig(:allow_registration) %>
-                    <p class="account has-text-centered">
-                        Still not registered? 
-                        <%= link_to(new_user_registration_path, :class => "has-text-primary") do %>
-                            <u><b>Create account</b></u>
-                        <% end %>
-                    </p> 
-                <% end %>
             </div>
         </div>
+
+        <% if Lesli.config.security.dig(:allow_registration) %>
+            <p class="account has-text-centered">
+                Still not registered? 
+                <%= link_to(new_user_registration_path, :class => "has-text-primary") do %>
+                    <u><b>Create account</b></u>
+                <% end %>
+            </p> 
+        <% end %>
 
     <% end %>
 

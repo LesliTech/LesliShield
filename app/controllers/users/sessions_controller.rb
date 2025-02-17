@@ -30,6 +30,8 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
+#require "uri"
+
 class Users::SessionsController < Devise::SessionsController
 
     # Creates a new session for the user and allows them access to the platform
@@ -39,7 +41,10 @@ class Users::SessionsController < Devise::SessionsController
         user = Lesli::User.find_for_database_authentication(email: sign_in_params[:email])
 
         # respond with a no valid credentials generic error if not valid user found
-        return respond_with_error(I18n.t("core.users/sessions.invalid_credentials")) unless user
+        unless user
+            danger(I18n.t("lesli.users/sessions.message_invalid_credentials"))
+            redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
+        end
 
         # save a invalid credentials log for the requested user
         journal = user.journals.new({ title: "session_create", description:"atempt" })
@@ -54,8 +59,8 @@ class Users::SessionsController < Devise::SessionsController
             })
 
             # respond with a no valid credentials generic error if not valid user found
-            return respond_with_error(I18n.t("core.users/sessions.invalid_credentials"))
-
+            danger(I18n.t("core.users/sessions.invalid_credentials"))
+            redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
         end
 
         # check if user meet requirements to create a new session
@@ -69,11 +74,9 @@ class Users::SessionsController < Devise::SessionsController
                     description: failures.join(", ")
                 })
 
-                # return and respond with the reasons user is not able to login
-                return respond_with_error(failures.join(", "))
-
+                danger(failures.join(", "))
+                redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
             end
-
         end
 
 
@@ -110,33 +113,24 @@ class Users::SessionsController < Devise::SessionsController
         # respond successful and send the path user should go
         #respond_with_successful({ default_path: user.has_role_with_default_path?() })
         #respond_with_successful({ default_path: Lesli.config.path_after_login || "/" })
-        redirect_to(Lesli.config.path_after_login || root_path)
-
+        redirect_to(safe_redirect_path(sign_in_params[:redirect]))
     end
 
     private 
 
-    # @return [Parameters] Allowed parameters for the discussion
-    # @description Sanitizes the parameters received from an HTTP call to only allow the specified ones.
-    #     Allowed params are _:email_, _:password_.
-    # @example
-    #     supose params contains {
-    #         "user": {
-    #             "id": 5,
-    #             "email": "john.smith@email.com",
-    #             "password": "my_password_123"
-    #         }
-    #     }
-    #     allowed_params = sign_in_params
-    #     puts allowed_params
-    #     will remove the _id_ field and only print {
-    #         "user": {
-    #             "email": "john.smith@email.com",
-    #             "password": "my_password_123"
-    #         }
-    #     }
-    def sign_in_params
-        params.fetch(:user, {}).permit(:email, :password)
+    def safe_redirect_path redirect_path
+        if redirect_path.present?
+            uri = URI.parse(redirect_path)
+            # Ensures it's a local path
+            return redirect_path if uri.relative?  
+        end
+        Lesli.config.path_after_login || root_path
+    rescue URI::InvalidURIError
+        # If the URL is invalid, fallback to root
+        root_path  
     end
 
+    def sign_in_params
+        params.fetch(:user, {}).permit(:email, :password, :redirect)
+    end
 end

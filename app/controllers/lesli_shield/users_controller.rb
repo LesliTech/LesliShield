@@ -48,7 +48,6 @@ module LesliShield
                     format.turbo_stream
                     format.html { redirect_to @user }
                 end
-                #respond_with_successful(@user.result)
             else 
                 respond_with_error(@user.errors)
             end

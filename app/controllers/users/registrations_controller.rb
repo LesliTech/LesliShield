@@ -132,10 +132,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     # end
 
     def sign_up_params
-        params.permit(:sign_up, 
-            :email, 
-            :password, 
-            :password_confirmation
-        )
+        params.fetch(:user, {}).permit(:email, :password, :password_confirmation)
     end
 end

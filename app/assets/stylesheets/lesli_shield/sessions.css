@@ -16555,6 +16555,13 @@ h1, h2, h3, h4, h5, h6, a {
   font-weight: 600;
   text-align: left;
 }
+.column.login-form .is-title {
+  line-height: 1.2;
+  max-width: 400px;
+}
+.column.login-form form {
+  max-width: 310px;
+}
 .column.login-form form label {
   font-weight: 400;
   font-size: 15px;
@@ -16590,11 +16597,8 @@ h1, h2, h3, h4, h5, h6, a {
   font-size: 14px;
 }
 .column.login-form .terms {
-  font-family: "Domine";
-  font-weight: 400;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 19px;
-  letter-spacing: -44%;
 }
 
 @media only screen and (max-width: 1023px) {

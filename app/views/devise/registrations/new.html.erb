@@ -1,29 +1,97 @@
-<h2>Sign up</h2>
+<%#
+Lesli
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+Copyright (c) 2025, Lesli Technologies, S. A.
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
+You should have received a copy of the GNU General Public License
+along with this program. If not, see http://www.gnu.org/licenses/.
 
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
+Lesli · Ruby on Rails SaaS Development Framework.
+
+Made with ♥ by LesliTech
+Building a better future, one line of code at a time.
+
+@contact  hello@lesli.tech
+@website  https://www.lesli.tech
+@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
+
+// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
+// · 
+%>
+
+
+<%= render("lesli/wrappers/application-devise", title:"Create an account to discover Lesli") do %>
+
+    <%# Log in form %>
+    <%= form_for(
+        resource, 
+        as: resource_name, 
+        url: user_registration_path,
+        builder: LesliView::Forms::Builder
+        ) do |form| %>
+
+        <%= form.field_control_builder(
+            label_html:form.label(:email, "E-mail address"), 
+            control_html:form.email_field(:email, autofocus: true, autocomplete: "email", placeholder: Lesli.config.company[:email]),
+            category: flash.first&.first,
+            icon: "person"
+        ) %>
+
+        <%= form.field_control_builder(
+            label_html:form.label(:password), 
+            control_html:form.password_field(:password, autocomplete: "current-password", placeholder: "* * * * * *"),
+            message_text: flash.first&.second,
+            category: flash.first&.first,
+            icon: "key"
+        ) %>
+
+        <div class="field mb-5">
+            <p>Password needs to contain:</p>
+            <ul class="pl-3 password-requirements">
+                <li>
+                    &bull; Minimum  one uppercase letter
+                </li>
+                <li>
+                    &bull; One symbol
+                </li>
+                <li>
+                    &bull; One number
+                </li>
+            </ul>
+        </div>
+
+        <div class="field">
+            <p class="terms">
+                By creating an account, you agree to our <a><u><b>Terms</b></u></a> and have
+                read and acknowledge the <a><u><b>Global Privacy Statement</b></u></a>
+            </p>
+        </div>
+
+        <div class="field mb-4 mt-5">
+            <div class="control is-fullwidth">
+                <button 
+                    type="submit" 
+                    class="button is-primary is-fullwidth mb-2">
+                    Create account
+                </button>
+            </div>
+        </div>
+
+        <p class="account has-text-centered">
+            Already have an account? 
+            <%= link_to(new_user_session_path, :class => "has-text-primary") do %>
+                <u><b>Log in</b></u>
+            <% end %>
+        </p> 
+    <% end %>
 <% end %>
-
-<%= render "devise/shared/links" %>

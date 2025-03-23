@@ -2,33 +2,33 @@
 <%
 columns = [{
     field: "id",
-    label: "ID",
+    label: "ID"
+},{
+    field: "name",
+    label: "Name",
     sort: true
 }, {
-    field: "fullname",
-    label: "name",
+    field: "users",
+    label: "Users",
+    align: "center",
     sort: true
 }, {
-    field: "email",
-    label: "email",
+    field: "actions",
+    label: "Actions",
+    align: "center",
     sort: true
 }, {
-    field: "rolenames",
-    label: "roles",
+    field: "isolated",
+    label: "Isolated",
     sort: true
 }, {
     field: "active",
-    label: "status",
-    sort: true,
-    custom: true
-}, {
-    field: "current_sign_in_at_string",
-    label: "last_sign_in",
+    label: "Active",
     sort: true
 }]
 %>
-<%= render LesliView::Layout::Container.new("shield-sessions") do %>
-    <%= render LesliView::Components::Header.new("Users") do %>
+<%= render LesliView::Layout::Container.new("shield-roles") do %>
+    <%= render LesliView::Components::Header.new("Roles") do %>
         <%= render(LesliView::Elements::Button.new(icon: "add", solid:true)) do %>
             Add new
         <% end %>
@@ -39,7 +39,7 @@ columns = [{
     <%= render LesliView::Components::Toolbar.new() %>
     <%= render(LesliView::Elements::Table.new(
         columns: columns,
-        records: @users[:records],
-        link: lambda {|user| user_path(user.id) }
+        records: @roles[:records],
+        link: lambda {|role| role_path(role.id) }
     )) %>
 <% end %> 

@@ -61,8 +61,13 @@ LesliShield::Engine.routes.draw do
 
             # configuration 
             resources :settings, only: [:create]
-
         end
     end
+
+    # Work with roles and privileges
+    resources :roles, only: [:index, :show, :edit, :new, :create] do
+    end
+
+    #
     resource :settings, only: [:show]
 end

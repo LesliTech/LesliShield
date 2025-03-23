@@ -45,6 +45,24 @@ Building a better future, one line of code at a time.
 LesliShield::Engine.routes.draw do
     Lesli::Routing.mount_dashboard_for(LesliShield)
     resources :sessions, only: [:index, :show]
-    resources :users, only: [:index, :show, :update]
+    resources :users, only: [:index, :show, :update] do 
+
+        # extensions to the user methods
+        scope module: :user do
+
+            # sessions management
+            resources :sessions, only: [:index, :destroy]
+
+            # assign and remove roles to users 
+            resources :roles, only: [:index, :create, :destroy]
+
+            # shortcuts
+            resources :shortcuts, only: [:index, :create, :update, :destroy]
+
+            # configuration 
+            resources :settings, only: [:create]
+
+        end
+    end
     resource :settings, only: [:show]
 end

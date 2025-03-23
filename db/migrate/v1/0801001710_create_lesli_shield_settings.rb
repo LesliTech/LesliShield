@@ -2,7 +2,7 @@
 
 Lesli
 
-Copyright (c) 2025, Lesli Technologies, S. A.
+Copyright (c) 2023, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS Development Framework.
+Lesli · Ruby on Rails Development Platform.
 
-Made with ♥ by LesliTech
+Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
 
 @contact  hello@lesli.tech
@@ -27,18 +27,19 @@ Building a better future, one line of code at a time.
 @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
+// ·
 =end
 
-class CreateLesliShieldAccounts < ActiveRecord::Migration[6.0]
+class CreateLesliShieldSettings < ActiveRecord::Migration[6.0]
     def change
-        create_table :lesli_shield_accounts do |t|
-            t.string   :name 
-            t.integer  :status
-            t.datetime :enabled_at
-            t.datetime :deleted_at, index: true
-            t.timestamps 
+        create_table :lesli_shield_settings do |t|
+            t.string :name
+            t.string :value
+            t.timestamps
         end
-        add_reference(:lesli_shield_accounts, :account, foreign_key: { to_table: :lesli_accounts })
+
+        add_reference(:lesli_shield_settings, :user, foreign_key: { to_table: :lesli_users })
+        add_reference(:lesli_shield_settings, :account, foreign_key: { to_table: :lesli_shield_accounts })
+        #add_index(:lesli_user_settings, %i[user_id name], unique: true)
     end
 end

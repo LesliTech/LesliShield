@@ -30,15 +30,15 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-class CreateLesliShieldAccounts < ActiveRecord::Migration[6.0]
+class CreateLesliShieldUserShortcuts < ActiveRecord::Migration[6.1]
     def change
-        create_table :lesli_shield_accounts do |t|
-            t.string   :name 
-            t.integer  :status
-            t.datetime :enabled_at
-            t.datetime :deleted_at, index: true
-            t.timestamps 
+        create_table :lesli_shield_user_shortcuts do |t|
+            t.string :name
+            t.string :icon
+            t.string :url
+            t.timestamps
         end
-        add_reference(:lesli_shield_accounts, :account, foreign_key: { to_table: :lesli_accounts })
+
+        add_reference(:lesli_shield_user_shortcuts, :user, foreign_key: { to_table: :lesli_users })
     end
 end

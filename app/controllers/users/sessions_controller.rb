@@ -54,7 +54,6 @@ class Users::SessionsController < Devise::SessionsController
 
             # save a invalid credentials log for the requested user
             journal.update({
-                title: "session_create",
                 description: "invalid_credentials"
             })
 
@@ -70,7 +69,6 @@ class Users::SessionsController < Devise::SessionsController
             unless valid
 
                 journal.update({
-                    title: "session_create",
                     description: failures.join(", ")
                 })
 
@@ -104,6 +102,7 @@ class Users::SessionsController < Devise::SessionsController
         # do a user login
         sign_in(:user, user)
 
+        # create a log for login atempts
         journal.update({ 
             title: "session_create", 
             description: "successful", 

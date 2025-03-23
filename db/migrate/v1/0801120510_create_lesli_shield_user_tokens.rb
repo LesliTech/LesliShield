@@ -30,15 +30,18 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-class CreateLesliShieldAccounts < ActiveRecord::Migration[6.0]
+class CreateLesliShieldUserTokens < ActiveRecord::Migration[7.0]
     def change
-        create_table :lesli_shield_accounts do |t|
-            t.string   :name 
-            t.integer  :status
-            t.datetime :enabled_at
-            t.datetime :deleted_at, index: true
-            t.timestamps 
+        create_table :lesli_shield_user_tokens do |t|
+            t.string :name
+            t.string :token
+            t.string :source # OTP, Pass, Integration
+            t.datetime :expiration_at
+            t.datetime :deleted_at,     index: true
+            t.timestamps
         end
-        add_reference(:lesli_shield_accounts, :account, foreign_key: { to_table: :lesli_accounts })
+        add_reference(:lesli_shield_user_tokens, :user, foreign_key: { to_table: :lesli_users })
+        add_index(:lesli_shield_user_tokens, :token, unique: true)
+        add_index(:lesli_shield_user_tokens, :expiration_at)
     end
 end

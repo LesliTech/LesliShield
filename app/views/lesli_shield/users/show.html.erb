@@ -4,19 +4,19 @@
 
     <%= render LesliView::Elements::Tabs.new() do |tabs| %>
 
-        <% tabs.with_tab(id:"information", title:"information", icon:"info_outline") do %>
+        <% tabs.with_tab(title:"information", icon:"info_outline") do %>
             <%= render "information-form" %>
         <% end %>
         <% tabs.with_tab(title:"Privileges", icon:"security") do %>
-            hola
         <% end %>
 
-        <% tabs.with_tab(id: 3, title:"number", icon:"security") do %>
-            3 3 3
+        <% tabs.with_tab(title:"Security", icon:"lock_outline") do %>
         <% end %>
 
-        <% tabs.with_tab(icon:"security") do %>
-            0 0 0 
+        <% tabs.with_tab(title:"Sessions", icon:"devices") do %>
+        <% end %>
+
+        <% tabs.with_tab(title:"Settings", icon:"settings") do %>
         <% end %>
     <% end %>
 <% end %>

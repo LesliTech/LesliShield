@@ -16,10 +16,10 @@
     08.01.00.30. shield/dashboards 
 
     08.01.10.01. shield/roles (reference only)
-    00.00.14.05. lesli_user_journals
+    00.00.14.05. shield/user_journals
 
     08.01.11.01. shield/user (reference only)
     08.01.11.04. shield/user_shortcuts
-    00.00.14.05. lesli_user_journals
+    00.00.14.05. shield/user_journals
     08.01.11.05. shield/user_tokens
 ```

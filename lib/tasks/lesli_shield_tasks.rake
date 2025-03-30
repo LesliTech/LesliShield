@@ -44,6 +44,6 @@ namespace :lesli_shield do
             Lesli::RoleOperator.new(role).synchronize
         end
 
-        L2.msg("LesliSecurity: Syncing privileges for all the available roles")
+        L2.msg("LesliShield: Syncing privileges for all the available roles")
     end
 end

@@ -1,0 +1,21 @@
+<%= form_with(model: @role, builder: LesliView::Forms::Builder) do |form| %>
+    <%= form.fieldset do %>
+        <%= form.field_control(:name) %>
+        <div class="columns">
+            <div class="column">
+                <%= form.field_control_select(:active, [["Activo", true], ["Desactivado", false]], label: "Status") %>
+            </div>
+            <div class="column">
+                <%#= form.field_control_select(:isolated, LesliBabel::Label.prefixes) %>
+            </div>
+        </div>
+        <%= form.field_control(:description) %>
+        <%= form.field_control(:active) %>
+        <%= form.field_control(:path_default) %>
+        <%= form.field_control(:path_limited) %>
+        <%= form.field_control(:isolated) %>
+        <%= form.field_control(:permission_level) %>
+        <hr/>
+        <%= form.field_control_submit %>
+    <% end %>        
+<% end %>

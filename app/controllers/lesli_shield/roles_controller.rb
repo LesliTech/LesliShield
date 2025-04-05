@@ -90,19 +90,23 @@ module LesliShield
             return respond_with_not_found unless @role.found?
 
             # check if current user can work with role
-            unless current_user.can_work_with_role?(@role.resource)
-                return respond_with_error(I18n.t("core.roles.messages_danger_updating_role_object_level_permission_too_high"))
-            end
+            # unless current_user.can_work_with_role?(@role.resource)
+            #     return respond_with_error(I18n.t("core.roles.messages_danger_updating_role_object_level_permission_too_high"))
+            # end
 
             # Update role information
             @role.update(role_params)
 
             # check if the update went OK
-            unless @role.successful?
+            if @role.successful?
+                success("Role updated successfully!")
+                respond_to do |format|
+                    format.turbo_stream
+                    format.html { redirect_to @role }
+                end
+            else
                 respond_with_error(@role.errors)
             end
-
-            respond_with_successful(@role)
         end
 
         # @return [Json] Json that contains wheter the role was successfully deleted or not.
@@ -162,13 +166,14 @@ module LesliShield
         #     #    "name": "Admin",
         #     #}
         def role_params
-            params.fetch(:role, {}).permit(
+            params.require(:role).permit(
                 :name,
                 :active,
-                :only_my_data,
-                :default_path,
-                :limit_to_path,
-                :object_level_permission
+                :description,
+                :path_default,
+                :path_limited,
+                :isolated,
+                :permission_level
             )
         end
 

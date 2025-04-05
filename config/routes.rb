@@ -43,7 +43,9 @@ Building a better future, one line of code at a time.
 
 # · 
 LesliShield::Engine.routes.draw do
+
     Lesli::Routing.mount_dashboard_for(LesliShield)
+
     resources :sessions, only: [:index, :show]
     resources :users, only: [:index, :show, :update] do 
 
@@ -65,7 +67,7 @@ LesliShield::Engine.routes.draw do
     end
 
     # Work with roles and privileges
-    resources :roles, only: [:index, :show, :edit, :new, :create] do
+    resources :roles, only: [:index, :show, :edit, :update, :new, :create] do
     end
 
     #

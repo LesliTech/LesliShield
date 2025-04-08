@@ -38,7 +38,15 @@ class Users::SessionsController < Devise::SessionsController
     def create
 
         # search for a existing user 
-        user = Lesli::User.find_for_database_authentication(email: sign_in_params[:email])
+        user = LesliShield::User.find_for_database_authentication(email: sign_in_params[:email])
+        pp "***   ***   ***   ***   ***   ***"
+        pp "***   ***   ***   ***   ***   ***"
+        pp "***   ***   ***   ***   ***   ***"
+        pp user
+        pp "***   ***   ***   ***   ***   ***"
+        pp "***   ***   ***   ***   ***   ***"
+        pp "***   ***   ***   ***   ***   ***"
+        
 
         # respond with a no valid credentials generic error if not valid user found
         unless user
@@ -47,18 +55,18 @@ class Users::SessionsController < Devise::SessionsController
         end
 
         # save a invalid credentials log for the requested user
-        journal = user.journals.new({ title: "session_create", description:"atempt" })
+        activity = user.activities.new({ title: "session_create", description:"atempt" })
 
         # check password validation
         unless user.valid_password?(sign_in_params[:password])
 
             # save a invalid credentials log for the requested user
-            journal.update({
+            activity.update({
                 description: "invalid_credentials"
             })
 
             # respond with a no valid credentials generic error if not valid user found
-            danger(I18n.t("core.users/sessions.invalid_credentials"))
+            danger(I18n.t("lesli.users/sessions.message_invalid_credentials"))
             redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
         end
 
@@ -68,7 +76,7 @@ class Users::SessionsController < Devise::SessionsController
             # if user do not meet requirements to login
             unless valid
 
-                journal.update({
+                activity.update({
                     description: failures.join(", ")
                 })
 
@@ -103,7 +111,7 @@ class Users::SessionsController < Devise::SessionsController
         sign_in(:user, user)
 
         # create a log for login atempts
-        journal.update({ 
+        activity.update({ 
             title: "session_create", 
             description: "successful", 
             session_id: current_session[:id] 

@@ -32,14 +32,6 @@ Building a better future, one line of code at a time.
 
 class CreateLesliShieldSettings < ActiveRecord::Migration[6.0]
     def change
-        create_table :lesli_shield_settings do |t|
-            t.string :name
-            t.string :value
-            t.timestamps
-        end
-
-        add_reference(:lesli_shield_settings, :user, foreign_key: { to_table: :lesli_users })
-        add_reference(:lesli_shield_settings, :account, foreign_key: { to_table: :lesli_shield_accounts })
-        #add_index(:lesli_user_settings, %i[user_id name], unique: true)
+        create_lesli_settings_table_for_engine(:lesli_shield)
     end
 end

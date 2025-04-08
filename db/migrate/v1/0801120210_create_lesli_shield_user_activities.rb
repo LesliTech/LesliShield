@@ -30,15 +30,8 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-class CreateLesliShieldUserJournals < ActiveRecord::Migration[6.0]
+class CreateLesliShieldUserActivities < ActiveRecord::Migration[6.0]
     def change
-        create_table :lesli_shield_user_journals do |t|
-            t.string :title
-            t.string :description
-            t.timestamps
-        end
-
-        add_reference(:lesli_shield_user_journals, :user, foreign_key: { to_table: :lesli_users })
-        add_reference(:lesli_shield_user_journals, :session, foreign_key: { to_table: :lesli_user_sessions })
+        create_lesli_activities_table_for(:lesli_shield_users)
     end
 end

@@ -32,13 +32,6 @@ Building a better future, one line of code at a time.
 
 class CreateLesliShieldAccounts < ActiveRecord::Migration[6.0]
     def change
-        create_table :lesli_shield_accounts do |t|
-            t.string   :name 
-            t.integer  :status
-            t.datetime :enabled_at
-            t.datetime :deleted_at, index: true
-            t.timestamps 
-        end
-        add_reference(:lesli_shield_accounts, :account, foreign_key: { to_table: :lesli_accounts })
+        create_lesli_accounts_table_for_engine(:lesli_shield)
     end
 end

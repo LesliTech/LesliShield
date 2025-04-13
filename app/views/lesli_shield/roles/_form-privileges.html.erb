@@ -1,1 +1,78 @@
-hola
+
+<%
+columns = [{
+    label: "Controller"
+}, {
+    label: "List"
+}, {
+    label: "Index"
+}, {
+    label: "Show"
+}, {
+    label: "Create"
+}, {
+    label: "Update"
+}, {
+    label: "Destroy"
+}, {
+    label: ""
+}]
+%>
+
+
+<style>
+.mini-toggle {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background: #ccc;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.25s ease;
+    display: inline-block;
+}
+
+.mini-toggle.active {
+    background: #22c55e; /* green */
+    background: var(--lesli-color-primary)
+}
+
+.mini-toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+}
+
+.mini-toggle.active .mini-toggle-slider {
+    transform: translateX(20px);
+}
+</style>
+
+<%= render LesliView::Elements::Table.new(:columns => columns) do |table| %>
+    <% @role_actions.each do |controller_name, actions| %>
+        <% table.with_row do |row| %>
+            <% row.with_cell do %>
+                <%= controller_name %>
+            <% end %>
+            <% actions.each do |action_name, action| %>
+                <% row.with_cell do %>
+                    <% if action %>
+                        <%= button_to role_action_path(action),
+                            method: :patch,
+                            params: { action: { active: !action.active } },
+                            class: "mini-toggle #{'active' if action.active}" do %>
+                            <span class="mini-toggle-slider"></span>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
+        <% end %>
+    <% end %>
+<% end %>

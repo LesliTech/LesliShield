@@ -38,15 +38,7 @@ class Users::SessionsController < Devise::SessionsController
     def create
 
         # search for a existing user 
-        user = LesliShield::User.find_for_database_authentication(email: sign_in_params[:email])
-        pp "***   ***   ***   ***   ***   ***"
-        pp "***   ***   ***   ***   ***   ***"
-        pp "***   ***   ***   ***   ***   ***"
-        pp user
-        pp "***   ***   ***   ***   ***   ***"
-        pp "***   ***   ***   ***   ***   ***"
-        pp "***   ***   ***   ***   ***   ***"
-        
+        user = LesliShield::User.find_for_database_authentication(email: sign_in_params[:email])        
 
         # respond with a no valid credentials generic error if not valid user found
         unless user

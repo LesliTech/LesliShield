@@ -32,6 +32,6 @@ Building a better future, one line of code at a time.
 
 class CreateLesliShieldDashboards < ActiveRecord::Migration[6.1]
     def change
-        create_lesli_dashboards_table_for_engine(:lesli_shield)
+        create_table_lesli_shared_dashboards_10(:lesli_shield)
     end
 end

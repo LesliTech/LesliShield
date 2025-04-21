@@ -32,6 +32,6 @@ Building a better future, one line of code at a time.
 
 class CreateLesliShieldSettings < ActiveRecord::Migration[6.0]
     def change
-        create_lesli_settings_table_for_engine(:lesli_shield)
+        create_table_lesli_shared_settings_10(:lesli_shield)
     end
 end

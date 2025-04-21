@@ -33,15 +33,14 @@ Building a better future, one line of code at a time.
 class CreateLesliShieldUserTokens < ActiveRecord::Migration[7.0]
     def change
         create_table :lesli_shield_user_tokens do |t|
-            t.string :name
-            t.string :token
-            t.string :source # OTP, Pass, Integration
-            t.datetime :expiration_at
-            t.datetime :deleted_at,     index: true
+            t.string :name, null: false
+            t.string :token, null: false
+            t.string :source, null: false # OTP, Pass, Integration
+            t.datetime :expiration_at, index: true
+            t.datetime :deleted_at, index: true
             t.timestamps
         end
-        add_reference(:lesli_shield_user_tokens, :user, foreign_key: { to_table: :lesli_users })
+        add_reference(:lesli_shield_user_tokens, :user, foreign_key: { to_table: :lesli_users }, index: true)
         add_index(:lesli_shield_user_tokens, :token, unique: true)
-        add_index(:lesli_shield_user_tokens, :expiration_at)
     end
 end

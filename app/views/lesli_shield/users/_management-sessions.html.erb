@@ -1,0 +1,27 @@
+
+<%
+columns = [{
+    field: "id",
+    label: "ID"
+}, {
+    field: "first_name",
+    label: "User name"
+}, {
+    field: "session_source",
+    label: "Source"
+}, {
+    field: "created_at_string",
+    label: "Created at"
+}, {
+    field: "last_used_at_string",
+    label: "Last used at"
+}, {
+    field: "device",
+    label: "Device"
+}]
+%>
+
+<%= render(LesliView::Elements::Table.new(
+    columns: columns,
+    records: @sessions
+)) %>

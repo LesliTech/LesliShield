@@ -47,13 +47,13 @@ class Users::SessionsController < Devise::SessionsController
         end
 
         # save a invalid credentials log for the requested user
-        #activity = user.activities.new({ title: "session_create", description:"atempt" })
+        activity = user.activities.new({ title: "session_create", description:"atempt" })
 
         # check password validation
         unless user.valid_password?(sign_in_params[:password])
 
             # save a invalid credentials log for the requested user
-            #activity.update(description: "invalid_credentials")
+            activity.update(description: "invalid_credentials")
 
             # respond with a no valid credentials generic error if not valid user found
             danger(I18n.t("lesli.users/sessions.message_invalid_credentials"))
@@ -66,7 +66,7 @@ class Users::SessionsController < Devise::SessionsController
             # if user do not meet requirements to login
             unless valid
 
-                #activity.update(description: failures.join(", "))
+                activity.update(description: failures.join(", "))
 
                 danger(failures.join(", "))
                 redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
@@ -99,11 +99,11 @@ class Users::SessionsController < Devise::SessionsController
         sign_in(:user, user)
 
         # create a log for login atempts
-        # activity.update({ 
-        #     title: "session_create", 
-        #     description: "successful", 
-        #     session_id: current_session[:id] 
-        # })
+        activity.update({ 
+            title: "session_create", 
+            description: "successful", 
+            session_id: current_session[:id] 
+        })
 
         # respond successful and send the path user should go
         #respond_with_successful({ default_path: user.has_role_with_default_path?() })

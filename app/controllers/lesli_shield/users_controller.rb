@@ -9,6 +9,13 @@ module LesliShield
 
         # GET /users/1
         def show
+            @activities = @user.result.activities.order(id: :desc).map { |a| {
+                id: a[:id],
+                title: a[:title].titleize,
+                description: a[:description],
+                date: Date2.new(a[:created_at]).date_words
+            }}
+            @sessions = @user.result.sessions
             @user = @user.show
         end
 

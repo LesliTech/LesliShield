@@ -2,7 +2,7 @@
 
     <%= render "information-card" %>
 
-    <%= render LesliView::Elements::Tabs.new() do |tabs| %>
+    <%= render LesliView::Components::Tabs.new() do |tabs| %>
 
         <% tabs.with_tab(title:"information", icon:"info_outline") do %>
             <%= render "information-form" %>
@@ -14,9 +14,14 @@
         <% end %>
 
         <% tabs.with_tab(title:"Sessions", icon:"devices") do %>
+            <%= render "management-sessions" %>
         <% end %>
 
         <% tabs.with_tab(title:"Settings", icon:"settings") do %>
+        <% end %>
+
+        <% tabs.with_tab(title:"Activities", icon:"history") do %>
+            <%= render "viewer-activities" %>
         <% end %>
     <% end %>
 <% end %>

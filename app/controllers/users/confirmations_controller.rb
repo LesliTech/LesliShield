@@ -23,7 +23,8 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
         end
 
         # register a log with a validation atempt for the user
-        log = user.logs.create({ description: "confirmation_atempt_successful" })
+        activity = user.activities.create({ title: "user_confirmation", description: "Confirmation process started" })
+        
 
         registration_operator = Lesli::UserRegistrationOperator.new(user)
 

@@ -2,7 +2,7 @@
     <%= render LesliView::Components::Header.new(@role.name) do %>
     <% end %>
 
-    <%= render LesliView::Elements::Tabs.new() do |tabs| %>
+    <%= render LesliView::Components::Tabs.new() do |tabs| %>
         <% tabs.with_tab(title:"information", icon:"info_outline") do %>
             <%= render "form-information" %>
         <% end %>

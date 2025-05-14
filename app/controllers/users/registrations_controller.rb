@@ -42,35 +42,34 @@ class Users::RegistrationsController < Devise::RegistrationsController
     # end
 
     def create
+        begin
+            # Check if instance allow multi-account
+            if !Lesli.config.security.dig(:allow_registration)
+                raise(I18n.t("core.users/registrations.messages_error_registration_not_allowed"))
+            end
 
-        # # Check if instance allow multi-account
-        # if !Rails.application.config.lesli.dig(:security, :allow_registration)
-        #     respond_with_error(I18n.t("core.users/registrations.messages_error_registration_not_allowed"))
-        #     return
-        # end
+            # build new user
+            user = build_resource(sign_up_params)
 
-        # # Validate user is unique
-        # if ::User.with_deleted.find_by(email: sign_up_params["email"])
-        #     return respond_with_error(I18n.t("core.users/registrations.messages_info_user_already_exists"))
-        # end
+            # run password complexity validations
+            #user_validator = UsersValidator.new(user).password_complexity(sign_up_params[:password])
 
-        # build new user
-        user = build_resource(sign_up_params)
+            # return if there are errors with the complexity validations
+            # unless user_validator.valid?
+            #     return respond_with_error("password_complexity_error", password_complexity.failures)
+            # end
 
-        # run password complexity validations
-        #user_validator = UsersValidator.new(user).password_complexity(sign_up_params[:password])
-
-        # return if there are errors with the complexity validations
-        # unless user_validator.valid?
-        #     return respond_with_error("password_complexity_error", password_complexity.failures)
-        # end
-
-        # persist new user
-        if user.save
-            respond_with_successful()
-        else
-            respond_with_error(user.errors.full_messages.to_sentence)
+            # persist new user
+            if user.save
+                success("Account created, check your email")
+            else
+                raise(user.errors.full_messages.to_sentence)
+            end
+        rescue => exception
+            #Honeybadger.notify(exception)
+            danger(exception.message)
         end
+        redirect_to(new_user_registration_path)
     end
 
     # GET /resource/edit

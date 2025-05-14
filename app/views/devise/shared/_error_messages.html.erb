@@ -1,3 +1,17 @@
+
+<% if flash[:danger] %>
+    <div class="notification is-danger">
+        <%= flash[:danger] %>
+    </div>
+<% end %>
+
+<% if flash[:success] %>
+    <div class="notification is-success">
+        <%= flash[:success] %>
+    </div>
+<% end %>
+
+
 <% if resource.errors.any? %>
   <div id="error_explanation" data-turbo-cache="false">
     <h2>

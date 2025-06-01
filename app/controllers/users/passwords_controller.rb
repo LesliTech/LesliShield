@@ -48,6 +48,8 @@ class Users::PasswordsController < Devise::PasswordsController
     def update
         super do |resource|
 
+            logs = resource.activities.new({ title: "password_reset", description:"atempt" })
+
             # check if password update was ok
             if resource.errors.empty?
 
@@ -56,18 +58,10 @@ class Users::PasswordsController < Devise::PasswordsController
                     resource.update(password_expiration_at: nil)
                 end
 
-                resource.logs.create(title: "password_reset_successful")
-
-                return respond_with_successful
-
+                logs.update({ description: "successful" })
             else
-
-                resource.logs.create(title: "password_reset_error") if resource.id
-
-                return respond_with_error(resource.errors.full_messages.to_sentence)
-
+                logs.update({ description: resource.errors.full_messages.to_sentence })
             end
-
         end
     end
 end

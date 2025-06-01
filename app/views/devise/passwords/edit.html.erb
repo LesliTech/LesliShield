@@ -1,25 +1,37 @@
-<h2>Change your password</h2>
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <%= f.hidden_field :reset_password_token %>
+<%= render("lesli/wrappers/application-devise-simple", title:"Cambiar contraseña") do %>
 
-  <div class="field">
-    <%= f.label :password, "New password" %><br />
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em><br />
-    <% end %>
-    <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
-  </div>
+    <%= form_for(
+        resource, 
+        as: resource_name, 
+        url: user_password_path(reset_password_token: params[:reset_password_token]),
+        html: { class: "has-text-centered", method: :put },
+        builder: LesliView::Forms::Builder
+        ) do |form| %>
 
-  <div class="field">
-    <%= f.label :password_confirmation, "Confirm new password" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
+            <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="actions">
-    <%= f.submit "Change my password" %>
-  </div>
+            <%= form.field_control_builder(
+                label_html:form.label(:password), 
+                control_html:form.password_field(:password, autocomplete: "current-password", placeholder: "* * * * * *"),
+                message_text: flash.first&.second,
+                category: flash.first&.first,
+                icon: "key"
+            ) %>
+
+            <%= form.field_control_builder(
+                label_html:form.label(:password_confirmation), 
+                control_html:form.password_field(:password_confirmation, autocomplete: "current-password", placeholder: "* * * * * *"),
+                message_text: flash.first&.second,
+                category: flash.first&.first,
+                icon: "key"
+            ) %>
+
+            <input type="hidden" name="user[reset_password_token]" value="<%= params[:reset_password_token] %>">
+
+            <%= form.field_control_button("Cambiar contraseña", icon:"key") %>
+
+        <% end %>
+
+    <%= render("devise/shared/links", login:true, password_reset:false, magic_link:false, otp:false) %>  
 <% end %>
-
-<%= render "devise/shared/links" %>

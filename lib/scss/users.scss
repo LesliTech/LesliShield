@@ -29,30 +29,30 @@ Building a better future, one line of code at a time.
 // · 
 */
 
-@import "Lesli/scss/templates/component";
+// @import "Lesli/scss/templates/component";
 
 
-// · 
-.user-information-card {
+// // · 
+// .user-information-card {
 
-    .lesli-element-avatar {
-        border: 2px solid var(--lesli-color-primary, lesli-css-color(blue));
-        span {
-            color: var(--lesli-color-primary, lesli-css-color(blue)) !important;
-        }
-    }
-}
+//     .lesli-element-avatar {
+//         border: 2px solid var(--lesli-color-primary, lesli-css-color(blue));
+//         span {
+//             color: var(--lesli-color-primary, lesli-css-color(blue)) !important;
+//         }
+//     }
+// }
 
 
-@include lesli-css-breakpoint-mobile {
-    .user-information-card {
+// @include lesli-css-breakpoint-mobile {
+//     .user-information-card {
 
-        .level.is-mobile {
-            justify-content: center;
-        }
+//         .level.is-mobile {
+//             justify-content: center;
+//         }
 
-        p, a, h5 {
-            text-align: center;
-        }
-    }   
-}
+//         p, a, h5 {
+//             text-align: center;
+//         }
+//     }   
+// }

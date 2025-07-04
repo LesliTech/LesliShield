@@ -55,6 +55,8 @@ columns = [{
 }
 </style>
 
+<%= dd @role_actions.first %>
+
 <%= render LesliView::Elements::Table.new(:columns => columns) do |table| %>
     <% @role_actions.each do |controller_name, actions| %>
         <% table.with_row do |row| %>

@@ -55,8 +55,6 @@ columns = [{
 }
 </style>
 
-<%= dd @role_actions.first %>
-
 <%= render LesliView::Elements::Table.new(:columns => columns) do |table| %>
     <% @role_actions.each do |controller_name, actions| %>
         <% table.with_row do |row| %>
@@ -66,11 +64,18 @@ columns = [{
             <% actions.each do |action_name, action| %>
                 <% row.with_cell do %>
                     <% if action %>
-                        <%= button_to role_action_path(action),
-                            method: :patch,
-                            params: { action: { active: !action.active } },
-                            class: "mini-toggle #{'active' if action.active}" do %>
-                            <span class="mini-toggle-slider"></span>
+                        <% if action[:active] == 1 %> 
+                            <%= button_to role_action_path(action),
+                                method: :delete,
+                                class: "mini-toggle active" do %>
+                                <span class="mini-toggle-slider"></span>
+                            <% end %>
+                        <% else %>
+                            <%= button_to role_action_path(action),
+                                method: :put,
+                                class: "mini-toggle" do %>
+                                <span class="mini-toggle-slider"></span>
+                            <% end %>
                         <% end %>
                     <% end %>
                 <% end %>

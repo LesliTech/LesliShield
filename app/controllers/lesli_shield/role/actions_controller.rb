@@ -19,11 +19,12 @@ module LesliShield
         def destroy
             # check saved
             if @role_action.result.destroy
-                success("Role privileges removed successfully!")
-                respond_to do |format|
-                    format.turbo_stream
-                    #format.html { redirect_to role_path(@role_action.role_id) }
-                end
+                # success("Role privileges removed successfully!")
+                # respond_to do |format|
+                #     format.turbo_stream
+                #     #format.html { redirect_to role_path(@role_action.role_id) }
+                # end
+                return "hola"
             else 
                 respond_with_error(@user.errors)
             end

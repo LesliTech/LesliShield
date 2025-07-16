@@ -64,18 +64,11 @@ columns = [{
             <% actions.each do |action_name, action| %>
                 <% row.with_cell do %>
                     <% if action %>
-                        <% if action[:active] == 1 %> 
-                            <%= button_to role_action_path(action),
-                                method: :delete,
-                                class: "mini-toggle active" do %>
-                                <span class="mini-toggle-slider"></span>
-                            <% end %>
-                        <% else %>
-                            <%= button_to role_action_path(action),
-                                method: :put,
-                                class: "mini-toggle" do %>
-                                <span class="mini-toggle-slider"></span>
-                            <% end %>
+                        <%= button_to role_action_path(action),
+                            method: :delete,
+                            class: "mini-toggle #{action[:active] == 1 ? 'active' : ''}",
+                            form: { "x-data" => "toggleForm", "x-on:submit.prevent" => "submit($el)" } do %>
+                            <span class="mini-toggle-slider"></span>
                         <% end %>
                     <% end %>
                 <% end %>
@@ -83,3 +76,29 @@ columns = [{
         <% end %>
     <% end %>
 <% end %>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('toggleForm', () => ({
+            submit(form) {
+                const method = form.querySelector('input[name="_method"]')?.value?.toUpperCase() || form.method.toUpperCase();
+                fetch(form.action, {
+                    method: method,
+                    headers: {
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'text/vnd.turbo-stream.html' // or 'application/json'
+                    },
+                    body: new URLSearchParams(new FormData(form))
+                }).then(response => {
+                    if (!response.ok) throw new Error("Request failed");
+                    return response.text();
+                }).then(() => {
+                    // Success! Toggle the class
+                    form.querySelector('button')?.classList.toggle('active');
+                }).catch(err => {
+                    console.error("Error:", err);
+                    alert("Something went wrong");
+                });
+            }
+        }))
+    });
+</script>

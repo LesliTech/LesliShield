@@ -31,7 +31,7 @@ Building a better future, one line of code at a time.
 =end
 
 module  LesliShield
-    class Tokens < ApplicationLesliService
+    class Tokens < Lesli::ApplicationLesliService
         def self.friendly_token(length:40)
             Devise.friendly_token(length)
         end

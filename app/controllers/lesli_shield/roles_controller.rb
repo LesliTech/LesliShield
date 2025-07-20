@@ -40,7 +40,7 @@ module LesliShield
 
         def show
             @role = @role.show
-            @role_actions = Lesli::Role::ActionService.new(current_user, query).index(nil)
+            @role_actions = Lesli::Role::ActionService.new(current_user, query).index(@role.id)
         end
 
         # @return [HTML] HTML view for creating a new role

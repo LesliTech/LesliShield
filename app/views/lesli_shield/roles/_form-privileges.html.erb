@@ -65,7 +65,7 @@ columns = [{
                 <% row.with_cell do %>
                     <% if action %>
                         <%= button_to role_action_path(action),
-                            method: :delete,
+                            method: (action[:active] == 1 ? :delete : :patch),
                             class: "mini-toggle #{action[:active] == 1 ? 'active' : ''}",
                             form: { "x-data" => "toggleForm", "x-on:submit.prevent" => "submit($el)" } do %>
                             <span class="mini-toggle-slider"></span>
@@ -87,7 +87,7 @@ columns = [{
                         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
                         'Accept': 'text/vnd.turbo-stream.html' // or 'application/json'
                     },
-                    body: new URLSearchParams(new FormData(form))
+                    //body: new URLSearchParams(new FormData(form))
                 }).then(response => {
                     if (!response.ok) throw new Error("Request failed");
                     return response.text();

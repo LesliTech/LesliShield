@@ -24,7 +24,7 @@ module LesliShield
                 #     format.turbo_stream
                 #     #format.html { redirect_to role_path(@role_action.role_id) }
                 # end
-                return "hola"
+                return true
             else 
                 respond_with_error(@user.errors)
             end

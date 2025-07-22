@@ -31,6 +31,8 @@ Building a better future, one line of code at a time.
 %>
 
 <% 
+
+# Check if demo mode is enable on initializer file
 if Lesli.config.demo
     resource.email = Lesli.config.company[:email]
     resource.password = Lesli.config.security[:password]

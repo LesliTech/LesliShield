@@ -28,12 +28,12 @@ module LesliShield
             # privilege for object not found
             if granted.blank?
                 current_user.activities.create({ title: "privilege_not_found", description: request.path })
-                return respond_with_unauthorized({ controller: params[:controller], privilege: params[:action] })
+                return respond_with_unauthorized({ controller: params[:controller], action: params[:action] })
             end
 
             unless granted
                 current_user.activities.create({ title: "privilege_not_granted", description: request.path })
-                return respond_with_unauthorized({ controller: params[:controller], privilege: params[:action] })
+                return respond_with_unauthorized({ controller: params[:controller], action: params[:action] })
             end
         end
     end

@@ -26,7 +26,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
         activity = user.activities.create({ title: "user_confirmation", description: "Confirmation process started" })
         
 
-        registration_operator = Lesli::UserRegistrationOperator.new(user)
+        registration_operator = LesliShield::UserRegistrationOperator.new(user)
 
         # confirm the user
         registration_operator.confirm

@@ -34,16 +34,15 @@ namespace :lesli_shield do
 
     desc "Syncing privileges for all the available roles"
     task :privileges => :environment do |task, args|
-        role_sync_privileges()
+        lesli_shield_privileges()
     end
 
     # Drop, build, migrate & seed database (development only)
-    def role_sync_privileges
+    def lesli_shield_privileges
 
         Lesli::Role.all.each do |role|
+            L2.info("LesliShield: Syncing privileges for #{role.name} role.")
             Lesli::RoleOperator.new(role).synchronize
         end
-
-        L2.msg("LesliShield: Syncing privileges for all the available roles")
     end
 end

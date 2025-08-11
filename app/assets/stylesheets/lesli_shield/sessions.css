@@ -31,37 +31,6 @@ Building a better future, one line of code at a time.
 // · 
 */
 /*
-
-Lesli
-
-Copyright (c) 2025, Lesli Technologies, S. A.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see http://www.gnu.org/licenses/.
-
-Lesli · Ruby on Rails SaaS Development Framework.
-
-Made with ♥ by LesliTech
-Building a better future, one line of code at a time.
-
-@contact  hello@lesli.tech
-@website  https://www.lesli.tech
-@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
-
-// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
-*/
-/*
 Lesli
 
 Copyright (c) 2024, Lesli Technologies, S. A.
@@ -560,6 +529,68 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
 Lesli - SCSS Utilities for websites, apps and web applications
+
+Made with ♥ by LesliTech
+Building a better future, one line of code at a time.
+
+@contact  hello@lesli.tech
+@website  https://www.lesli.tech
+@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
+
+// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
+// · 
+*/
+/*
+
+Lesli
+
+Copyright (c) 2025, Lesli Technologies, S. A.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see http://www.gnu.org/licenses/.
+
+Lesli · Ruby on Rails SaaS Development Framework.
+
+Made with ♥ by LesliTech
+Building a better future, one line of code at a time.
+
+@contact  hello@lesli.tech
+@website  https://www.lesli.tech
+@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
+
+// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
+// · 
+*/
+/*
+
+Lesli
+
+Copyright (c) 2025, Lesli Technologies, S. A.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see http://www.gnu.org/licenses/.
+
+Lesli · Ruby on Rails SaaS Development Framework.
 
 Made with ♥ by LesliTech
 Building a better future, one line of code at a time.
@@ -18791,6 +18822,16 @@ Building a better future, one line of code at a time.
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
 */
+@font-face {
+  font-family: "Domine";
+  src: url("/lesli_assets/Domine/Domine-Variable.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "OpenSans";
+  src: url("/lesli_assets/OpenSans/OpenSans-Variable.ttf") format("truetype");
+  font-display: swap;
+}
 /*
 Lesli
 
@@ -18821,6 +18862,12 @@ Building a better future, one line of code at a time.
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
 */
+@font-face {
+  font-family: "MaterialSymbols";
+  src: url("/lesli_assets/MaterialDesign/symbols.woff") format("woff");
+  font-style: normal;
+  font-weight: 400;
+}
 .material-symbols,
 .material-symbols-outlined {
   font-family: "MaterialSymbols";
@@ -18900,12 +18947,6 @@ Building a better future, one line of code at a time.
   border: 1px solid silver;
 }
 
-.column.background {
-  background: linear-gradient(0deg, rgba(49, 106, 255, 0.4), rgba(49, 106, 255, 0.4)), url("lesli/brand/login-background.jpg");
-  background-position: center;
-  background-size: cover;
-}
-
 .column.login-form {
   max-width: 550px;
   margin: 0 auto;
@@ -18968,9 +19009,6 @@ Building a better future, one line of code at a time.
   .column.login-form {
     width: 100%;
     max-width: 100%;
-    background: linear-gradient(0deg, rgba(49, 106, 255, 0.4), rgba(49, 106, 255, 0.4)), url("lesli/brand/login-background.jpg");
-    background-position: center;
-    background-size: cover;
   }
   .column.login-form .hero {
     padding: 2rem 0;
@@ -18981,5 +19019,18 @@ Building a better future, one line of code at a time.
     background-color: white;
     border-radius: 6px;
     padding: 1rem 3rem;
+  }
+}
+.column.background {
+  background: linear-gradient(0deg, rgba(49, 106, 255, 0.4), rgba(49, 106, 255, 0.4)), url("/lesli/brand/login-background.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+@media only screen and (max-width: 1023px) {
+  .column.login-form {
+    background: linear-gradient(0deg, rgba(49, 106, 255, 0.4), rgba(49, 106, 255, 0.4)), url("/lesli/brand/login-background.jpg");
+    background-position: center;
+    background-size: cover;
   }
 }

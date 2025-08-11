@@ -45,23 +45,6 @@ Building a better future, one line of code at a time.
 }
 
 
-// · reusable background styles
-@mixin lesli-login-background() {
-    background: linear-gradient(0deg, 
-        rgba(49, 106, 255, 0.4), 
-        rgba(49, 106, 255, 0.4)), 
-        url("lesli/brand/login-background.jpg");
-    background-position: center;
-    background-size: cover;
-}
-
-
-// column with image background right side
-.column.background {
-    @include lesli-login-background;
-}
-
-
 // login form container
 .column.login-form {
     max-width: 550px;
@@ -144,7 +127,6 @@ Building a better future, one line of code at a time.
     .column.login-form {
         width: 100%;
         max-width: 100%;
-        @include lesli-login-background;
 
         .hero {
             padding: 2rem 0;

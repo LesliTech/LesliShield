@@ -31,5 +31,36 @@ Building a better future, one line of code at a time.
 */
 
 
+// ·
+@use "lesli-css" as lesli;
+
+
 // · 
 @use "devise";
+
+
+// · 
+@mixin lesli-login-background() {
+    background: linear-gradient(0deg, 
+        rgba(49, 106, 255, 0.4), 
+        rgba(49, 106, 255, 0.4)), 
+        url("/lesli/brand/login-background.jpg");
+    background-position: center;
+    background-size: cover;
+}
+
+
+// · 
+.column.background {
+    @include lesli-login-background;
+}
+
+
+// · 
+@include lesli.lesli-breakpoint-until-tablet() {
+
+    // login column must be full width on mobile
+    .column.login-form {
+        @include lesli-login-background;
+    }
+}

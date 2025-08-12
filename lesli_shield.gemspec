@@ -36,28 +36,37 @@ Gem::Specification.new do |spec|
     spec.name        = "lesli_shield"
     spec.version     = LesliShield::VERSION
     spec.platform    = Gem::Platform::RUBY
-    spec.license     = "GPL-3.0"
+    spec.license     = "GPL-3.0-or-later"
     spec.authors     = ["The Lesli Development Team"]
     spec.email       = ["hello@lesli.tech"]
     spec.homepage    = "https://www.lesli.dev/"
     spec.summary     = "Authentication & Authorization management for the Lesli Framework."
-    spec.description = "Authentication & Authorization management for the Lesli Framework."
+    spec.description = <<~DESC
+        Provides a complete authentication and authorization solution for The Lesli Framework, 
+        including user session management, secure login and logout, role-based access control, 
+        and permission handling.
+    DESC
 
     # Prevent pushing this gem to RubyGems.org. To allow pushes either set the "allowed_push_host"
     # to allow pushing to a single host or delete this section to allow pushing to any host.
     # spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
 
-    spec.metadata["homepage_uri"] = spec.homepage
-    spec.metadata["changelog_uri"] = "https://github.com/LesliTech/LesliShield"
-    spec.metadata["source_code_uri"] = "https://github.com/LesliTech/LesliShield"
+    spec.metadata["homepage_uri"]       = spec.homepage
+    spec.metadata["changelog_uri"]      = "https://github.com/LesliTech/LesliShield/releases"
+    spec.metadata["source_code_uri"]    = "https://github.com/LesliTech/LesliShield"
+    spec.metadata["bug_tracker_uri"]    = "https://github.com/LesliTech/LesliShield/issues"
+    spec.metadata["documentation_uri"]  = "https://www.lesli.dev/engines/shield/"
 
     spec.files = Dir.chdir(File.expand_path(__dir__)) do
         Dir["{app,config,db,lib}/**/*", "license", "Rakefile", "readme.md"]
     end
 
+    # Ruby version
+    spec.required_ruby_version = ">= 3.2"
+
     # Lesli core minimum requirements
     spec.add_dependency("lesli", "~> 5.0")
 
     # Flexible authentication solution for Rails with Warden
-    spec.add_dependency("devise")
+    spec.add_dependency("devise", "~> 4.9")
 end

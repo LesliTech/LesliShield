@@ -37,6 +37,16 @@ Building a better future, one line of code at a time.
 @use "LesliAssets/lib/lesli_assets_styles/templates/public";
 
 
+// · Configuration & variables
+@use "LesliAssets/lib/lesli_assets_styles/settings/variables";
+
+
+// · headings and links
+h1, h2, h3, h4, h5, h6, a {
+    font-family: "Domine", variables.$family-primary;
+}
+
+
 // ·
 .shield-form-demo {
     width: 100%;

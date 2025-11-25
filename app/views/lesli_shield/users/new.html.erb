@@ -1,11 +1,5 @@
-<% content_for :title, "New user" %>
-
-<h1>New user</h1>
-
-<%= render "form", user: @user %>
-
-<br>
-
-<div>
-  <%= link_to "Back to users", users_path %>
-</div>
+<%= render LesliView::Layout::Container.new("shield-users-show") do %>
+    <%= render LesliView::Components::Header.new('Add new user') do %>        
+    <% end %>
+    <%= render "information-form" %>
+<% end %>

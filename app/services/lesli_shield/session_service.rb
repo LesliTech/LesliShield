@@ -58,10 +58,10 @@ module LesliShield
             current_session = current_user.sessions.create({
                 :remote => remote_ip,
 
-                :agent_os => user_agent&[:os] || "unknown",
-                :agent_platform => user_agent&[:platform] || "unknown",
-                :agent_browser => user_agent&[:browser] || "unknown",
-                :agent_version => user_agent&[:version] || "unknown",
+                :agent_os => user_agent&.dig(:os) || "unknown",
+                :agent_platform => user_agent&.dig(:platform) || "unknown",
+                :agent_browser => user_agent&.dig(:browser) || "unknown",
+                :agent_version => user_agent&.dig(:version) || "unknown",
                 
                 :session_source => session_source,
                 :last_used_at => Date2.new.get,

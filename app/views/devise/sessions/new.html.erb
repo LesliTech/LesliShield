@@ -45,7 +45,8 @@ end
         resource, 
         as: resource_name, 
         url: user_session_path,
-        builder: LesliView::Forms::Builder
+        builder: LesliView::Forms::Builder,
+        data: { turbo: false }
         ) do |form| %>
 
         <% if Lesli.config.demo %>

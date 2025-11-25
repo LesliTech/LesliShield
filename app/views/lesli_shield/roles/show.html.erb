@@ -3,11 +3,11 @@
     <% end %>
 
     <%= render LesliView::Components::Tabs.new() do |tabs| %>
+        <% tabs.with_tab(title:"information", icon:"info") do %>
+            <%= render "form-information" %>
+        <% end %>
         <% tabs.with_tab(title:"privileges", icon:"security") do %>
             <%= render "form-privileges" %>
-        <% end %>
-        <% tabs.with_tab(title:"information", icon:"info_outline") do %>
-            <%= render "form-information" %>
         <% end %>
     <% end %>
 <% end %>

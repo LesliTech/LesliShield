@@ -44,10 +44,10 @@ Building a better future, one line of code at a time.
 # · 
 LesliShield::Engine.routes.draw do
 
-    Lesli::Routing.mount_dashboard_for(LesliShield)
+    Lesli::Router.mount_dashboard_for(LesliShield)
 
     resources :sessions, only: [:index, :show]
-    resources :users, only: [:index, :show, :update] do 
+    resources :users, only: [:index, :show, :update, :new, :create] do 
 
         # extensions to the user methods
         scope module: :user do

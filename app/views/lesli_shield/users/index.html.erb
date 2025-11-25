@@ -29,12 +29,8 @@ columns = [{
 %>
 <%= render LesliView::Layout::Container.new("shield-sessions") do %>
     <%= render LesliView::Components::Header.new("Users") do %>
-        <%= render(LesliView::Elements::Button.new(icon: "add", solid:true)) do %>
-            Add new
-        <% end %>
-        <%= render(LesliView::Elements::Button.new(icon: "refresh")) do %>
-            Reload
-        <% end %>
+        <%= render(LesliView::Elements::Button.new('Add user', url: new_user_path, icon: "add", solid:true)) %>
+        <%= render(LesliView::Elements::Button.new('Refresh', icon: 'refresh')) %>
     <% end %>
     <%= render LesliView::Components::Toolbar.new() %>
     <%= render(LesliView::Elements::Table.new(

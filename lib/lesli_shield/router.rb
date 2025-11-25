@@ -1,5 +1,5 @@
 module LesliShield 
-    module Routing 
+    module Router
         def self.mount_login_at path=""
             Rails.application.routes.draw do
                 devise_for :users, class_name: "Lesli::User", module: :devise,

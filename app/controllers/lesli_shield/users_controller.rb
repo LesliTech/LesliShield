@@ -33,9 +33,13 @@ module LesliShield
             @user = User.new(user_params)
 
             if @user.save
-                redirect_to @user, notice: "User was successfully created."
+                respond_with_stream(
+                    stream_notification_success('User was successfully created.')
+                )
             else
-                render :new, status: :unprocessable_entity
+                respond_with_stream(
+                    stream_notification_danger(@user.errors.full_messages.to_sentence)
+                )
             end
         end
 

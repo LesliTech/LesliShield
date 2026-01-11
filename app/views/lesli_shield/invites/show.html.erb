@@ -29,10 +29,26 @@ Building a better future, one line of code at a time.
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
 %>
-
-<%= navigation_item(lesli_shield.dashboard_path, "Dashboard", "ri-dashboard-3-line"); %>
-<%= navigation_item(lesli_shield.users_path, "Users", "ri-user-line"); %>
-<%= navigation_item(lesli_shield.sessions_path, "Sessions", "ri-lock-line") %>
-<%= navigation_item(lesli_shield.roles_path, "Roles", "ri-shield-user-line") %>
-<%= navigation_item(lesli_shield.invites_path, "Invites", "ri-user-add-line") %>
-<%= navigation_item(lesli_shield.settings_path, "Settings", "ri-settings-3-line") %>
+<%= render LesliView::Layout::Container.new('shield-invites') do %>
+    <%= render LesliView::Components::Header.new("Invite for #{ @invite.full_name.presence || @invite.email }") do %>
+        <%= render(LesliView::Elements::Button.new(
+            'Send invitation', 
+            success:true, 
+            solid:true, 
+            icon:'send', 
+            url: invite_path(@invite),
+            method: :put,
+            params: { invite: { status: :sent } }
+        )) %>
+        <%= render(LesliView::Elements::Button.new(
+            'Cancel invitation', 
+            danger:true, 
+            solid:true, 
+            icon:'cancel',
+            url: invite_path(@invite),
+            method: :put,
+            params: { invite: { status: :cancelled } }
+        )) %>
+    <% end %>
+    <%= render "form" %>
+<% end %> 

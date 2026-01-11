@@ -1,0 +1,10 @@
+<%= form_with(model: @invite, builder: LesliView::Forms::Builder) do |form| %>
+    <%= form.fieldset do %>
+        <%= form.field_control_email(:email) %>
+        <%= form.field_control(:full_name) %>
+        <%= form.field_control(:telephone) %>
+        <%= form.field_text_editor(:notes) %>
+        <hr/>
+        <%= form.field_control_submit %>
+    <% end %>
+<% end %>

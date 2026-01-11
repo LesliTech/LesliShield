@@ -43,6 +43,7 @@ Building a better future, one line of code at a time.
 
 # · 
 LesliShield::Engine.routes.draw do
+  resources :invites
 
     Lesli::Router.mount_dashboard_for(LesliShield)
 

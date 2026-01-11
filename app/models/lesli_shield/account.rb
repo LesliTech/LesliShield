@@ -34,6 +34,7 @@ module LesliShield
     class Account < ApplicationRecord
         belongs_to :account, class_name: "Lesli::Account"
         has_many :dashboards
+        has_many :invites
 
         after_create :initialize_account
 

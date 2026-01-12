@@ -38,6 +38,11 @@ module LesliShield
 
         # PATCH/PUT /invites/1
         def update
+            audit(
+                action: "update",
+                subject: @invite,
+                description: "Invitation updated successfully"
+            )
             if @invite.update(invite_params)
                 respond_with_stream(
                     stream_notification_success("Invite was successfully updated.")

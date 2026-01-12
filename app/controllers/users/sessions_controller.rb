@@ -34,6 +34,8 @@ Building a better future, one line of code at a time.
 
 class Users::SessionsController < Devise::SessionsController
 
+    after_action :log_devices, only: [:create] if defined?(LesliAudit)
+
     # Creates a new session for the user and allows them access to the platform
     def create
 

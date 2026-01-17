@@ -15,7 +15,6 @@ module LesliShield
             requested: 6
         }
 
-
         private 
 
         def before_create_invite

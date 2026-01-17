@@ -35,31 +35,26 @@ columns = [{
     label: "ID",
     sort: true
 }, {
-    field: "fullname",
-    label: "name",
+    field: "full_name",
+    label: "Name",
     sort: true
 }, {
     field: "email",
-    label: "email",
+    label: "Email",
     sort: true
 }, {
-    field: "rolenames",
-    label: "roles",
+    field: "telephone",
+    label: "Telephone",
     sort: true
 }, {
-    field: "active",
+    field: "status",
     label: "status",
-    sort: true,
-    custom: true
-}, {
-    field: "current_sign_in_at_string",
-    label: "last_sign_in",
     sort: true
 }]
 %>
 <%= render LesliView::Layout::Container.new('shield-invites') do %>
     <%= render LesliView::Components::Header.new('Invites') do %>
-        <%= render(LesliView::Elements::Button.new('Send invite', url: new_invite_path, icon: "add", solid:true)) %>
+        <%= render(LesliView::Elements::Button.new('Create invitation', url: new_invite_path, icon: "add", solid:true)) %>
         <%= render(LesliView::Elements::Button.new(icon: 'refresh')) %>
     <% end %>
     <%= render LesliView::Components::Toolbar.new() %>

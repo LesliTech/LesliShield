@@ -29,14 +29,15 @@ module LesliShield
                     subject: @invite,
                     description: "Invitation created successfully"
                 )
+                
                 success("Invite was successfully created.")
-                respond_with_stream(
-                    stream_redirection(invite_path(@invite)),
+                respond_for(
+                    turbo: stream_redirection(invite_path(@invite))
                 ) 
             else
-                respond_with_stream(
-                    stream_notification_danger(@invite.errors.full_messages.to_sentence),
-                )
+                respond_for(
+                    turbo: stream_notification_danger(@invite.errors.full_messages.to_sentence)
+                ) 
             end
         end
 

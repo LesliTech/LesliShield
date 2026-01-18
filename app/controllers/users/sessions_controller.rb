@@ -30,8 +30,6 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
-#require "uri"
-
 class Users::SessionsController < Devise::SessionsController
 
     after_action :log_devices, only: [:create] if defined?(LesliAudit)
@@ -55,7 +53,7 @@ class Users::SessionsController < Devise::SessionsController
         unless user.valid_password?(sign_in_params[:password])
 
             # save a invalid credentials log for the requested user
-            log.update(description: "invalid_credentials")
+            log.update(description: "invalid_credentials") if defined?(LesliAudit)
 
             # respond with a no valid credentials generic error if not valid user found
             danger(I18n.t("lesli.users/sessions.message_invalid_credentials"))
@@ -63,12 +61,12 @@ class Users::SessionsController < Devise::SessionsController
         end
 
         # check if user meet requirements to create a new session
-        Lesli::UsersValidator.new(user).valid? do |valid, failures|
+        LesliShield::UserValidatorService.new(user).valid? do |valid, failures|
 
             # if user do not meet requirements to login
             unless valid
 
-                log.update(description: failures.join(", "))
+                log.update(description: failures.join(", ")) if defined?(LesliAudit)
 
                 danger(failures.join(", "))
                 redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
@@ -81,7 +79,7 @@ class Users::SessionsController < Devise::SessionsController
 
 
         # create a new session for the user
-        current_session = ::LesliShield::SessionService.new(user)
+        current_session = LesliShield::UserSessionService.new(user)
         .create(request.remote_ip,(get_user_agent(false) if defined?(LesliAudit)))
         .result
 
@@ -104,7 +102,7 @@ class Users::SessionsController < Devise::SessionsController
         log.update({ 
             description: "Session creation successful", 
             session_id: current_session[:id] 
-        })
+        }) if defined?(LesliAudit)
 
         # respond successful and send the path user should go
         #respond_with_successful({ default_path: user.has_role_with_default_path?() })

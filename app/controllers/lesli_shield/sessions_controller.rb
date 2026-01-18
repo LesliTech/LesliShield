@@ -4,14 +4,11 @@ module LesliShield
 
     # GET /sessions
     def index
-        respond_to do |format|
-            format.html {
-                @sessions = respond_as_pagination(SessionService.new(current_user, query).index())
-            }
-            format.json { 
-                respond_as_pagination(SessionService.new(current_user, query).index())
-            }
-        end
+        @sessions = respond_as_pagination(UserSessionService.new(current_user, query).index())
+        respond_for(
+            :html => @sessions,
+            :json => @sessions
+        )
     end
 
     # GET /sessions/1

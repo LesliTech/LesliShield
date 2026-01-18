@@ -31,7 +31,7 @@ Building a better future, one line of code at a time.
 =end
 
 module LesliShield
-    class SessionService < Lesli::ApplicationLesliService
+    class UserSessionService < Lesli::ApplicationLesliService
 
         def index
             Lesli::User::Session

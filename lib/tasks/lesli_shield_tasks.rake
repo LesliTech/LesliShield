@@ -42,7 +42,7 @@ namespace :lesli_shield do
 
         Lesli::Role.all.each do |role|
             L2.info("LesliShield: Syncing privileges for #{role.name} role.")
-            Lesli::RoleOperator.new(role).synchronize
+            LesliShield::RoleService.new(role).synchronize
         end
     end
 end

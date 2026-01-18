@@ -1,3 +1,4 @@
+<%
 =begin
 
 Lesli
@@ -17,7 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails SaaS Development Framework.
+Lesli · Ruby on Rails SaaS development platform.
 
 Made with ♥ by https://www.lesli.tech
 Building a better future, one line of code at a time.
@@ -29,17 +30,30 @@ Building a better future, one line of code at a time.
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
 =end
+%>
 
-class CreateLesliRoleActions < ActiveRecord::Migration[7.0]
-    def change
-        create_table :lesli_role_actions do |t|
-            t.datetime :deleted_at, index: true
-            t.timestamps
-        end
+<% title = defined?(title) ? title : "" %>
 
-        add_reference(:lesli_role_actions, :role, foreign_key: { to_table: :lesli_roles })
-        add_reference(:lesli_role_actions, :action,
-                      foreign_key: { to_table: :lesli_system_controller_actions }, 
-                      index: { name: "descriptor_privileges_system_controller_actions" })
-    end
-end
+<main id="lesli-application">
+    <section class="hero is-fullheight">
+        <div class="hero-head has-text-centered">
+            <%# Logo container %>
+            <div class="logo mb-4">
+                <%= image_tag(
+                    "#{lesli_instance_code}/brand/app-auth.svg",    # dynamic path to the instance main logo
+                    :class => "#{lesli_instance_code}-logo",        # dynamic class according to the instance
+                    :alt => "Main logo") 
+                %>
+                <h1 class="title is-size-4 has-text-primary">
+                    <%#= I18n.t("core.users/sessions.view_text_welcome") %>
+                    <%= title %>
+                </h1>
+            </div>
+        </div>
+        <div class="hero-body">
+            
+            <%= yield %>
+
+        </div>
+    </section>
+</main>

@@ -32,9 +32,6 @@ Building a better future, one line of code at a time.
 
 module LesliShield
     class Dashboard < Lesli::Shared::Dashboard
-        self.table_name = "lesli_shield_dashboards"
-        belongs_to :account
-
-        COMPONENTS = %i[]
+        COMPONENTS = %i[calendar chart_bar weather]
     end
 end

@@ -6,8 +6,6 @@
 
 08.01.00.10. shield/settings 
 08.01.00.20. shield/catalogs 
-08.01.00.21. shield/catalog/items
-08.01.00.30. shield/dashboards 
 
 08.01.00.50. shield/workflows
 08.01.00.51. shield/workflow/statuses
@@ -26,6 +24,7 @@
 08.01.11.07. shield/user/versions
 08.01.11.10. shield/user/shortcuts
 08.01.11.11. shield/user/tokens
+08.01.11.12. shield/user/sessions
 
 08.01.12.01. shield/invites
 ```

@@ -1,2 +1,5 @@
 ---
-:it: {}
+:it:
+  lesli_shield:
+    users:
+      message_invalid_credentials: ":lesli_shield.users.message_invalid_credentials:"

@@ -1,2 +1,5 @@
 ---
-:en: {}
+:en:
+  lesli_shield:
+    users:
+      message_invalid_credentials: Not valid credentials

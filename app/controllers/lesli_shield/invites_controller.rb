@@ -31,11 +31,11 @@ module LesliShield
                 )
                 
                 success("Invite was successfully created.")
-                respond_for(
+                respond_with_lesli(
                     turbo: stream_redirection(invite_path(@invite))
                 ) 
             else
-                respond_for(
+                respond_with_lesli(
                     turbo: stream_notification_danger(@invite.errors.full_messages.to_sentence)
                 ) 
             end
@@ -48,12 +48,12 @@ module LesliShield
                     subject: @invite,
                     description: "Invitation updated successfully"
                 )
-                respond_with_stream(
-                    stream_notification_success("Invite was successfully updated.")
+                respond_with_lesli(
+                    :turbo => stream_notification_success("Invite was successfully updated.")
                 ) 
             else
-                respond_with_stream(
-                    stream_notification_danger(@invite.errors.full_messages.to_sentence)
+                respond_with_lesli(
+                    :turbo => stream_notification_danger(@invite.errors.full_messages.to_sentence)
                 ) 
             end
         end

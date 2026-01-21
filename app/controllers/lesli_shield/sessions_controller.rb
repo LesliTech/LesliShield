@@ -5,7 +5,7 @@ module LesliShield
     # GET /sessions
     def index
         @sessions = respond_as_pagination(UserSessionService.new(current_user, query).index())
-        respond_for(
+        respond_with_lesli(
             :html => @sessions,
             :json => @sessions
         )

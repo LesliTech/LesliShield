@@ -69,12 +69,9 @@ LesliShield::Engine.routes.draw do
 
     # Work with roles and privileges
     resources :roles, only: [:index, :show, :edit, :update, :new, :create, :destroy] do
-        collection do
-            get :list
-        end
         scope module: :role do 
             resources :privileges
-            resources :actions
+            resources :actions, only: [:index, :update, :destroy]
         end
     end
 

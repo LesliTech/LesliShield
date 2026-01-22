@@ -1,13 +1,10 @@
 <%= render LesliView::Layout::Container.new("shield-roles-show") do %>
     <%= render LesliView::Components::Header.new(@role.name) do %>
+        <%= render(LesliView::Elements::Button.new('Privileges', 
+            url: role_actions_path(@role), 
+            icon: 'security'
+        )) %>
     <% end %>
 
-    <%= render LesliView::Components::Tabs.new() do |tabs| %>
-        <% tabs.with_tab(title:"information", icon:"info") do %>
-            <%= render "form-information" %>
-        <% end %>
-        <% tabs.with_tab(title:"privileges", icon:"security") do %>
-            <%= render "form-privileges" %>
-        <% end %>
-    <% end %>
+    <%= render "form" %>
 <% end %>

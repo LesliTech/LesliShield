@@ -40,7 +40,7 @@ module LesliShield
 
         def show
             @role = @role.show
-            @role_actions = Lesli::Role::ActionService.new(current_user, query).index(@role.id)
+            @role_actions = Lesli::RoleActionService.new(current_user, query).index(@role.id)
         end
 
         # @return [HTML] HTML view for creating a new role
@@ -100,13 +100,9 @@ module LesliShield
 
             # check if the update went OK
             if @role.successful?
-                success("Role updated successfully!")
-                respond_to do |format|
-                    format.turbo_stream
-                    format.html { redirect_to @role }
-                end
+                respond_with_lesli(:turbo => stream_notification_success("Role updated successfully!"))
             else
-                respond_with_error(@role.errors)
+                respond_with_lesli(:turbo => stream_notification_danger(@role.errors_as_sentence))
             end
         end
 

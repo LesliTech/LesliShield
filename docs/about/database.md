@@ -4,7 +4,6 @@
 ```plaintext
 08.01.00.01. shield/account 
 
-08.01.00.10. shield/settings 
 08.01.00.20. shield/catalogs 
 
 08.01.00.50. shield/workflows

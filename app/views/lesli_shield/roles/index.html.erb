@@ -29,12 +29,8 @@ columns = [{
 %>
 <%= render LesliView::Layout::Container.new("shield-roles") do %>
     <%= render LesliView::Components::Header.new("Roles") do %>
-        <%= render(LesliView::Elements::Button.new(icon: "add", solid:true)) do %>
-            Add new
-        <% end %>
-        <%= render(LesliView::Elements::Button.new(icon: "refresh")) do %>
-            Reload
-        <% end %>
+        <%= render(LesliView::Elements::Button.new('Add new', icon: "add", solid:true)) %>
+        <%= render(LesliView::Elements::Button.new('Reload', icon: "refresh")) %>
     <% end %>
     <%= render LesliView::Components::Toolbar.new() %>
     <%= render(LesliView::Elements::Table.new(

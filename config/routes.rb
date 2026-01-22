@@ -45,7 +45,7 @@ Building a better future, one line of code at a time.
 LesliShield::Engine.routes.draw do
   resources :invites
 
-    Lesli::Router.mount_dashboard_for(LesliShield)
+    Lesli::Router.mount_routes_for(LesliShield)
 
     resources :sessions, only: [:index, :show]
     resources :users, only: [:index, :show, :update, :new, :create] do 

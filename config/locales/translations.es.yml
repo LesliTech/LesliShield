@@ -1,5 +1,5 @@
 ---
 :es:
   lesli_shield:
-    users:
-      message_invalid_credentials: Credenciales no validas
+    devise/sessions:
+      message_not_valid_credentials: Credenciales no validas

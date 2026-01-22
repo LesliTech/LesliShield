@@ -1,5 +1,5 @@
 ---
 :it:
   lesli_shield:
-    users:
-      message_invalid_credentials: ":lesli_shield.users.message_invalid_credentials:"
+    devise/sessions:
+      message_not_valid_credentials: ":lesli_shield.devise/sessions.message_not_valid_credentials:"

@@ -42,7 +42,7 @@ class Users::SessionsController < Devise::SessionsController
 
         # respond with a no valid credentials generic error if not valid user found
         unless user
-            danger(I18n.t("lesli.users/sessions.message_invalid_credentials"))
+            danger(I18n.t("lesli_shield.devise/sessions.message_not_valid_credentials"))
             redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
         end
 
@@ -56,7 +56,7 @@ class Users::SessionsController < Devise::SessionsController
             log.update(description: "invalid_credentials") if defined?(LesliAudit)
 
             # respond with a no valid credentials generic error if not valid user found
-            danger(I18n.t("lesli.users/sessions.message_invalid_credentials"))
+            danger(I18n.t("lesli_shield.devise/sessions.message_not_valid_credentials"))
             redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
         end
 

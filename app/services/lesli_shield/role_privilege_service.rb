@@ -35,7 +35,6 @@ module LesliShield
 
         # Syncronize the descriptor privileges with the role privilege cache table 
         def synchronize role
-            @role = role
 
             # bulk all the descriptor privileges
             # this script was built manually for performance, maintenance
@@ -49,25 +48,25 @@ module LesliShield
             #   - the power has active that group of actions, this means that, if the power has
             #     not marked as active the pshow, pindex, etc column the power is not active
             #     even if it is assigned and active to a descriptor
+
             records = Lesli::Role.joins(%(
                 INNER JOIN "lesli_shield_role_actions" 
                 ON "lesli_shield_role_actions"."role_id" = "lesli_roles"."id"
             )).joins(%(
-                INNER JOIN lesli_system_controller_actions 
-                ON lesli_system_controller_actions.id = lesli_shield_role_actions.action_id
+                INNER JOIN lesli_resources as resource_actions
+                ON resource_actions.id = lesli_shield_role_actions.action_id
             )).joins(%(
-                INNER JOIN lesli_system_controllers 
-                ON lesli_system_controllers.id = lesli_system_controller_actions.system_controller_id
+                INNER JOIN lesli_resources as resource_controllers
+                ON resource_controllers.id = resource_actions.parent_id
             )).select(%(
                 lesli_shield_role_actions.role_id as role_id,
-                lesli_system_controllers.route as controller, 
-                lesli_system_controller_actions.name as action,
+                resource_controllers.route as controller, 
+                resource_actions.action as action,
                 lesli_shield_role_actions.deleted_at IS NULL as active
             )).with_deleted
 
-
             # get privileges only for the given role, this is needed to sync only modified roles
-            records = records.where("lesli_shield_role_actions.role_id" => @role.id)
+            records = records.where("lesli_shield_role_actions.role_id" => role.id)
 
             # get privileges only for the given role action, this is needed to sync only modified actions
             records = records.where("lesli_shield_role_actions.id" => @action.id) if @action

@@ -39,7 +39,7 @@ class CreateLesliShieldRoleActions < ActiveRecord::Migration[7.0]
 
         add_reference(:lesli_shield_role_actions, :role, foreign_key: { to_table: :lesli_roles })
         add_reference(:lesli_shield_role_actions, :action,
-                      foreign_key: { to_table: :lesli_system_controller_actions }, 
-                      index: { name: "descriptor_privileges_system_controller_actions" })
+                      foreign_key: { to_table: :lesli_resources }, 
+                      index: { name: "role_actions_resources" })
     end
 end

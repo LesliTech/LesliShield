@@ -84,9 +84,9 @@ module LesliShield
 
                 controller_action[:actions].each do |action_name|
 
-                    system_controller_action = Lesli::SystemController::Action.joins(:system_controller)
-                    .where("lesli_system_controllers.route = ?", controller_action[:controller])
-                    .where("lesli_system_controller_actions.name = ?", action_name)
+                    system_controller_action = Lesli::Resource.actions.joins(:parent)
+                    .where("parents_lesli_resources.route = ?", controller_action[:controller])
+                    .where("lesli_resources.action = ?", action_name)
 
                     @role.actions.find_or_create_by(
                         action: system_controller_action.first
@@ -99,7 +99,7 @@ module LesliShield
             @role = role
 
             # Adding default system actions for profile descriptor
-            actions = Lesli::SystemController::Action.all 
+            actions = Lesli::Resource.actions
 
             actions.each do |action|
                 @role.actions.find_or_create_by(action: action)

@@ -33,9 +33,8 @@ Building a better future, one line of code at a time.
 module LesliShield
     class Role::Action < Lesli::ApplicationLesliRecord
         self.table_name = 'lesli_shield_role_actions'
+        
         belongs_to :role, class_name: 'Lesli::Role'
-
-        belongs_to :action, class_name: "Lesli::SystemController::Action"
-        belongs_to :system_controller_action, class_name: "Lesli::SystemController::Action", foreign_key: "action_id"
+        belongs_to :action, class_name: "Lesli::Resource"
     end
 end

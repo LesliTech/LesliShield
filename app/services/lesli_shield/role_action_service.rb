@@ -19,16 +19,16 @@ module LesliShield
 
             role_actions = {}
 
-            Role::Action.with_deleted.joins(system_controller_action: :system_controller)
+            Role::Action.with_deleted.joins(action: :parent)
             .where(:role_id => role_id)
             .select(
                 :id,
                 :role_id,
-                :action_id,
                 :deleted_at,
-                "lesli_system_controllers.id as controller_id",
-                "lesli_system_controllers.name as controller_name",
-                "lesli_system_controller_actions.name as controller_action_name",
+                "parents_lesli_resources.id as controller_id",
+                "parents_lesli_resources.label as controller_name",
+                "lesli_resources.action as action_name",
+                "lesli_resources.id as action_id",
                 "case when lesli_shield_role_actions.deleted_at is null then TRUE else FALSE end active"
             ).each do |action|
 
@@ -43,27 +43,27 @@ module LesliShield
                     }
                 end
 
-                if  action[:controller_action_name] == "list"
+                if  action[:action_name] == "list"
                     role_actions[action[:controller_name]][:list] = clean(action)
                 end
 
-                if  action[:controller_action_name] == "index"
+                if  action[:action_name] == "index"
                     role_actions[action[:controller_name]][:index] = clean(action)
                 end
 
-                if  action[:controller_action_name] == "show"
+                if  action[:action_name] == "show"
                     role_actions[action[:controller_name]][:show] = clean(action)
                 end
 
-                if  action[:controller_action_name] == "create"
+                if  action[:action_name] == "create"
                     role_actions[action[:controller_name]][:create] = clean(action)
                 end
 
-                if  action[:controller_action_name] == "update"
+                if  action[:action_name] == "update"
                     role_actions[action[:controller_name]][:update] = clean(action)
                 end
 
-                if  action[:controller_action_name] == "destroy"
+                if  action[:action_name] == "destroy"
                     role_actions[action[:controller_name]][:destroy] = clean(action)
                 end
             end

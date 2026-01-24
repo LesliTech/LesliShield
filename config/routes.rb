@@ -43,6 +43,9 @@ Building a better future, one line of code at a time.
 
 # · 
 LesliShield::Engine.routes.draw do
+  namespace :user do
+    resources :roles
+  end
   resources :invites
 
     Lesli::Router.mount_routes_for(LesliShield)
@@ -69,12 +72,12 @@ LesliShield::Engine.routes.draw do
 
     # Work with roles and privileges
     resources :roles, only: [:index, :show, :edit, :update, :new, :create, :destroy] do
+        member do
+            post :deploy
+        end
         scope module: :role do 
             resources :privileges
             resources :actions, only: [:index, :update, :destroy]
         end
     end
-
-    #
-    resource :settings, only: [:show]
 end

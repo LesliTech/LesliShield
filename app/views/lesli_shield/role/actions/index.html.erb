@@ -1,6 +1,14 @@
 <%= render LesliView::Layout::Container.new("shield-role-actions") do %>
     <%= render LesliView::Components::Header.new("#{@role.name} privileges", :back => role_path(@role)) do %>
-        <%= render(LesliView::Elements::Button.new('Deploy privileges', :icon => 'shield', :css_class => 'is-light is-hovered', solid:true, danger:true)) %>
+        <%= render(LesliView::Elements::Button.new('Deploy privileges', 
+            solid:true, 
+            danger:true,
+            icon: 'shield', 
+            css_class: 'is-light is-hovered',
+            url: deploy_role_path(@role.id),
+            method: :post
+
+        )) %>
     <% end %>
     <%= render "form" %>
 <% end %> 

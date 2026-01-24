@@ -27,12 +27,18 @@ module LesliShield
 
             # privilege for object not found
             if granted.blank?
-                current_user.activities.create({ title: "privilege_not_found", description: request.path })
+                log(
+                    :operation => :authorize_request,
+                    :description => "Privilege not found for: #{request.path}"
+                )
                 return respond_with_unauthorized({ controller: params[:controller], action: params[:action] })
             end
 
             unless granted
-                current_user.activities.create({ title: "privilege_not_granted", description: request.path })
+                log(
+                    :operation => :authorize_request,
+                    :description => "Privilege not granted for: #{request.path}"
+                )
                 return respond_with_unauthorized({ controller: params[:controller], action: params[:action] })
             end
         end

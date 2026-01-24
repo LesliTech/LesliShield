@@ -12,9 +12,12 @@
 08.01.00.53. shield/workflow/actions
 
 08.01.10.01. shield/roles (reference only)
-08.01.10.03. shield/role/activities
+08.01.10.02. shield/role/actions
+08.01.10.03. shield/role/privileges
+08.01.10.04. shield/role/versions
 
-08.01.11.01. shield/users (reference only)
+08.01.11.00. shield/users (reference only)
+08.01.11.01. shield/user/roles
 08.01.11.02. shield/user/actions 
 08.01.11.03. shield/user/activities 
 08.01.11.04. shield/user/discussions 

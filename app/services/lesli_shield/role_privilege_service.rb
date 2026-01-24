@@ -31,51 +31,11 @@ Building a better future, one line of code at a time.
 =end
 
 module LesliShield
-    class RoleService < Lesli::ApplicationLesliService
-
-        @role = nil
-        @action = nil
-
-        def initialize role, action=nil
-            @role = role
-            @action = action
-        end
-
-        def add_guest_actions
-
-            # Adding default system actions for profile descriptor
-            [
-                { controller: "lesli_admin/profiles", actions: ["show"] },      # enable profile view
-                { controller: "lesli/users", actions: ["options", "update"] },  # enable user edition
-                { controller: "lesli/abouts", actions: ["show"] },              # system status
-                { controller: "lesli/user/sessions", actions: ["index"] }       # session management
-            ].each do |controller_action|
-
-                controller_action[:actions].each do |action_name|
-
-                    system_controller_action = Lesli::SystemController::Action.joins(:system_controller)
-                    .where("lesli_system_controllers.route = ?", controller_action[:controller])
-                    .where("lesli_system_controller_actions.name = ?", action_name)
-
-                    @role.actions.find_or_create_by(
-                        action: system_controller_action.first
-                    )
-                end
-            end
-        end
-
-        def add_owner_actions
-
-            # Adding default system actions for profile descriptor
-            actions = Lesli::SystemController::Action.all 
-
-            actions.each do |action|
-                @role.actions.find_or_create_by(action: action)
-            end
-        end
+    class RolePrivilegeService < Lesli::ApplicationLesliService
 
         # Syncronize the descriptor privileges with the role privilege cache table 
-        def synchronize 
+        def synchronize role
+            @role = role
 
             # bulk all the descriptor privileges
             # this script was built manually for performance, maintenance
@@ -90,27 +50,27 @@ module LesliShield
             #     not marked as active the pshow, pindex, etc column the power is not active
             #     even if it is assigned and active to a descriptor
             records = Lesli::Role.joins(%(
-                INNER JOIN "lesli_role_actions" 
-                ON "lesli_role_actions"."role_id" = "lesli_roles"."id"
+                INNER JOIN "lesli_shield_role_actions" 
+                ON "lesli_shield_role_actions"."role_id" = "lesli_roles"."id"
             )).joins(%(
                 INNER JOIN lesli_system_controller_actions 
-                ON lesli_system_controller_actions.id = lesli_role_actions.action_id
+                ON lesli_system_controller_actions.id = lesli_shield_role_actions.action_id
             )).joins(%(
                 INNER JOIN lesli_system_controllers 
                 ON lesli_system_controllers.id = lesli_system_controller_actions.system_controller_id
             )).select(%(
-                lesli_role_actions.role_id as role_id,
+                lesli_shield_role_actions.role_id as role_id,
                 lesli_system_controllers.route as controller, 
                 lesli_system_controller_actions.name as action,
-                lesli_role_actions.deleted_at IS NULL as active
+                lesli_shield_role_actions.deleted_at IS NULL as active
             )).with_deleted
 
 
             # get privileges only for the given role, this is needed to sync only modified roles
-            records = records.where("lesli_role_actions.role_id" => @role.id)
+            records = records.where("lesli_shield_role_actions.role_id" => @role.id)
 
             # get privileges only for the given role action, this is needed to sync only modified actions
-            records = records.where("lesli_role_actions.id" => @action.id) if @action
+            records = records.where("lesli_shield_role_actions.id" => @action.id) if @action
 
 
             # we use the deleted_at column to know if a privilege is enable or disable, NULL values
@@ -118,7 +78,7 @@ module LesliShield
             # all the active privileges will be at the top, then the uniq method is going to take
             # always the active values, to completely disable a privilege for a specific controller/action
             # we have to disable in all the roles
-            records = records.order("lesli_role_actions.deleted_at DESC")
+            records = records.order("lesli_shield_role_actions.deleted_at DESC")
 
 
             # convert the results to json so it is easy to insert/update
@@ -147,7 +107,7 @@ module LesliShield
             # IMPORTANT: Due to the importance and how delicate this process is, it is better
             #            to copy the controller name and actions from the system, instead of 
             #            just have a reference to the system_controller_actions table
-            Lesli::Role::Privilege.with_deleted.upsert_all(records, unique_by: [:controller, :action, :role_id])
+            Role::Privilege.with_deleted.upsert_all(records, unique_by: [:controller, :action, :role_id])
         end 
     end
 end

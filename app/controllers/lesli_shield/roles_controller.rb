@@ -34,13 +34,25 @@ module LesliShield
     class RolesController < ApplicationController
         before_action :set_role, only: %i[ show update destroy ]
 
+        def deploy
+            pp params[:id]
+            pp params[:id]
+            pp params[:id]
+            pp params[:id]
+
+            RolePrivilegeService.new.synchronize(Lesli::Role.first)
+
+            respond_with_lesli(
+                :turbo => stream_notification_success("success")
+            )
+        end
+
         def index
             @roles = respond_as_pagination(Lesli::RoleService.new(current_user, query).index)
         end
 
         def show
             @role = @role.show
-            @role_actions = Lesli::RoleActionService.new(current_user, query).index(@role.id)
         end
 
         # @return [HTML] HTML view for creating a new role

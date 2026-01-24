@@ -1,8 +1,8 @@
-<%#
+=begin
 
 Lesli
 
-Copyright (c) 2023, Lesli Technologies, S. A.
+Copyright (c) 2026, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 Lesli · Ruby on Rails SaaS Development Framework.
 
-Made with ♥ by https://www.lesli.tech
+Made with ♥ by LesliTech
 Building a better future, one line of code at a time.
 
 @contact  hello@lesli.tech
@@ -28,10 +28,18 @@ Building a better future, one line of code at a time.
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
-%>
+=end
 
-<%= navigation_item(lesli_shield.dashboard_path, "Dashboard", "ri-dashboard-3-line"); %>
-<%= navigation_item(lesli_shield.users_path, "Users", "ri-user-line"); %>
-<%= navigation_item(lesli_shield.sessions_path, "Sessions", "ri-lock-line") %>
-<%= navigation_item(lesli_shield.roles_path, "Roles", "ri-shield-user-line") %>
-<%= navigation_item(lesli_shield.invites_path, "Invites", "ri-user-add-line") %>
+class CreateLesliShieldRolePrivileges < ActiveRecord::Migration[7.0]
+    def change
+        create_table :lesli_shield_role_privileges do |t|
+            t.string   :controller
+            t.string   :action
+            t.boolean  :active
+            t.datetime :deleted_at, index: true
+            t.timestamps
+        end
+        add_reference(:lesli_shield_role_privileges, :role, foreign_key: { to_table: :lesli_roles })
+        add_index(:lesli_shield_role_privileges, %i[controller action role_id], unique: true, name: "shield_role_privileges_index")
+    end
+end

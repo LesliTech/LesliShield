@@ -4,12 +4,12 @@ module LesliShield
         before_action :set_role_action, only: %i[update destroy]
 
         def index 
-            @role_actions = Lesli::RoleActionService.new(current_user, query).index(@role.id)
+            @role_actions = RoleActionService.new(current_user, query).index(@role.id)
         end
 
         def update
             if @role_action.result.recover
-                @role_actions = Lesli::RoleActionService.new(current_user, query).index(@role.id)
+                @role_actions = RoleActionService.new(current_user, query).index(@role.id)
                 respond_with_lesli(
                     :turbo => [
                         stream_notification_success("Role privileges added successfully!"),
@@ -25,7 +25,7 @@ module LesliShield
 
         def destroy
             if @role_action.result.delete
-                @role_actions = Lesli::RoleActionService.new(current_user, query).index(@role.id)
+                @role_actions = RoleActionService.new(current_user, query).index(@role.id)
                 respond_with_lesli(
                     :turbo => [
                         stream_notification_warning("Role privileges removed successfully!"),
@@ -46,7 +46,7 @@ module LesliShield
         end 
 
         def set_role_action
-            @role_action = Lesli::RoleActionService.new(current_user).find(params[:id])
+            @role_action = RoleActionService.new(current_user).find(params[:id])
         end
 
         def role_action_params

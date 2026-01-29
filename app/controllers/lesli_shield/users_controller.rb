@@ -36,7 +36,7 @@ module LesliShield
 
         # GET /users
         def index
-            @users = respond_as_pagination(Lesli::UserService.new(current_user, query).index(params))
+            @users = respond_with_pagination(Lesli::UserService.new(current_user, query).index(params))
         end
 
         # GET /users/1

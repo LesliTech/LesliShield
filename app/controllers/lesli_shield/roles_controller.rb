@@ -48,7 +48,7 @@ module LesliShield
         end
 
         def index
-            @roles = respond_as_pagination(Lesli::RoleService.new(current_user, query).index)
+            @roles = respond_with_pagination(Lesli::RoleService.new(current_user, query).index)
         end
 
         def show

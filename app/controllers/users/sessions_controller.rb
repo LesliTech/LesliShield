@@ -47,7 +47,12 @@ class Users::SessionsController < Devise::SessionsController
         end
 
         # save a invalid credentials log for the requested user
-        log = user.log(operation: :session_creation, description: 'Session creation attempt')
+        log = user.log(
+            :engine => LesliShield,
+            :action => action_name,
+            :operation => :session_creation, 
+            :description => 'Session creation attempt'
+        )
 
         # check password validation
         unless user.valid_password?(sign_in_params[:password])

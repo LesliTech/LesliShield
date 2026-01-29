@@ -4,7 +4,7 @@ module LesliShield
 
         # GET /invites
         def index
-            @invites = respond_as_pagination(LesliShield::InviteService.new(current_user, query).index(params))
+            @invites = respond_with_pagination(LesliShield::InviteService.new(current_user, query).index(params))
         end
 
         # GET /invites/1

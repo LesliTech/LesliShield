@@ -1,6 +1,6 @@
 <div align="center" class="documentation-header">
     <img width="100" alt="LesliShield logo" src="./app/assets/images/lesli_shield/shield-logo.svg" />
-    <h3 align="center">Authentication & Authorization for the Lesli Framework.</h3>
+    <h3 align="center">Users & Security Management for the Lesli Framework.</h3>
 </div>
 
 

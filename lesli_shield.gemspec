@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
     spec.authors     = ["The Lesli Development Team"]
     spec.email       = ["hello@lesli.tech"]
     spec.homepage    = "https://www.lesli.dev/"
-    spec.summary     = "Authentication & Authorization management for the Lesli Framework."
+    spec.summary     = "Users & security management for the Lesli Framework."
     spec.description = <<~DESC
         Provides a complete authentication and authorization solution for The Lesli Framework, 
         including user session management, secure login and logout, role-based access control, 

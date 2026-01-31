@@ -25,9 +25,11 @@ module LesliShield
             @invite = current_user.account.shield.invites.new(invite_params)
             @invite.user = current_user
             if @invite.save
+
                 log(
                     subject: @invite,
-                    description: "Invitation created successfully"
+                    operation: 'invite.created',
+                    description: "Invitation created successfully created for: #{@invite.email}"
                 )
                 
                 success("Invite was successfully created.")

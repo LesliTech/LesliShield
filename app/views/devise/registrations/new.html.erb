@@ -29,10 +29,8 @@ Building a better future, one line of code at a time.
 // · 
 %>
 
+<%= render("devise/shared/application-devise", title:"Create an account to discover Lesli") do %>
 
-<%= render("lesli/wrappers/application-devise", title:"Create an account to discover Lesli") do %>
-
-    <%# Log in form %>
     <%= form_for(
         resource, 
         as: resource_name, 

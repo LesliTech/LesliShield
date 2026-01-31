@@ -72,14 +72,13 @@ module LesliShield
         end
 
         def add_guest_actions role
-            @role = role
 
             # Adding default system actions for profile descriptor
             [
-                { controller: "lesli_admin/profiles", actions: ["show"] },      # enable profile view
-                { controller: "lesli/users", actions: ["options", "update"] },  # enable user edition
-                { controller: "lesli/abouts", actions: ["show"] },              # system status
-                { controller: "lesli/user/sessions", actions: ["index"] }       # session management
+                { controller: "lesli/users", actions: ["update"] },        # enable user edition
+                { controller: "lesli/abouts", actions: ["show"] },         # system status
+                { controller: "lesli/user/sessions", actions: ["index"] }, # session management
+                { controller: "lesli_admin/profiles", actions: ["show"] }  # enable profile view
             ].each do |controller_action|
 
                 controller_action[:actions].each do |action_name|
@@ -88,7 +87,7 @@ module LesliShield
                     .where("parents_lesli_resources.route = ?", controller_action[:controller])
                     .where("lesli_resources.action = ?", action_name)
 
-                    @role.actions.find_or_create_by(
+                    role.actions.find_or_create_by(
                         action: system_controller_action.first
                     )
                 end
@@ -96,13 +95,12 @@ module LesliShield
         end
 
         def add_owner_actions role
-            @role = role
 
             # Adding default system actions for profile descriptor
             actions = Lesli::Resource.actions
 
             actions.each do |action|
-                @role.actions.find_or_create_by(action: action)
+                role.actions.find_or_create_by(action: action)
             end
         end
     end

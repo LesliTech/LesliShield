@@ -2,7 +2,7 @@
 
 Lesli
 
-Copyright (c) 2023, Lesli Technologies, S. A.
+Copyright (c) 2026, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-Lesli · Ruby on Rails Development Platform.
+Lesli · Ruby on Rails SaaS Development Framework.
 
-Made with ♥ by https://www.lesli.tech
+Made with ♥ by LesliTech
 Building a better future, one line of code at a time.
 
 @contact  hello@lesli.tech
@@ -28,11 +28,10 @@ Building a better future, one line of code at a time.
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
-
 =end
 
 module LesliShield
-    class UserRegistrationOperator < Lesli::ApplicationLesliService
+    class UserRegistrationService < Lesli::ApplicationLesliService
 
         def initialize(current_user)
             @resource = current_user
@@ -41,36 +40,21 @@ module LesliShield
 
         def confirm
 
-            if current_user.blank?
-                failures.push(I18n.t("core.shared.messages_warning_user_not_found")) 
-                return self
-            end
-
             # confirm the user
             current_user.confirm
 
-            # force token deletion so we are sure nobody will be able to use the token again
-            resource.update(confirmation_token: nil)
 
-            # send a welcome email to user as is confirmed
-            Lesli::DeviseMailer.with(user: resource).welcome.deliver_later
+            # force token deletion so we are sure nobody 
+            # will be able to use the token again
+            current_user.update(confirmation_token: nil)
 
-            # initialize user dependencies
-            current_user.after_confirmation
+            # Minimum security settings required
+            #self.settings.create_with(:value => false).find_or_create_by(:name => "mfa_enabled")
+            #self.settings.create_with(:value => :email).find_or_create_by(:name => "mfa_method")
 
         end
 
         def create_account
-
-            if resource.blank?
-                failures.push(I18n.t("core.shared.messages_warning_user_not_found")) 
-                return self
-            end
-
-            if resource.account
-                failures.push(I18n.t("core.users.messages_info_user_already_belongs_to_account")) 
-                return self
-            end
 
             # check if instance is for multi-account
             allow_multiaccount = Lesli.config.security.dig(:allow_multiaccount)
@@ -115,8 +99,16 @@ module LesliShield
             # update user :)
             resource.save
 
-            # initialize user dependencies
-            resource.after_account_assignation
+            # # initialize user dependencies
+            # def after_account_assignation
+            # return unless self.account
+
+            # #Courier::One::Firebase::User.sync_user(self)
+            # # Lesli::Courier.new(:lesli_calendar).from(:calendar_service, self).create({
+            # #     name: "Personal Calendar", 
+            # #     default: true
+            # # })
+            # end
 
         end
     end

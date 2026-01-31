@@ -38,7 +38,7 @@ Building a better future, one line of code at a time.
 </script>
 <% end %>
 
-<%= render("lesli/wrappers/application-devise-simple", title: "Account confirmation") do %>
+<%= render("devise/shared/application-devise-simple", title:"Account confirmation") do %>
 
     <% if flash[:danger] %>
         <% flash.each do |type, msg| %>

@@ -43,6 +43,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     def create
         begin
+
             # Check if instance allow multi-account
             if !Lesli.config.security.dig(:allow_registration)
                 raise(I18n.t("core.users/registrations.messages_error_registration_not_allowed"))
@@ -51,16 +52,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
             # build new user
             user = build_resource(sign_up_params)
 
-            # run password complexity validations
-            #user_validator = UsersValidator.new(user).password_complexity(sign_up_params[:password])
-
-            # return if there are errors with the complexity validations
-            # unless user_validator.valid?
-            #     return respond_with_error("password_complexity_error", password_complexity.failures)
-            # end
-
             # persist new user
             if user.save
+                user.log(engine: LesliShield, source: self.class.name, action: action_name, operation: 'user_creation', description: 'User creation successfully')
                 success("Account created, check your email")
             else
                 raise(user.errors.full_messages.to_sentence)

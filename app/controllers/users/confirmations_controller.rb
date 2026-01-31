@@ -1,4 +1,36 @@
 # frozen_string_literal: true
+
+=begin
+
+Lesli
+
+Copyright (c) 2026, Lesli Technologies, S. A.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see http://www.gnu.org/licenses/.
+
+Lesli · Ruby on Rails SaaS Development Framework.
+
+Made with ♥ by LesliTech
+Building a better future, one line of code at a time.
+
+@contact  hello@lesli.tech
+@website  https://www.lesli.tech
+@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
+
+// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
+// · 
+=end
 class Users::ConfirmationsController < Devise::ConfirmationsController
 
     def show
@@ -23,22 +55,24 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
         end
 
         # register a log with a validation atempt for the user
-        activity = user.activities.create({ title: "user_confirmation", description: "Confirmation process started" })
+        log = user.log(engine: LesliShield, source: self.class.name, action: action_name, operation: "user_confirmation", description: "Confirmation process started")
         
-
-        registration_operator = LesliShield::UserRegistrationOperator.new(user)
+        # create a new instance of the registration service
+        registration_service = LesliShield::UserRegistrationService.new(user)
 
         # confirm the user
-        registration_operator.confirm
+        registration_service.confirm
+
+        # send a welcome email to user as is confirmed
+        LesliShield::DeviseMailer.with(user: resource).welcome.deliver_later
 
         # let the user knows that the confirmation is done
         flash[:success] = I18n.t("core.users/confirmations.messages_success_email_updated")
         
-        # if new account, launch account onboarding in another thread, 
-        # so the user can continue with the registration process
-        registration_operator.create_account if user.account.blank?
-        #Thread.new { registration_operator.create_account } if user.account.blank?
+        # setup the new account
+        registration_service.create_account if user.account.blank?
 
+        log.update(description: 'User confirmed successfully')
     end
 
     

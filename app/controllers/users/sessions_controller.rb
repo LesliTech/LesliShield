@@ -32,8 +32,6 @@ Building a better future, one line of code at a time.
 
 class Users::SessionsController < Devise::SessionsController
 
-    after_action :log_devices, only: [:create] if defined?(LesliAudit)
-
     # Creates a new session for the user and allows them access to the platform
     def create
 
@@ -46,11 +44,24 @@ class Users::SessionsController < Devise::SessionsController
             redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
         end
 
+        pp user.account
+        pp user.account
+        pp user.account
+        pp user.account
+        pp user.account
+        pp user.account
+
+        unless user.account
+            danger(I18n.t("lesli_shield.devise/sessions.message_not_confirmed_account"))
+            redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
+        end
+
         # save a invalid credentials log for the requested user
         log = user.log(
             :engine => LesliShield,
+            :source => self.class.name,
             :action => action_name,
-            :operation => :session_creation, 
+            :operation => 'session_new',
             :description => 'Session creation attempt'
         )
 
@@ -113,6 +124,9 @@ class Users::SessionsController < Devise::SessionsController
         #respond_with_successful({ default_path: user.has_role_with_default_path?() })
         #respond_with_successful({ default_path: Lesli.config.path_after_login || "/" })
         redirect_to(safe_redirect_path(sign_in_params[:redirect]))
+
+        # Save the user_agent for every new session
+        log_devices
     end
 
     private 

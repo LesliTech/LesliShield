@@ -315,7 +315,7 @@ end
 
 Devise.setup do |config|
 
-    config.mailer = "Lesli::DeviseMailer"
+    config.mailer = "LesliShield::DeviseMailer"
 
     # Mount devise through Lesli engine
     config.router_name = :lesli_shield

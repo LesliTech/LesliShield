@@ -43,10 +43,6 @@ Building a better future, one line of code at a time.
 
 # · 
 LesliShield::Engine.routes.draw do
-  namespace :user do
-    resources :roles
-  end
-  resources :invites
 
     Lesli::Router.mount_routes_for(LesliShield)
 
@@ -60,7 +56,7 @@ LesliShield::Engine.routes.draw do
             resources :sessions, only: [:index, :destroy]
 
             # assign and remove roles to users 
-            resources :roles, only: [:index, :create, :destroy]
+            resources :roles, only: [:index, :create, :update, :destroy]
 
             # shortcuts
             resources :shortcuts, only: [:index, :create, :update, :destroy]
@@ -80,4 +76,6 @@ LesliShield::Engine.routes.draw do
             resources :actions, only: [:index, :update, :destroy]
         end
     end
+
+    resources :invites, only: [:index, :show, :new, :create, :update]
 end

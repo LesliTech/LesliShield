@@ -22,22 +22,22 @@ module LesliShield
 
     # POST /user/roles
     def create
-      @user_role = User::Role.new(user_role_params)
+        #   @user_role = User::Role.new(user_role_params)
 
-      if @user_role.save
-        redirect_to @user_role, notice: "Role was successfully created."
-      else
-        render :new, status: :unprocessable_content
-      end
+        #   if @user_role.save
+        #     redirect_to @user_role, notice: "Role was successfully created."
+        #   else
+        #     render :new, status: :unprocessable_content
+        #   end
     end
 
     # PATCH/PUT /user/roles/1
     def update
-      if @user_role.update(user_role_params)
-        redirect_to @user_role, notice: "Role was successfully updated.", status: :see_other
-      else
-        render :edit, status: :unprocessable_content
-      end
+    #   if @user_role.update(user_role_params)
+    #     redirect_to @user_role, notice: "Role was successfully updated.", status: :see_other
+    #   else
+    #     render :edit, status: :unprocessable_content
+    #   end
     end
 
     # DELETE /user/roles/1
@@ -54,7 +54,9 @@ module LesliShield
 
       # Only allow a list of trusted parameters through.
       def user_role_params
-        params.fetch(:user_role, {})
+        params.require(:user_role).permit(
+            :role_id
+        )
       end
   end
 end

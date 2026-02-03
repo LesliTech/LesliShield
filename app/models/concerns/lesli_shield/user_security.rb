@@ -39,7 +39,7 @@ module LesliShield
 
         # get the max level permission from roles assigned to the user
         def max_level_permission
-            self.lesliroles.maximum(:permission_level) || 0
+            self.roles.maximum(:permission_level) || 0
         end
 
         # check if user has roles with specific names

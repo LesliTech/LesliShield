@@ -76,32 +76,4 @@ columns = [{
         <% end %>
     <% end %>
 <% end %>
-<script>
-    /*
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('toggleForm', () => ({
-            submit(form) {
-                const method = form.querySelector('input[name="_method"]')?.value?.toUpperCase() || form.method.toUpperCase();
-                fetch(form.action, {
-                    method: method,
-                    headers: {
-                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'text/vnd.turbo-stream.html' // or 'application/json'
-                    },
-                    //body: new URLSearchParams(new FormData(form))
-                }).then(response => {
-                    if (!response.ok) throw new Error("Request failed");
-                    return response.text();
-                }).then(() => {
-                    // Success! Toggle the class
-                    form.querySelector('button')?.classList.toggle('active');
-                }).catch(err => {
-                    console.error("Error:", err);
-                    alert("Something went wrong");
-                });
-            }
-        }))
-    });
-    */
-</script>
 </section>

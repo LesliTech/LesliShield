@@ -2,26 +2,28 @@
 
     <%= render "information-card" %>
 
-    <%= render LesliView::Components::Tabs.new() do |tabs| %>
+    <%= render LesliView::Components::Tabs.new(active_tab: 'security') do |tabs| %>
 
         <% tabs.with_tab(title:"information", icon:"info") do %>
-            <%= render "information-form" %>
+            <%= render("information-form") %>
         <% end %>
         <% tabs.with_tab(title:"Privileges", icon:"security") do %>
+            <%= render("management-privileges") %>
         <% end %>
 
         <% tabs.with_tab(title:"Security", icon:"lock_outline") do %>
+            <%= render("management-security") %>
         <% end %>
 
         <% tabs.with_tab(title:"Sessions", icon:"devices") do %>
-            <%= render "management-sessions" %>
+            <%= render("management-sessions") %>
         <% end %>
 
         <% tabs.with_tab(title:"Settings", icon:"settings") do %>
         <% end %>
 
         <% tabs.with_tab(title:"Activities", icon:"history") do %>
-            <%= render "viewer-activities" %>
+            <%= render("activities-viewer") %>
         <% end %>
     <% end %>
 <% end %>

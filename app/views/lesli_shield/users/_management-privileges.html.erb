@@ -1,0 +1,74 @@
+<%
+columns = [{
+    label: "ID"
+}, {
+    label: "Name"
+}, {
+    label: "status"
+}]
+%>
+
+<% roles = @user.account.roles.joins("
+    LEFT JOIN lesli_shield_user_roles
+    ON lesli_shield_user_roles.role_id = lesli_roles.id
+    AND lesli_shield_user_roles.user_id = #{@user.id}
+  ").select(
+    "lesli_roles.*",
+    "lesli_shield_user_roles.id AS user_role_id"
+  )
+%>
+
+<%= render(LesliView::Elements::Table.new(:columns => columns)) do |table| %>
+    <% roles.each do |role| %>
+        <% table.with_row do |row| %>
+            <% row.with_cell do %>
+                <%= role[:id] %>
+            <% end %>
+            <% row.with_cell do %>
+                <%= role[:name] %>
+            <% end %>
+            <% row.with_cell do %>
+                <%= button_to user_role_path(role),
+                    class: "mini-toggle #{'active' if role[:user_role_id].present?}",
+                    method: (role[:user_role_id].present? ? :delete : :patch) do %>
+                    <span class="mini-toggle-slider"></span>
+                <% end %>
+            <% end %>
+        <% end %>
+    <% end %>
+<% end %>
+
+<style>
+.mini-toggle {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background: #ccc;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.25s ease;
+    display: inline-block;
+}
+
+.mini-toggle.active {
+    background: #22c55e; /* green */
+    background: var(--lesli-color-primary)
+}
+
+.mini-toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+}
+
+.mini-toggle.active .mini-toggle-slider {
+    transform: translateX(20px);
+}
+</style>

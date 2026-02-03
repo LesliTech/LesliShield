@@ -41,13 +41,12 @@ module LesliShield
 
         # GET /users/1
         def show
-            # @activities = @user.result.activities.order(id: :desc).map { |a| {
-            #     id: a[:id],
-            #     title: a[:title].titleize,
-            #     description: a[:description],
-            #     date: Date2.new(a[:created_at]).date_words
-            # }}
-            @activities = []
+            @user_roles = @user.result.roles
+            @activities = @user.result.logs
+                .order(id: :desc)
+                .select(:id, :operation, :description, Date2.new.db_column('created_at', as:'date'))
+                .limit(7)
+                .as_json
             @sessions = @user.result.sessions
             @user = @user.show
         end

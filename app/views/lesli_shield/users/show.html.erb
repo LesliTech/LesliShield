@@ -2,7 +2,7 @@
 
     <%= render "information-card" %>
 
-    <%= render LesliView::Components::Tabs.new(active_tab: 'security') do |tabs| %>
+    <%= render LesliView::Components::Tabs.new(active_tab: 'information') do |tabs| %>
 
         <% tabs.with_tab(title:"information", icon:"info") do %>
             <%= render("information-form") %>

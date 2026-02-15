@@ -32,7 +32,22 @@ Building a better future, one line of code at a time.
 
 class Users::SessionsController < Devise::SessionsController
 
-    # Creates a new session for the user and allows them access to the platform
+    # Creates a new session for the user and allows them access to the platform.
+    #
+    # Devise provides extension points such as Warden hooks and a custom FailureApp
+    # to modify the authentication flow. However, in this case we need full and
+    # explicit control over each step of the login process, including validation,
+    # logging, session creation, and redirection.
+    #
+    # For that reason, the default Devise session logic is intentionally overridden
+    # and reimplemented here. While this approach is less conventional and may
+    # introduce compatibility risks with future Devise releases, it provides a
+    # predictable and fully controlled authentication pipeline, which is important
+    # for the needs of this framework.
+    #
+    # This trade-off is accepted as part of the framework’s lifecycle: any
+    # incompatibilities introduced by Devise updates will be addressed and
+    # maintained as needed.
     def create
 
         # Use guarden to check if the users credetials are valid 

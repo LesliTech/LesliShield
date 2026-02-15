@@ -41,5 +41,8 @@ class CreateLesliShieldRoleActions < ActiveRecord::Migration[7.0]
         add_reference(:lesli_shield_role_actions, :action,
                       foreign_key: { to_table: :lesli_resources }, 
                       index: { name: "role_actions_resources" })
+
+        add_index(:lesli_shield_role_actions, [:role_id, :action_id], unique: true, 
+                  name: "index_role_actions_on_role_and_action")
     end
 end

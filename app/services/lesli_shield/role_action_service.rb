@@ -96,12 +96,23 @@ module LesliShield
 
         def add_owner_actions role
 
+            now = Time.current
+
             # Adding default system actions for profile descriptor
             actions = Lesli::Resource.actions
 
-            actions.each do |action|
-                role.actions.find_or_create_by(action: action)
+            records = actions.map do |action|
+                {
+                    role_id: role.id,
+                    action_id: action.id,
+                    created_at: now,
+                    updated_at: now
+                }
             end
+
+            role.actions.upsert_all(records,
+                unique_by: :index_role_actions_on_role_and_action
+            )
         end
     end
 end

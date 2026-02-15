@@ -72,7 +72,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
         # setup the new account
         registration_service.create_account if user.account.blank?
 
-        log.update(description: 'User confirmed successfully')
+        log.update(description: 'User confirmed successfully') if defined?(LesliAudit)
     end
 
     

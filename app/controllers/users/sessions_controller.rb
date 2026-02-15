@@ -35,46 +35,34 @@ class Users::SessionsController < Devise::SessionsController
     # Creates a new session for the user and allows them access to the platform
     def create
 
-        # search for a existing user 
-        user = ::Lesli::User.find_for_database_authentication(email: sign_in_params[:email])        
+        # Use guarden to check if the users credetials are valid 
+        self.resource = warden.authenticate(auth_options)
 
-        # respond with a no valid credentials generic error if not valid user found
-        unless user
+        # respond with a no valid credentials generic error if warden
+        # cannot validate the user
+        unless resource
             danger(I18n.t("lesli_shield.devise/sessions.message_not_valid_credentials"))
-            redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
+            redirect_to user_session_path(r: sign_in_params[:redirect]) and return
         end
 
-        pp user.account
-        pp user.account
-        pp user.account
-        pp user.account
-        pp user.account
-        pp user.account
+        user = resource
 
+        # check if user has a valid account
         unless user.account
             danger(I18n.t("lesli_shield.devise/sessions.message_not_confirmed_account"))
-            redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
+            redirect_to user_session_path(r: sign_in_params[:redirect]) and return
         end
 
-        # save a invalid credentials log for the requested user
+        log = nil 
+
+        # Save a log for the current login attempt 
         log = user.log(
-            :engine => LesliShield,
-            :source => self.class.name,
-            :action => action_name,
-            :operation => 'session_new',
-            :description => 'Session creation attempt'
-        )
-
-        # check password validation
-        unless user.valid_password?(sign_in_params[:password])
-
-            # save a invalid credentials log for the requested user
-            log.update(description: "invalid_credentials") if defined?(LesliAudit)
-
-            # respond with a no valid credentials generic error if not valid user found
-            danger(I18n.t("lesli_shield.devise/sessions.message_not_valid_credentials"))
-            redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
-        end
+            engine: LesliShield,
+            source: self.class.name,
+            action: action_name,
+            operation: 'session_new',
+            description: 'Session creation attempt'
+        ) if defined?(LesliAudit)
 
         # check if user meet requirements to create a new session
         LesliShield::UserValidatorService.new(user).valid? do |valid, failures|
@@ -82,51 +70,37 @@ class Users::SessionsController < Devise::SessionsController
             # if user do not meet requirements to login
             unless valid
 
-                log.update(description: failures.join(", ")) if defined?(LesliAudit)
-
-                danger(failures.join(", "))
-                redirect_to user_session_path(:r => sign_in_params[:redirect]) and return 
+                failures_string = failures.join(", ")
+                danger(failures_string)
+                log.update(description: failures_string) if log
+                redirect_to user_session_path(r: sign_in_params[:redirect]) and return
             end
         end
 
-
-        # remember the user (not enabled by default)
-        # remember_me(user) if sign_in_params[:remember_me] == '1'
-
-
         # create a new session for the user
         current_session = LesliShield::UserSessionService.new(user)
-        .create(request.remote_ip,(get_user_agent(false) if defined?(LesliAudit)))
+        .create(request.remote_ip, (get_user_agent(false) if log))
         .result
 
         # make session id globally available
         session[:user_session_id] = current_session[:id]
 
-        # create a new multi factor authentication service instance for the current user 
-        #mfa_service = User::MfaService.new(user, log)
-
-        # generate a new mfa for the current session (if enabled)
-        #mfa_service.generate do |success|
-            # mfa was successfully generated, return the user to the mfa page
-            # return respond_with_successful({ default_path: "mfa" }) if success
-        #end 
-
         # do a user login
-        sign_in(:user, user)
+        sign_in(resource_name, user)
 
-        # create a log for login atempts
-        log.update({ 
+        # update logs with a successful login
+        log.update(
             description: "Session creation successful", 
-            session_id: current_session[:id] 
-        }) if defined?(LesliAudit)
+            session_id: current_session[:id]
+        ) if log
 
         # respond successful and send the path user should go
-        #respond_with_successful({ default_path: user.has_role_with_default_path?() })
-        #respond_with_successful({ default_path: Lesli.config.path_after_login || "/" })
-        redirect_to(safe_redirect_path(sign_in_params[:redirect]))
+        # respond_with_successful({ default_path: user.has_role_with_default_path?() })
+        # respond_with_successful({ default_path: Lesli.config.path_after_login || "/" })
+        redirect_to safe_redirect_path(sign_in_params[:redirect])
 
         # Save the user_agent for every new session
-        log_devices
+        log_devices if log
     end
 
     private 

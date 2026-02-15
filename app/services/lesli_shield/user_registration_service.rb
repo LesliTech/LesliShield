@@ -79,7 +79,7 @@ module LesliShield
 
             # add owner role to user only if multi-account is allowed
             if allow_multiaccount == true
-                resource.roles.create({ role: account.roles.find_by(name: "owner") })
+                resource.user_roles.create({ role: account.roles.find_by(name: "owner") })
             end
 
             # add profile role to user only if multi-account is allowed
@@ -94,6 +94,11 @@ module LesliShield
                 else
                     resource.roles.create({ role: account.roles.find_by(name: "limited") })
                 end
+            end
+
+            # Synchronize roles for the very first time
+            resource.roles.each do |role|
+                LesliShield::RolePrivilegeService.new(nil).synchronize(role)
             end
 
             # update user :)

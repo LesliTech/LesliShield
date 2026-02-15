@@ -18,15 +18,14 @@
 
 08.01.11.00. shield/users (reference only)
 08.01.11.01. shield/user/roles
-08.01.11.02. shield/user/actions 
-08.01.11.03. shield/user/activities 
-08.01.11.04. shield/user/discussions 
-08.01.11.05. shield/user/subscribers 
-08.01.11.06. shield/user/attachments 
-08.01.11.07. shield/user/versions
-08.01.11.10. shield/user/shortcuts
-08.01.11.11. shield/user/tokens
-08.01.11.12. shield/user/sessions
+
+07.02.11.02. shield/user/activities 
+07.02.11.04. shield/user/attachments 
+07.02.11.07. shield/user/actions 
+
+08.01.11.10. shield/user/tokens
+08.01.11.11. shield/user/sessions
+08.01.11.12. shield/user/shortcuts
 
 08.01.12.01. shield/invites
 ```

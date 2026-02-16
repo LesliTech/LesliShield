@@ -72,10 +72,10 @@ class Users::PasswordsController < Devise::PasswordsController
                     user.update(password_expiration_at: nil)
                 end
 
-                logs.update(description: "Password update successful")
+                logs&.update(description: "Password update successful")
             else
                 danger(user.errors.full_messages.to_sentence)
-                logs.update(description: resource.errors.full_messages.to_sentence)
+                logs&.update(description: resource.errors.full_messages.to_sentence)
             end
         end
     end

@@ -36,39 +36,25 @@ class Users::PasswordsController < Devise::PasswordsController
 
     # Sends an email with a token, so the user can reset their password
     def create
-        begin
+        self.resource = resource_class.send_reset_password_instructions(resource_params)
 
-            if params[:user].blank?
-                raise(I18n.t("core.shared.messages_warning_user_not_found"))
-            end
+        user = self.resource
 
-            if params[:user][:email].blank?
-                raise(I18n.t("core.shared.messages_warning_user_not_found"))
-            end
+        if successfully_sent?(resource)
 
-            user = Lesli::User.find_by(:email => params[:user][:email])
+            user.log(
+                :engine => LesliShield, 
+                :source => self.class.name, 
+                :action => action_name, 
+                :operation => 'password_reset', 
+                :description => 'Reset password instructions sent'
+            )
 
-            if user.blank?
-                raise(I18n.t("core.shared.messages_warning_user_not_found"))
-            end
-
-            log = user.log(:engine => LesliShield, source: self.class.name, :action => action_name, :operation => 'password_reset', :description => 'Reset password attempt')
-
-            unless user.active
-                log.update(:description => 'User is not able to reset password due is not active')
-                raise(I18n.t("core.users/passwords.messages_danger_inactive_user"))
-            end
-
-            token = user.generate_password_reset_token
-
-            log.update(:description => 'Reset password instructions sent')
-
-            ::LesliShield::DeviseMailer.reset_password_instructions(user, token).deliver_now
             success(I18n.t("core.users/passwords.messages_success"))
             redirect_to(new_user_password_path)
-        rescue => exception
-            #Honeybadger.notify(exception)
-            danger(exception.message)
+        else
+            #respond_with(resource)
+            danger("Error sending reset password instructions")
             redirect_to(new_user_password_path)
         end
     end

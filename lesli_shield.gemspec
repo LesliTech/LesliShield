@@ -61,9 +61,6 @@ Gem::Specification.new do |spec|
         Dir["{app,config,db,lib}/**/*", "license", "Rakefile", "readme.md"]
     end
 
-    # Ruby version
-    spec.required_ruby_version = ">= 3.2"
-
     # Lesli core minimum requirements
     spec.add_dependency("lesli", "~> 5.0")
 

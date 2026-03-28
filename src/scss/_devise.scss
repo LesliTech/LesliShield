@@ -34,11 +34,11 @@ Building a better future, one line of code at a time.
 
 // ·
 @use "lesli-css" as lesli;
-@use "LesliAssets/lib/lesli_assets_styles/templates/public";
+@use "LesliAssets/src/scss/templates/public";
 
 
 // · Configuration & variables
-@use "LesliAssets/lib/lesli_assets_styles/settings/variables";
+@use "LesliAssets/src/scss/settings/variables";
 
 
 // · headings and links
@@ -78,7 +78,8 @@ h1, h2, h3, h4, h5, h6, a {
     }
 
     form {
-        max-width: 310px;
+        max-width: 95%;
+        width: 350px;
 
         label {
             font-weight: 400;

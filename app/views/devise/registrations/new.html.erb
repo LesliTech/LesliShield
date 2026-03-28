@@ -28,10 +28,16 @@ Building a better future, one line of code at a time.
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
 %>
+
 <% 
-resource.email = 'test2@lesli.tech'
-resource.password = 'Test123!'
+
+# Check if demo mode is enable on initializer file
+if Lesli.config.demo
+    resource.email = Lesli.config.company[:email]
+    resource.password = Lesli.config.security[:password]
+end
 %>
+
 <%= render("devise/shared/application-devise", title:"Create an account to discover Lesli") do %>
 
     <%= form_for(

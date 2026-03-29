@@ -1,6 +1,6 @@
 <div align="center">
     <img width="100" alt="LesliShield logo" src="./app/assets/images/lesli_shield/shield-logo.svg" />
-    <h3 align="center">Administration area for the Lesli Framework.</h3>
+    <h3 align="center">Users & security management for the Lesli Framework.</h3>
 </div>
 
 <br />
@@ -55,7 +55,7 @@ end
 
 ### Development 
 
-```shell
+```ruby
 # clone the lesli repo inside your engine folder: RailsApp/engines
 git clone https://github.com/LesliTech/LesliShield.git
 

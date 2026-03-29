@@ -33,15 +33,16 @@
 
 ### Installation
 
-```shell
+```ruby
+
 # Add LesliShield engine gem
 bundle add lesli_shield
 
+
 # Setup & initialize the database
 rake lesli:db:setup
-```
 
-```ruby
+
 # Load LesliShield engine
 Rails.application.routes.draw do
     mount LesliShield::Engine => "/shield"
@@ -49,7 +50,7 @@ end
 ```
 
 <br />
-<hr/>
+<hr />
 <br />
 
 ### Development 
@@ -70,7 +71,7 @@ rake lesli:db:setup
 ```
 
 <br />
-<hr/>
+<hr />
 <br />
 
 ### Demo
@@ -108,7 +109,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see http://www.gnu.org/licenses/.
 
-<br />
 <hr />
 <br />
 <br />

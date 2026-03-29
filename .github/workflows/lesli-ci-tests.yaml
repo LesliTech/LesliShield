@@ -1,28 +1,29 @@
 # Lesli
-#
-# Copyright (c) 2023, Lesli Technologies, S. A.
-#
+# 
+# Copyright (c) 2025, Lesli Technologies, S. A.
+# 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-#
+# 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
-#
+# 
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see http://www.gnu.org/licenses/.
-#
+# 
 # Lesli · Ruby on Rails SaaS Development Framework.
-#
-# Made with ♥ by https://www.lesli.tech
+# 
+# Made with ♥ by LesliTech
 # Building a better future, one line of code at a time.
-#
+# 
 # @contact  hello@lesli.tech
-# @website  https://www.lesli.dev
+# @website  https://www.lesli.tech
 # @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
+# 
 # // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 # // · 
 
@@ -37,7 +38,7 @@
 
 # Specs for The Lesli Framework
 # -·-   -·-   -·-   -·-   -·-   -·-   -·-   -·-   -·-   -·-   -·-   -·-   -·-
-name: "Lesli specs workflow"
+name: "Lesli Tests Workflow"
 on:
   push:
     branches: [master]  # Execute when push only for the master branch
@@ -46,22 +47,28 @@ on:
   pull_request:         # Execute this workflow automatic on any new PR
 
 jobs:
-  sqlite-tests:
-    name: Run SQLite tests
-    uses: LesliTech/Lesli/.github/workflows/lesli-spec-sqlite.yaml@master
+  lesli-test-engine-brakeman:
+    name: Run lesli-test-engine-brakeman
+    uses: LesliTech/LesliActions/.github/workflows/lesli-test-engine-brakeman.yaml@master
+    with:
+      branch: ${{ github.ref_name }}
+  lesli-test-engine-minitest:
+    name: Run lesli-test-engine-minitest
+    needs: lesli-test-engine-brakeman
+    uses: LesliTech/LesliActions/.github/workflows/lesli-test-engine-minitest.yaml@master
     with:
       branch: ${{ github.ref_name }}
 
-  postgres-tests:
-    name: Run PostgreSQL tests
-    needs: sqlite-tests  # Runs only after the SQLite tests finish
-    uses: LesliTech/Lesli/.github/workflows/lesli-spec-postgresql.yaml@master
+  lesli-test-builder:
+    name: Run lesli-test-builder
+    needs: lesli-test-engine-minitest
+    uses: LesliTech/LesliActions/.github/workflows/lesli-test-builder.yaml@master
     with:
       branch: ${{ github.ref_name }}
 
-  brakeman-scan:
-    name: Static Analysis Security Tool
-    needs: postgres-tests  # Runs only after the PostgreSQL tests finish
-    uses: LesliTech/Lesli/.github/workflows/lesli-spec-brakeman.yaml@master
+  lesli-test-new:
+    name: Run lesli-test-new
+    needs: lesli-test-builder
+    uses: LesliTech/LesliActions/.github/workflows/lesli-test-new.yaml@master
     with:
       branch: ${{ github.ref_name }}

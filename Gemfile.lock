@@ -373,13 +373,13 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  lesli
   lesli_shield!
   lesli_testing
   propshaft
   puma
   rubocop-rails-omakase
   sqlite3
+  termline
 
 BUNDLED WITH
    2.7.1

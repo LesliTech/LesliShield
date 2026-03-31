@@ -1,6 +1,6 @@
 <div align="center">
     <img width="100" alt="LesliShield logo" src="./app/assets/images/lesli_shield/shield-logo.svg" />
-    <h3 align="center">Users & security management for the Lesli Framework.</h3>
+    <h3 align="center">Users & Security Management for the Lesli Framework.</h3>
 </div>
 
 <br />
@@ -87,9 +87,9 @@ rake lesli:db:setup
 
 ### Connect with Lesli
 
-* [X: @LesliTech](https://x.com/LesliTech)
-* [Email: hello@lesli.tech](hello@lesli.tech)
-* [Website: https://www.lesli.tech](https://www.lesli.tech)
+* [@LesliTech](https://x.com/LesliTech)
+* [hello@lesli.tech](hello@lesli.tech)
+* [https://www.lesli.tech](https://www.lesli.tech)
 
 
 ### License

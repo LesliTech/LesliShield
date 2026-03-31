@@ -15,4 +15,4 @@ gem "rubocop-rails-omakase", require: false
 
 gem "lesli_testing"
 
-gem "lesli"
+gem "termline"

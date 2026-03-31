@@ -87,7 +87,7 @@ GEM
       activesupport (>= 6.1, < 8.2)
     addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
-    ansi (1.5.0)
+    ansi (1.6.0)
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt (3.1.22)
@@ -154,7 +154,7 @@ GEM
     lesli_assets (1.1.0)
     lesli_date (1.1.0)
     lesli_system (1.1.0)
-    lesli_testing (1.2.2)
+    lesli_testing (1.2.3)
       brakeman (~> 8.0.0)
       letter_opener (~> 1.10.0)
       minitest (~> 6.0.0)
@@ -336,7 +336,7 @@ GEM
     stringio (3.2.0)
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)
-    termline (1.1.0)
+    termline (1.1.1)
     thor (1.5.0)
     timeout (0.6.1)
     tsort (0.2.0)
@@ -373,6 +373,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  devise
   lesli_shield!
   lesli_testing
   propshaft

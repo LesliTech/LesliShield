@@ -5,7 +5,7 @@ ENV["RAILS_ENV"] = "test"
 require "lesli_testing/loader"
 
 # Start Lesli testing coverage
-LesliTesting.start_coverage!(Lesli::Engine, { :min_coverage => 10 })
+LesliTesting.configure(LesliShield::Engine, { :min_coverage => 10 })
 
 # Loading dummy app
 require_relative "../test/dummy/config/environment"
@@ -23,4 +23,4 @@ if ActiveSupport::TestCase.respond_to?(:fixture_paths=)
 end
 
 # Load Lesli testing defaults
-LesliTesting.configure_tests!(Lesli::Engine)
+LesliTesting.configure_tests()

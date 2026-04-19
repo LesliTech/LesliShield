@@ -1,11 +1,17 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
-# Lesli helpers
-require "lesli_testing/loader"
 
-# Start Lesli testing coverage
-LesliTesting.configure(LesliShield::Engine, { :min_coverage => 10 })
+# load lesli testing tools
+require "lesli_testing"
+
+
+# register engine for testing
+LesliTesting.engine("LesliShield", {
+    :coverage_min_coverage => 0.5,
+    :coverage_profile => "engine"
+})
+
 
 # Loading dummy app
 require_relative "../test/dummy/config/environment"
@@ -21,6 +27,3 @@ if ActiveSupport::TestCase.respond_to?(:fixture_paths=)
     ActiveSupport::TestCase.file_fixture_path = File.expand_path("fixtures", __dir__) + "/files"
     ActiveSupport::TestCase.fixtures :all
 end
-
-# Load Lesli testing defaults
-LesliTesting.configure_tests()

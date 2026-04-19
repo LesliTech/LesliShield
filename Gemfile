@@ -13,8 +13,8 @@ gem "rubocop-rails-omakase", require: false
 
 # gem "debug", ">= 1.0.0"
 
-gem "lesli_testing"
+gem "lesli"
 
-gem "termline"
+gem "lesli_testing"
 
 gem "devise"

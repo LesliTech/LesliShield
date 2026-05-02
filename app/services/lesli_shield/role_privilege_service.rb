@@ -62,7 +62,7 @@ module LesliShield
                 lesli_shield_role_actions.role_id as role_id,
                 resource_controllers.route as controller, 
                 resource_actions.action as action,
-                lesli_shield_role_actions.deleted_at IS NULL as active
+                case when lesli_shield_role_actions.deleted_at is null then TRUE else FALSE end active
             )).with_deleted
 
             # get privileges only for the given role, this is needed to sync only modified roles

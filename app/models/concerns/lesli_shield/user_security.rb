@@ -57,7 +57,7 @@ module LesliShield
                     active: true
                 ).exists?
             rescue => exception
-                L2.danger(exception.to_s)
+                Termline.danger(exception.to_s)
                 return false
             end
         end

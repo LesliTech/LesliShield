@@ -32,16 +32,10 @@ Building a better future, one line of code at a time.
 
 module LesliShield
     class RolesController < ApplicationController
-        before_action :set_role, only: %i[ show update destroy ]
+        before_action :set_role, only: %i[ show update destroy deploy ]
 
         def deploy
-            pp params[:id]
-            pp params[:id]
-            pp params[:id]
-            pp params[:id]
-
-            RolePrivilegeService.new.synchronize(Lesli::Role.first)
-
+            RolePrivilegeService.new.synchronize(@role.result)
             respond_with_lesli(
                 :turbo => stream_notification_success("success")
             )

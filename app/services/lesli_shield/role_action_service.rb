@@ -21,20 +21,21 @@ module LesliShield
 
             Role::Action.with_deleted.joins(action: :parent)
             .where(:role_id => role_id)
+            .order('parents_lesli_resources.route')
             .select(
                 :id,
                 :role_id,
                 :deleted_at,
                 "parents_lesli_resources.id as controller_id",
                 "parents_lesli_resources.label as controller_name",
+                "parents_lesli_resources.route as controller_route",
                 "lesli_resources.action as action_name",
                 "lesli_resources.id as action_id",
                 "case when lesli_shield_role_actions.deleted_at is null then TRUE else FALSE end active"
             ).each do |action|
 
-                unless role_actions.has_key?(action[:controller_name])
-                    role_actions[action[:controller_name]] = {
-                        list:nil,
+                unless role_actions.has_key?(action[:controller_route])
+                    role_actions[action[:controller_route]] = {
                         index: nil,
                         show:nil,
                         create:nil,
@@ -43,28 +44,24 @@ module LesliShield
                     }
                 end
 
-                if  action[:action_name] == "list"
-                    role_actions[action[:controller_name]][:list] = clean(action)
-                end
-
                 if  action[:action_name] == "index"
-                    role_actions[action[:controller_name]][:index] = clean(action)
+                    role_actions[action[:controller_route]][:index] = clean(action)
                 end
 
                 if  action[:action_name] == "show"
-                    role_actions[action[:controller_name]][:show] = clean(action)
+                    role_actions[action[:controller_route]][:show] = clean(action)
                 end
 
                 if  action[:action_name] == "create"
-                    role_actions[action[:controller_name]][:create] = clean(action)
+                    role_actions[action[:controller_route]][:create] = clean(action)
                 end
 
                 if  action[:action_name] == "update"
-                    role_actions[action[:controller_name]][:update] = clean(action)
+                    role_actions[action[:controller_route]][:update] = clean(action)
                 end
 
                 if  action[:action_name] == "destroy"
-                    role_actions[action[:controller_name]][:destroy] = clean(action)
+                    role_actions[action[:controller_route]][:destroy] = clean(action)
                 end
             end
 

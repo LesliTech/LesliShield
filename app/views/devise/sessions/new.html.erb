@@ -39,7 +39,12 @@ if Lesli.config.demo
 end
 %>
 
-<%= render("devise/shared/application-devise", title:I18n.t("lesli_shield.devise/sessions.view_title")) do %>
+<%
+title = I18n.t("overrides.lesli_shield.devise/sessions.view_title",
+        default: :"lesli_shield.devise/sessions.view_title")
+%>
+
+<%= render("devise/shared/application-devise", title:title) do %>
 
     <%= form_for(
         resource, 
@@ -77,16 +82,16 @@ end
                 <button 
                     type="submit" 
                     class="button is-primary is-fullwidth mb-2">
-                    Log in
+                    <%= I18n.t("lesli_shield.devise/sessions.button_log_in") %>
                 </button>
             </div>
         </div>
 
         <% if Lesli.config.security.dig(:allow_registration) %>
             <p class="account has-text-centered">
-                Still not registered? 
+                <%= I18n.t("lesli_shield.devise/sessions.view_still_not_registered") %>
                 <%= link_to(new_user_registration_path, :class => "has-text-primary") do %>
-                    <u><b>Create account</b></u>
+                    <u><b><%= I18n.t("lesli_shield.devise/sessions.button_create_account") %></b></u>
                 <% end %>
             </p> 
         <% end %>

@@ -1,8 +1,0 @@
----
-:ro:
-  lesli_shield:
-    devise/sessions:
-      message_not_valid_credentials: ":lesli_shield.devise/sessions.message_not_valid_credentials:"
-      view_title: ":lesli_shield.devise/sessions.view_title:"
-    devise/registrations:
-      view_title: ":lesli_shield.devise/registrations.view_title:"

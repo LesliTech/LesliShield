@@ -38,7 +38,12 @@ if Lesli.config.demo
 end
 %>
 
-<%= render("devise/shared/application-devise", title:I18n.t("lesli_shield.devise/registrations.view_title")) do %>
+<%
+title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
+        default: :"lesli_shield.devise/registrations.view_title")
+%>
+
+<%= render("devise/shared/application-devise", title:title) do %>
 
     <%= form_for(
         resource, 
@@ -63,17 +68,11 @@ end
         ) %>
 
         <div class="field mb-5">
-            <p>Password needs to contain:</p>
+            <p><%= I18n.t("lesli_shield.devise/registrations.view_password_requirements") %></p>
             <ul class="pl-3 password-requirements">
-                <li>
-                    &bull; Minimum  one uppercase letter
-                </li>
-                <li>
-                    &bull; One symbol
-                </li>
-                <li>
-                    &bull; One number
-                </li>
+                <li>&bull; <%= I18n.t("lesli_shield.devise/registrations.view_password_requirements_uppercase") %></li>
+                <li>&bull; <%= I18n.t("lesli_shield.dashboards.view_password_requirements_symbol") %></li>
+                <li>&bull; <%= I18n.t("lesli_shield.dashboards.view_password_requirements_number") %></li>
             </ul>
         </div>
 
@@ -89,15 +88,16 @@ end
                 <button 
                     type="submit" 
                     class="button is-primary is-fullwidth mb-2">
-                    Create account
+                    <%= I18n.t("overrides.lesli_shield.devise/registrations.button_create_account",
+                                default: :"lesli_shield.devise/registrations.button_create_account") %>
                 </button>
             </div>
         </div>
 
         <p class="account has-text-centered">
-            Already have an account? 
+            <%= I18n.t("lesli_shield.devise/registrations.view_already_have_an_account") %>
             <%= link_to(new_user_session_path, :class => "has-text-primary") do %>
-                <u><b>Log in</b></u>
+                <u><b><%= I18n.t("lesli_shield.devise/registrations.button_login") %></b></u>
             <% end %>
         </p> 
     <% end %>

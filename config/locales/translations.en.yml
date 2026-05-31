@@ -4,5 +4,16 @@
     devise/sessions:
       message_not_valid_credentials: Not valid credentials
       view_title: Welcome to Lesli
+      button_log_in: Log in
+      view_still_not_registered: Still not registered?
+      button_create_account: Create account
     devise/registrations:
       view_title: Create an account to discover Lesli
+      view_password_requirements: 'Password needs to contain:'
+      view_password_requirements_uppercase: 'Minimum one uppercase letter '
+      button_create_account: Create account
+      view_already_have_an_account: Already have an account?
+      button_login: Log in
+    dashboards:
+      view_password_requirements_symbol: One symbol
+      view_password_requirements_number: One number

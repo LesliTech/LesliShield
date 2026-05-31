@@ -126,7 +126,7 @@ class Users::SessionsController < Devise::SessionsController
             # Ensures it's a local path
             return redirect_path if uri.relative?  
         end
-        Lesli.config.path_after_login || root_path
+        Lesli.config.shield.dig(:path_after_login) || root_path
     rescue URI::InvalidURIError
         # If the URL is invalid, fallback to root
         root_path  

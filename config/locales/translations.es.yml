@@ -3,3 +3,6 @@
   lesli_shield:
     devise/sessions:
       message_not_valid_credentials: Credenciales no validas
+      view_title: ":lesli_shield.devise/sessions.view_title:"
+    devise/registrations:
+      view_title: Crea una cuenta y descubre Lesli

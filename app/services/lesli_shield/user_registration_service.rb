@@ -56,40 +56,8 @@ module LesliShield
 
         def create_account
 
-            # check if instance is for multi-account
-            allow_multiaccount = Lesli.config.security.dig(:allow_multiaccount)
-
-            if allow_multiaccount === true
-                # create new account for the new user only if multi-account is allowed
-                account = Lesli::Account.create!({
-                    user: resource,     # set user as owner of his just created account
-                    name: "Lesli",      # temporary company name
-                    email: resource.email,
-                    status: :active     # account is active due user already confirmed his email
-                })
-            else
-                # if multi-account is not allowed user belongs to the first account in instance
-                account = Lesli::Account.first
-            end
-
-            # add user to his own account
-            resource.account = account
-            
-            if allow_multiaccount == true
-                # add owner role to user only if multi-account is allowed
-                resource.user_roles.create({ role: account.roles.find_by(name: "owner") })
-            else
-                # Assigning default role if defined in account settings
-                # Otherwise, the default role is "limited"
-                #default_role_id = account.settings.find_by(:name => "default_role_id")&.value
-                default_role_id = Lesli.config.shield.dig(:default_role)
-
-                if default_role_id.present?
-                    resource.roles.create({ role: account.roles.find_by(:id => default_role_id)})
-                else
-                    resource.roles.create({ role: account.roles.find_by(name: "limited") })
-                end
-            end
+            add_account() if resource.account.blank?
+            add_role() if resource.user_roles.empty?
 
             # Synchronize roles for the very first time
             resource.roles.each do |role|
@@ -110,6 +78,51 @@ module LesliShield
             # # })
             # end
 
+        end
+
+        private 
+
+        # check if instance is for multi-account
+        ALLOW_MULTI_ACCOUNT = Lesli.config.security.dig(:allow_multiaccount)
+
+        # This is necessary when user is creating a brand new account
+        # and the platform is configured to create new Lesli accounts for every user
+        # The platform use the same account when the platform is not saas but
+        # proprietary instance (only one company is using the platform)
+        # Another scenario where it is not needed to create a new account for the 
+        # user is when the user is confirming the account through an invitation
+        def add_account
+
+            if ALLOW_MULTI_ACCOUNT === true
+                # create new account for the new user only if multi-account is allowed
+                account = Lesli::Account.create!({
+                    user: resource,     # set user as owner of his just created account
+                    name: "Lesli",      # temporary company name
+                    email: resource.email,
+                    status: :active     # account is active due user already confirmed his email
+                })
+            else
+                # if multi-account is not allowed user belongs to the first account in instance
+                account = Lesli::Account.first
+            end
+
+            # add user to his own account
+            resource.account = account
+        end
+
+        def add_role
+            if ALLOW_MULTI_ACCOUNT == true
+                # add owner role to user only if multi-account is allowed
+                resource.user_roles.create({ role: account.roles.find_by(name: "owner") })
+            else
+                # Assigning default role if defined in account settings
+                # Otherwise, the default role is "limited"
+                default_role_name = Lesli.config.shield.dig(:default_role) || "guest"
+
+                default_role = resource.account.roles.find_by(name: default_role_name)
+
+                resource.user_roles.create({ role: default_role })
+            end
         end
     end
 end

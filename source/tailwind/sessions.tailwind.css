@@ -5,14 +5,41 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
-@import "../../../../gems/LesliView/lib/lesli_view/forms/form.css";
 
-@source "../../app/views/devise/shared/_application-devise.html.erb";
-@source "../../app/views/devise/shared/_demo.html.erb";
-@source "../../app/views/devise/sessions/new.html.erb";
+@import "../../../../gems/LesliView/lib/lesli_view/forms/form.css";
 @source "../../../../gems/LesliView/lib/lesli_view/forms/*.rb";
 
+
+@source "../../app/views/devise/shared/_application-devise.html.erb";
+@source "../../app/views/devise/sessions/new.html.erb";
+@source "../../app/views/devise/shared/_demo.html.erb";
+@source "../../app/views/devise/shared/_links.html.erb";
+
 @layer components {
+    .links {
+        @apply mt-5 overflow-hidden rounded-xl border border-slate-200 bg-white;
+    }
+
+    .links > a {
+        @apply flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 hover:text-sky-700 focus:outline-none focus-visible:bg-sky-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500/30;
+    }
+
+    .links > a:not(:last-child) {
+        @apply border-b border-slate-200;
+    }
+
+    .links .icon {
+        @apply mr-0 inline-flex h-7 w-7 shrink-0 items-center justify-center;
+    }
+
+    .links .icon svg {
+        @apply block max-h-6 max-w-6;
+    }
+
+    .links > a > span:not(.icon) {
+        font-family: "Domine", "OpenSans", sans-serif;
+    }
+
     .lesli-auth-visual {
         background: linear-gradient(0deg, 
             rgba(49, 106, 255, 0.4), 
@@ -20,29 +47,5 @@
             url("/lesli_shield/login-background.jpg");
         background-position: center;
         background-size: cover;
-    }
-
-    .lesli-login-form {
-        @apply w-full;
-    }
-
-    .lesli-login-options {
-        @apply mb-5 flex min-h-6 items-start justify-between gap-4;
-    }
-
-    .lesli-login-options .lesli-form-field {
-        @apply mb-0;
-    }
-
-    .lesli-login-forgot-password {
-        @apply text-sm font-medium text-sky-700 transition hover:text-sky-900 hover:underline focus:outline-none focus:underline;
-    }
-
-    .lesli-login-registration {
-        @apply mt-1 text-center text-sm text-slate-600;
-    }
-
-    .lesli-login-registration a {
-        @apply font-semibold text-sky-700 hover:text-sky-900 hover:underline;
     }
 }

@@ -1,0 +1,36 @@
+/* Shared Tailwind entrypoint for Devise authentication views. */
+@import "tailwindcss" source(none);
+
+@source "../../app/views/devise/shared/_application-devise.html.erb";
+@source "../../app/views/devise/shared/_demo.html.erb";
+@source "../../app/views/devise/sessions/new.html.erb";
+
+@layer base {
+    html {
+        color-scheme: light;
+    }
+
+    body {
+        margin: 0;
+        background: #f8fafc;
+        color: #0f172a;
+        font-family: "OpenSans", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    h1,
+    a,
+    button {
+        font-family: "Domine", "OpenSans", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
+    }
+}
+
+@layer components {
+    .lesli-auth-visual {
+        background: linear-gradient(0deg, 
+            rgba(49, 106, 255, 0.4), 
+            rgba(49, 106, 255, 0.4)), 
+            url("/lesli_shield/login-background.jpg");
+        background-position: center;
+        background-size: cover;
+    }
+}

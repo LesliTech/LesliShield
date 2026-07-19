@@ -1,6 +1,10 @@
 
-<fieldset class="shield-form-demo mb-4 px-4 pb-2">
-    <legend>demo account</legend>
-    <p><small><b>Username: </b><%= Lesli.config.company[:email] %></small></label>
-    <p><small><b>Password: </b><%= Lesli.config.security[:password] %></small></p>
+<fieldset class="rounded-xl border border-sky-200 bg-sky-50 px-4 pb-4 text-sm text-sky-950">
+    <legend class="px-2 font-semibold text-sky-800">Demo account</legend>
+    <dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+        <dt class="font-medium">Username:</dt>
+        <dd class="break-all"><%= Lesli.config.company[:email] %></dd>
+        <dt class="font-medium">Password:</dt>
+        <dd><%= Lesli.config.security[:password] %></dd>
+    </dl>
 </fieldset>

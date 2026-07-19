@@ -30,46 +30,48 @@ Building a better future, one line of code at a time.
 // · 
 %>
 
-<% title = defined?(title) ? title : "" %>
-<% back_to_login = defined?(back_to_login) ? back_to_login : false %>
+<% title = local_assigns.fetch(:title, "") %>
+<% back_to_login = local_assigns.fetch(:back_to_login, false) %>
 
-<main id="lesli-application" class="standard-auth-view">
-    <section class="columns is-gapless">
-        <div class="column login-form">
-            <div class="hero is-fullheight">
-                <% if back_to_login %>
-                    <div class="hero-head pt-6 pl-6">
-                        <%= link_to new_user_session_path, :class => "has-text-primary" do %>
-                            <span class="icon-text">
-                                <span class="icon ri-lg">
-                                    <i class="ri-arrow-left-s-line"></i>
-                                </span>
-                                <span>Back to Login</span>
-                            </span>
-                        <% end %>
-                    </div>
+<main id="lesli-application" class="min-h-screen bg-slate-50 lg:grid lg:grid-cols-3">
+    <section class="flex min-h-screen flex-col bg-white">
+        <% if back_to_login %>
+            <div class="px-6 pt-6 sm:px-10 sm:pt-8">
+                <%= link_to new_user_session_path,
+                    class: "inline-flex items-center gap-2 rounded-lg text-sm font-medium text-sky-700 transition hover:text-sky-900 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:ring-offset-4" do %>
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                        <path d="m12.5 15-5-5 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span><%= I18n.t("actions.back_to_login", default: "Back to login") %></span>
                 <% end %>
-                <div class="hero-body is-flex-direction-column is-justify-content-center">
+            </div>
+        <% end %>
 
-                    <%# Logo container %>
-                    <div class="logo has-text-centered mb-6">
-                        <%= image_tag(
-                           "lesli_assets/brand/app-auth.svg",
-                            :class => "#{lesli_instance_code}-logo mb-2",
-                            :alt => "Main logo") 
-                        %>
-                        <h1 class="is-title is-size-3 has-text-primary">
-                            <%= title %>
-                        </h1>
-                    </div>
+        <div class="flex flex-1 items-center justify-center px-6 py-10 sm:px-10 lg:px-16">
+            <div class="w-full max-w-md">
+                <div class="mb-8 text-center">
+                    <%= image_tag(
+                        "lesli_assets/brand/app-auth.svg",
+                        class: "#{lesli_instance_code}-logo mx-auto mb-6 h-auto max-h-20 w-auto max-w-[220px]",
+                        alt: I18n.t("lesli_shield.authentication.logo_alt", default: "Application logo")
+                    ) %>
 
-                    <%= yield %>
-
+                    <% if title.present? %>
+                        <h1 class="text-3xl font-semibold tracking-tight text-slate-900"><%= title %></h1>
+                    <% end %>
                 </div>
-                <%# footer %>
-                <%#= render partial: "devise/shared/footer" %>
+
+                <%= yield %>
             </div>
         </div>
-        <div class="column background is-hidden-touch"></div>
     </section>
+
+    <aside class="lesli-auth-visual relative hidden min-h-screen overflow-hidden lg:col-span-2 lg:block" aria-hidden="true">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/10 to-transparent"></div>
+        <div class="absolute inset-x-0 bottom-0 p-12 text-white">
+            <p class="max-w-lg text-3xl font-semibold leading-tight">
+                <%= I18n.t("lesli_shield.authentication.tagline", default: "A better way to manage your work.") %>
+            </p>
+        </div>
+    </aside>
 </main>

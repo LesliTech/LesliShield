@@ -1,18 +1,44 @@
-# Installation & configuration
+# Installation
+
+LesliShield provides authentication, role-based authorization, invitations, and account-scoped security administration. It requires Lesli `~> 5.1.0`.
+
+## Install and Mount
 
 ```shell
-# Add LesliBabel engine
-bundle add lesli_babel
+bundle add lesli_shield
 ```
 
-```shell
-# Setup database
-rake lesli:db:setup
-```
+The standard Lesli router configures the authentication routes and mounts the engine at `/shield`:
 
 ```ruby
-# Load LesliBabel
 Rails.application.routes.draw do
-    mount LesliBabel::Engine => "/babel"
+  Lesli::Router.mount(self)
 end
 ```
+
+For a manual installation, configure authentication before mounting the engine:
+
+```ruby
+Rails.application.routes.draw do
+  LesliShield::Router.mount_login_at(self)
+  mount LesliShield::Engine => "/shield"
+end
+```
+
+Pass a path such as `"account"` to `mount_login_at` when the application should expose `/account/login`, `/account/logout`, and the related registration and password routes.
+
+Prepare the database and initialize installed engines:
+
+```shell
+bin/rails lesli:db:prepare
+```
+
+## Verify the Installation
+
+```shell
+bin/rails routes -g login
+bin/rails routes -g shield
+bin/rails server
+```
+
+Visit `http://127.0.0.1:3000/shield`. Run the [privilege synchronization task](/engines/shield/about/tasks) after changing roles, actions, or protected resources.

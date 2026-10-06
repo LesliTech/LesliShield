@@ -1,31 +1,25 @@
+# Database
 
-## 08.01 LesliShield Database
+LesliShield uses collection code `08` and engine code `01`.
 
-```plaintext
-08.01.00.01. shield/account 
+| Migration code | Table | Responsibility |
+| --- | --- | --- |
+| `08.01.00.01.10` | `lesli_shield_accounts` | Engine state for a Lesli account |
+| `08.01.10.02.10` | `lesli_shield_role_actions` | Actions available to a core role |
+| `08.01.10.04.10` | `lesli_shield_role_privileges` | Persisted privilege decisions for roles and resources |
+| `08.01.11.01.10` | `lesli_shield_user_roles` | Membership between core users and roles |
+| `08.01.11.10.10` | `lesli_shield_user_shortcuts` | Account-scoped navigation shortcuts for a user |
+| `08.01.11.11.10` | `lesli_shield_user_tokens` | User authentication tokens |
+| `08.01.11.12.10` | `lesli_shield_user_sessions` | Recorded user sessions |
+| `08.01.12.01.10` | `lesli_shield_invites` | Invitations and their onboarding state |
 
-08.01.00.20. shield/catalogs 
+Roles and users are owned by Lesli Core and referenced by these engine tables. The current migrations do not create Shield catalogs, workflows, role versions, user activities, attachments, or action tables.
 
-08.01.00.50. shield/workflows
-08.01.00.51. shield/workflow/statuses
-08.01.00.52. shield/workflow/associations
-08.01.00.53. shield/workflow/actions
+Most security records use `deleted_at` for soft deletion. Preserve account ownership in every query and do not treat a soft-deleted role assignment, token, session, or invitation as active.
 
-08.01.10.01. shield/roles (reference only)
-08.01.10.02. shield/role/actions
-08.01.10.03. shield/role/privileges
-08.01.10.04. shield/role/versions
-
-08.01.11.00. shield/users (reference only)
-08.01.11.01. shield/user/roles
-
-07.02.11.02. shield/user/activities 
-07.02.11.04. shield/user/attachments 
-07.02.11.07. shield/user/actions 
-
-08.01.11.10. shield/user/tokens
-08.01.11.11. shield/user/sessions
-08.01.11.12. shield/user/shortcuts
-
-08.01.12.01. shield/invites
+```shell
+bin/rails lesli:db:prepare
+bin/rails db:migrate:status
 ```
+
+After schema or role changes, synchronize the derived privilege records with `bin/rails lesli_shield:privileges`. See [Database Architecture](/engines/lesli/database/structure) for account ownership and migration naming.

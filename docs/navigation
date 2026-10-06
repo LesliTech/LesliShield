@@ -1,1 +1,1 @@
-<%= navigation_for("engines", "shield", "about") %>
+<%= navigation_for_folder("engines", "shield", "about", order:["installation", "translations", "dashboards", "database", "tasks"]) %>

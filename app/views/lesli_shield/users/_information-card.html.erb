@@ -1,49 +1,39 @@
-<div class="user-information-card level mb-4 mt-6">
-    <div class="level-left">
-        <div class="level-item">
-            <%= render LesliView::Elements::Avatar.new(
-                name: @user.full_name
-            ) %>
-        </div>
-        <div class="level-item">
-            <div>
-                <h5 class="title is-size-5 mb-0">
-                    <%= @user.full_name %>
-                </h5>
-                <p class="mb-1"><%= @user.title %></p>
-                <div class="level is-mobile">
-                    <div class="level-left">
-                        <a  class="level-item"
-                            href="mailto:<%= @user.email %>">
-                            <span class="icon is-small mr-2">
-                                <span class="material-symbols">
-                                    email
-                                </span>
-                            </span>
-                            <%= @user.email %>
-                        </a>
-                        <a  class="level-item mx-2"
-                            href="tel:<%= @user.telephone %>">
-                            <span class="icon is-small mr-2">
-                                <span class="material-symbols">
-                                    phone
-                                </span>
-                            </span>
-                            <%= @user.telephone %>
-                        </a>
+<div class="user-information-card mt-6 mb-4 flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
+    <div class="shrink-0">
+        <%= render LesliView::Elements::Avatar.new(
+            name: @user.full_name
+        ) %>
+    </div>
 
-                        <!-- Show the max role -->
-                        <p class="level-item" v-if="storeUser.role_names">
-                            <span class="icon is-small mr-2">
-                                <span class="material-symbols">
-                                    security
-                                </span>
-                            </span>
-                            <%= @user.role_names %>
-                        </p>
-                    </div>
-                </div>
-            </div>
+    <div class="min-w-0">
+        <h5 class="text-xl font-semibold leading-tight text-slate-800">
+            <%= @user.full_name %>
+        </h5>
+
+        <p class="mb-1 text-slate-600"><%= @user.title %></p>
+
+        <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 md:justify-start">
+            <a
+                class="inline-flex min-w-0 items-center text-[var(--lesli-color-primary)] hover:underline focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"
+                href="mailto:<%= @user.email %>"
+            >
+                <span class="material-symbols mr-2 shrink-0 text-xl" aria-hidden="true">email</span>
+                <span class="break-all"><%= @user.email %></span>
+            </a>
+
+            <a
+                class="inline-flex items-center text-[var(--lesli-color-primary)] hover:underline focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"
+                href="tel:<%= @user.telephone %>"
+            >
+                <span class="material-symbols mr-2 shrink-0 text-xl" aria-hidden="true">phone</span>
+                <%= @user.telephone %>
+            </a>
+
+            <!-- Show the max role -->
+            <p class="inline-flex items-center text-slate-600" v-if="storeUser.role_names">
+                <span class="material-symbols mr-2 shrink-0 text-xl" aria-hidden="true">security</span>
+                <%= @user.role_names %>
+            </p>
         </div>
     </div>
 </div>

@@ -154,10 +154,7 @@ module LesliShield
             unless @resource.active? && @resource.locked_until != nil
 
                 # save a locked log for the requested user
-                @resource.logs.create({
-                    title: "session_creation_failed",
-                    description: "user_locked"
-                })
+                log_failure("user_locked")
 
                 return false
 
@@ -172,10 +169,7 @@ module LesliShield
             unless @resource.confirmed?
 
                 # save a invalid credentials log for the requested user
-                @resource.logs.create({
-                    title: "session_creation_failed",
-                    description: "email_not_confirmed"
-                })
+                log_failure("email_not_confirmed")
 
                 return false
 
@@ -190,10 +184,7 @@ module LesliShield
             # check if user has roles assigned
             if @resource.roles.empty?
 
-                @resource.logs.create({
-                    title: "session_creation_failed",
-                    description: "user_has_no_assigned_role"
-                })
+                log_failure("user_has_no_assigned_role")
 
                 return true
 
@@ -207,15 +198,22 @@ module LesliShield
 
             # check user has at least one active role before authorize the sign-in request
             unless (@resource.roles.map {|role| role.active}.include? true)
-                @resource.logs.create({
-                    title: "session_creation_failed",
-                    description: "user_has_no_active_role"
-                })
+                log_failure("user_has_no_active_role")
 
                 return false
             end
 
             return true
+        end
+
+        def log_failure(description)
+            @resource.log(
+                engine: LesliShield,
+                source: self.class.name,
+                action: "validate",
+                operation: "session_creation_failed",
+                description: description
+            )
         end
     end
 end

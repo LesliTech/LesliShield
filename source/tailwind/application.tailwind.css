@@ -1,0 +1,7 @@
+/* Tailwind utilities used by LesliShield's authenticated application views. */
+@layer theme, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@source "../../app/views/lesli_shield/users/_information-card.html.erb";

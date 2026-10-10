@@ -34,6 +34,12 @@ module LesliShield
     class Engine < ::Rails::Engine
         isolate_namespace LesliShield
 
+        config.to_prepare do
+            unless Lesli::User < LesliShield::UserSecurity
+                Lesli::User.include(LesliShield::UserSecurity)
+            end
+        end
+
         initializer :lesli_shield do |app|
             
             # register assets manifest

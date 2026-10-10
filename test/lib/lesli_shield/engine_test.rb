@@ -13,5 +13,9 @@ module LesliShield
         test "engine isolates namespace" do
             assert_equal "LesliShield", LesliShield::Engine.railtie_namespace.name
         end
+
+        test "engine extends Lesli user with security methods" do
+            assert Lesli::User < LesliShield::UserSecurity
+        end
     end
 end

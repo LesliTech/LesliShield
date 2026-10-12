@@ -5,7 +5,7 @@
         resource, 
         as: resource_name, 
         url: user_password_path(),
-        html: { class: "has-text-centered" },
+        html: { class: "text-center" },
         builder: LesliView::Forms::Builder
         ) do |form| %>
 
@@ -20,11 +20,13 @@
             <%= form.field_control_button("Send me reset password instructions", icon:"mail") %>
 
             <% if Lesli.config.security.dig(:allow_registration) %>
-                <p class="account has-text-centered">
-                    Still not registered? 
-                    <%= link_to(new_user_registration_path, :class => "has-text-primary") do %>
-                        <u><b>Create account</b></u>
-                    <% end %>
+                <p class="mt-6 text-center text-sm text-slate-600">
+                    Still not registered?
+                    <%= link_to(
+                        "Create account",
+                        new_user_registration_path,
+                        class: "font-semibold text-[var(--lesli-color-primary)] underline underline-offset-2 hover:opacity-80 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"
+                    ) %>
                 </p> 
             <% end %>
         <% end %>

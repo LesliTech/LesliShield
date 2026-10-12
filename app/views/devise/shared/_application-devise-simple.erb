@@ -1,5 +1,4 @@
-<%
-=begin
+<%#
 
 Lesli
 
@@ -29,31 +28,31 @@ Building a better future, one line of code at a time.
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
-=end
 %>
 
-<% title = defined?(title) ? title : "" %>
+<% title = local_assigns.fetch(:title, "") %>
 
-<main id="lesli-application">
-    <section class="hero is-fullheight">
-        <div class="hero-head has-text-centered">
-            <%# Logo container %>
-            <div class="logo mb-4">
+<main id="lesli-application" class="min-h-screen bg-white">
+    <section class="flex min-h-screen flex-col">
+        <header class="shrink-0 px-6 pb-12 pt-20 text-center sm:pb-16 sm:pt-32">
+            <div>
                 <%= image_tag(
                     "lesli_assets/brand/app-auth.svg",
-                    :class => "#{lesli_instance_code}-logo",
-                    :alt => "Main logo") 
+                    class: "#{lesli_instance_code}-logo mx-auto mb-4 h-auto w-auto max-w-[130px]",
+                    alt: I18n.t("lesli_shield.authentication.logo_alt", default: "Application logo")
+                )
                 %>
-                <h1 class="title is-size-4 has-text-primary">
-                    <%#= I18n.t("core.users/sessions.view_text_welcome") %>
-                    <%= title %>
-                </h1>
-            </div>
-        </div>
-        <div class="hero-body">
-            
-            <%= yield %>
 
+                <% if title.present? %>
+                    <h1 class="text-2xl font-semibold tracking-tight text-[var(--lesli-color-primary)]">
+                        <%= title %>
+                    </h1>
+                <% end %>
+            </div>
+        </header>
+
+        <div class="flex flex-1 flex-col items-center border-t border-slate-200 bg-slate-50 px-6 py-8 [&>form]:my-8 [&>form]:w-full [&>form]:max-w-[750px] [&>form]:rounded-xl [&>form]:border [&>form]:border-slate-200 [&>form]:bg-white [&>form]:p-8 [&>form]:shadow-sm sm:[&>form]:p-16">
+            <%= yield %>
         </div>
     </section>
 </main>

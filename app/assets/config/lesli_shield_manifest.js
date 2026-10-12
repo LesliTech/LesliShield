@@ -36,6 +36,7 @@ Building a better future, one line of code at a time.
 //= link lesli_shield/application.css
 //= link lesli_shield/application.js
 //= link lesli_shield/sessions.tailwind.css
+//= link lesli_shield/passwords.tailwind.css
 
 
 //= link lesli_shield/sessions.js

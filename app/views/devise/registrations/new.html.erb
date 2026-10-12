@@ -1,7 +1,8 @@
 <%#
+
 Lesli
 
-Copyright (c) 2025, Lesli Technologies, S. A.
+Copyright (c) 2026, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -52,53 +53,63 @@ title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
         builder: LesliView::Forms::Builder
         ) do |form| %>
 
-        <%= form.field_control_builder(
-            label_html:form.label(:email, "E-mail address"), 
-            control_html:form.email_field(:email, autofocus: true, autocomplete: "email", placeholder: Lesli.config.company[:email]),
+        <%= form.field_control_email(
+            :email,
+            label: "E-mail address",
             category: flash.first&.first,
-            icon: "person"
+            icon: "person",
+            autofocus: true,
+            autocomplete: "email",
+            required: true,
+            placeholder: Lesli.config.company[:email]
         ) %>
 
-        <%= form.field_control_builder(
-            label_html:form.label(:password), 
-            control_html:form.password_field(:password, autocomplete: "current-password", placeholder: "* * * * * *"),
-            message_text: flash.first&.second,
+        <%= form.field_control_password(
+            :password,
+            label: I18n.t("lesli_shield.devise/registrations.label_password", default: "Password"),
+            message: flash.first&.second,
             category: flash.first&.first,
-            icon: "key"
+            icon: "key",
+            autocomplete: "new-password",
+            required: true,
+            placeholder: "••••••••"
         ) %>
 
-        <div class="field mb-5">
-            <p><%= I18n.t("lesli_shield.devise/registrations.view_password_requirements") %></p>
-            <ul class="pl-3 password-requirements">
-                <li>&bull; <%= I18n.t("lesli_shield.devise/registrations.view_password_requirements_uppercase") %></li>
-                <li>&bull; <%= I18n.t("lesli_shield.dashboards.view_password_requirements_symbol") %></li>
-                <li>&bull; <%= I18n.t("lesli_shield.dashboards.view_password_requirements_number") %></li>
+        <div class="mb-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left text-sm text-slate-600">
+            <p class="font-medium text-slate-700">
+                <%= I18n.t("lesli_shield.devise/registrations.view_password_requirements") %>
+            </p>
+            <ul class="mt-2 list-disc space-y-1 pl-5">
+                <li><%= I18n.t("lesli_shield.devise/registrations.view_password_requirements_uppercase") %></li>
+                <li><%= I18n.t("lesli_shield.dashboards.view_password_requirements_symbol") %></li>
+                <li><%= I18n.t("lesli_shield.dashboards.view_password_requirements_number") %></li>
             </ul>
         </div>
 
-        <div class="field">
-            <p class="terms">
-                By creating an account, you agree to our <a><u><b>Terms</b></u></a> and have
-                read and acknowledge the <a><u><b>Global Privacy Statement</b></u></a>
+        <div class="mb-4">
+            <p class="text-left text-xs leading-5 text-slate-500">
+                By creating an account, you agree to our
+                <span class="font-semibold text-[var(--lesli-color-primary)]">Terms</span>
+                and have read and acknowledge the
+                <span class="font-semibold text-[var(--lesli-color-primary)]">Global Privacy Statement</span>.
             </p>
         </div>
 
-        <div class="field mb-4 mt-5">
-            <div class="control is-fullwidth">
-                <button 
-                    type="submit" 
-                    class="button is-primary is-fullwidth mb-2">
-                    <%= I18n.t("overrides.lesli_shield.devise/registrations.button_create_account",
-                                default: :"lesli_shield.devise/registrations.button_create_account") %>
-                </button>
-            </div>
-        </div>
+        <%= form.field_control_button(
+            I18n.t(
+                "overrides.lesli_shield.devise/registrations.button_create_account",
+                default: :"lesli_shield.devise/registrations.button_create_account"
+            ),
+            { class: "w-full" }
+        ) %>
 
-        <p class="account has-text-centered">
+        <p class="mt-1 text-center text-sm text-slate-600">
             <%= I18n.t("lesli_shield.devise/registrations.view_already_have_an_account") %>
-            <%= link_to(new_user_session_path, :class => "has-text-primary") do %>
-                <u><b><%= I18n.t("lesli_shield.devise/registrations.button_login") %></b></u>
-            <% end %>
+            <%= link_to(
+                I18n.t("lesli_shield.devise/registrations.button_login"),
+                new_user_session_path,
+                class: "font-semibold text-[var(--lesli-color-primary)] underline underline-offset-2 hover:opacity-80 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"
+            ) %>
         </p> 
     <% end %>
 <% end %>

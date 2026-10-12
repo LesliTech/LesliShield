@@ -1,0 +1,25 @@
+/* Tailwind utilities used by the registration views. */
+@layer theme, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@import "../../../../gems/LesliView/lib/lesli_view/forms/form.css";
+@source "../../../../gems/LesliView/lib/lesli_view/forms/*.rb";
+
+@source "../../app/views/devise/registrations/*.html.erb";
+@source "../../app/views/devise/shared/_application-devise.html.erb";
+
+@layer components {
+    .lesli-auth-visual {
+        background:
+            linear-gradient(
+                0deg,
+                rgb(49 106 255 / 40%),
+                rgb(49 106 255 / 40%)
+            ),
+            url("/lesli_shield/register-background.jpg");
+        background-position: center;
+        background-size: cover;
+    }
+}

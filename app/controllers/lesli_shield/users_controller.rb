@@ -41,17 +41,9 @@ module LesliShield
 
         # GET /users/1
         def show
-            @user_roles = @user.result.roles
-            @activities = if defined?(LesliAudit) && @user.result.respond_to?(:logs)
-                @user.result.logs
-                    .order(id: :desc)
-                    .select(:id, :operation, :description, Date2.new.db_column('created_at', as:'date'))
-                    .limit(7)
-                    .as_json
-            else
-                []
-            end
-            @sessions = @user.result.sessions
+            @user_roles = @user.roles
+            @activities = @user.logs
+            @sessions = @user.sessions
             @user = @user.show
         end
 

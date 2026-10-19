@@ -46,7 +46,7 @@ title = I18n.t("overrides.lesli_shield.devise/sessions.view_title",
 
 <%= render("devise/shared/application-devise", title: title) do %>
 
-    <% authentication_error = flash[:alert].presence || flash[:error].presence %>
+    <% authentication_error = flash[:danger].presence || flash[:alert].presence || flash[:error].presence %>
 
     <%= form_for(
         resource,

@@ -16,5 +16,3 @@ gem "rubocop-rails-omakase", require: false
 gem "lesli"
 
 gem "lesli_testing"
-
-gem "devise"

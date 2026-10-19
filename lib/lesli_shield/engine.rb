@@ -30,24 +30,44 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
+require "devise"
+
 module LesliShield
     class Engine < ::Rails::Engine
         isolate_namespace LesliShield
 
+        initializer "lesli_shield.authentication_routes" do
+            if Lesli::Router.respond_to?(:authentication_router=)
+                Lesli::Router.authentication_router = LesliShield::Router
+            end
+        end
+
         config.to_prepare do
-                Lesli::User.devise(
-                    :database_authenticatable,
-                    :registerable,
-                    :rememberable,
-                    :recoverable,
-                    :validatable,
-                    :confirmable,
-                    :trackable,
-                    :lockable
-                )
+            unless Lesli::User < LesliShield::UserAuthentication
+                Lesli::User.include(LesliShield::UserAuthentication)
+            end
 
             unless Lesli::User < LesliShield::UserSecurity
                 Lesli::User.include(LesliShield::UserSecurity)
+            end
+
+            # Compatibility for core versions whose Devise base controller did
+            # not explicitly expose Lesli helpers to isolated engines.
+            devise_controller = Lesli::ApplicationDeviseController
+            core_helper_modules = [Lesli::SystemHelper, Lesli::HtmlHelper]
+
+            # The controller and layout live in Lesli, while Shield owns the
+            # specialized Devise forms. Put those forms before Devise's bundled
+            # defaults in the lookup order whenever Shield is installed.
+            shield_views = LesliShield::Engine.root.join("app", "views")
+            unless devise_controller.view_paths.first&.to_path == shield_views.to_s
+                devise_controller.prepend_view_path(shield_views)
+            end
+
+            core_helper_modules.each do |helper_module|
+                next if devise_controller._helpers < helper_module
+
+                devise_controller.helper(helper_module)
             end
         end
 

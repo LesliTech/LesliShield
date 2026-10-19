@@ -18,6 +18,37 @@ module LesliShield
             assert Lesli::User < LesliShield::UserSecurity
         end
 
+        test "engine installs its Devise authentication implementation" do
+            assert Lesli::User < LesliShield::UserAuthentication
+
+            LesliShield::UserAuthentication::DEVISE_MODULES.each do |devise_module|
+                assert_includes Lesli::User.devise_modules, devise_module
+            end
+        end
+
+        test "Devise validates the password through LesliShield" do
+            user = Lesli::User.new(email: "password-validation@example.com")
+
+            refute user.valid?
+            assert_includes user.errors[:password], "can't be blank"
+        end
+
+        test "Lesli base controller loads Shield security interfaces directly" do
+            assert Lesli::ApplicationLesliController < LesliShield::AuthenticationInterface
+            assert Lesli::ApplicationLesliController < LesliShield::AuthorizationInterface
+            assert_includes Lesli::ApplicationLesliController._process_action_callbacks.map(&:filter),
+                :authenticate_request
+            assert_includes Lesli::ApplicationLesliController._process_action_callbacks.map(&:filter),
+                :authorize_request
+        end
+
+        test "configures Devise controllers through LesliShield" do
+            assert_equal "Lesli::ApplicationDeviseController", Devise.parent_controller
+            assert_equal :lesli_shield, Devise.router_name
+            assert_equal "lesli/layouts/application-devise",
+                Lesli::ApplicationDeviseController._layout
+        end
+
         test "enables Devise lockable with a temporary failed-attempt lock" do
             assert_includes Lesli::User.devise_modules, :lockable
             assert_equal :failed_attempts, Devise.lock_strategy

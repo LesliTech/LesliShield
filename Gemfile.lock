@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     lesli_shield (1.1.6)
+      devise (~> 5.0.0)
       lesli (~> 5.1.0)
 
 GEM
@@ -357,7 +358,6 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  devise
   lesli
   lesli_shield!
   lesli_testing

@@ -63,4 +63,7 @@ Gem::Specification.new do |spec|
 
     # Lesli core minimum requirements
     spec.add_dependency("lesli", "~> 5.1.0")
+
+    # Devise is the authentication implementation selected by LesliShield.
+    spec.add_dependency("devise", "~> 5.0.0")
 end

@@ -8,7 +8,11 @@ require "devise/orm/active_record"
 Devise.setup do |config|
     # Controllers, routes, and mail delivery
     config.parent_controller = "Lesli::ApplicationDeviseController"
-    config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
+    config.mailer_sender = (
+        ENV["LESLI_MAILER_FROM"].presence ||
+        Rails.application.config.action_mailer.default_options&.dig(:from).presence ||
+        "no-reply@lesli.dev"
+    )
     config.mailer = "LesliShield::DeviseMailer"
     # Authentication routes are intentionally mounted in the host application
     # so every Lesli engine shares the same login. Devise must therefore build

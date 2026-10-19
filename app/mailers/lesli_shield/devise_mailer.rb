@@ -32,18 +32,14 @@ Building a better future, one line of code at a time.
 module LesliShield
     class DeviseMailer < Lesli::ApplicationLesliMailer
 
-        default from: -> {
-            Devise.mailer_sender.presence ||
-                Rails.application.config.action_mailer.default_options&.dig(:from) ||
-                "no-reply@lesli.dev"
-        }
+        default from: -> { configured_sender }
 
         # Sends an email with instructions to allow the user reset the password
         def reset_password_instructions(user, token, opts = {})
 
             # defaults for new accounts/users
             email_template = "devise/reset_password_instructions"
-            email_subject = opts[:subject] || I18n.t(
+            email_subject = I18n.t(
                 "lesli_shield.devise/passwords.mailer_subject"
             )
 
@@ -54,8 +50,9 @@ module LesliShield
             }
 
             # send email
-            email(
-                params,
+            send_email(
+                params: params,
+                options: opts,
                 to: user.email, 
                 subject: email_subject,
                 template_name: email_template
@@ -67,7 +64,7 @@ module LesliShield
 
             # defaults for new accounts/users
             email_template = "devise/confirmation_instructions"
-            email_subject = opts[:subject] || I18n.t(
+            email_subject = I18n.t(
                 "lesli_shield.devise/confirmations.mailer_confirmation_subject"
             )
 
@@ -79,7 +76,7 @@ module LesliShield
 
             # Depending on wheter there is a new user or they are changing their email, 
             # one or another field will be used
-            email_recipient = user.unconfirmed_email || user.email
+            email_recipient = user.unconfirmed_email.presence || user.email
 
             # email parameters
             params = {
@@ -87,18 +84,20 @@ module LesliShield
             }
 
             # send email
-            email(
-                params,
+            send_email(
+                params: params,
+                options: opts,
                 to: email_recipient, 
                 subject: email_subject,
                 template_name: email_template
             )
         end
 
-        def welcome(user)
-            email_recipient = user.unconfirmed_email || user.email
-            email(
-                { user: user },
+        def welcome(user, opts = {})
+            email_recipient = user.unconfirmed_email.presence || user.email
+            send_email(
+                params: { user: user },
+                options: opts,
                 to: email_recipient,
                 subject: I18n.t(
                     "lesli_shield.devise/confirmations.mailer_welcome_subject"
@@ -109,20 +108,47 @@ module LesliShield
 
         private
 
+        def send_email(params:, options:, to:, subject:, template_name:)
+            headers = { to: to, subject: subject }.merge(options)
+            headers.delete(:template_name)
+
+            @params = @params.merge(params)
+            build_app_from_params(params)
+
+            mail(
+                **headers,
+                template_name: template_name
+            )
+        end
+
+        def configured_sender
+            sender = Devise.mailer_sender
+            sender = sender.call(:user) if sender.respond_to?(:call)
+
+            sender.presence ||
+                Rails.application.config.action_mailer.default_options&.dig(:from).presence ||
+                "no-reply@lesli.dev"
+        end
+
         # Use the host application's named route so password recovery continues
         # to work when authentication is mounted under a custom path.
         def password_reset_url(token)
             Rails.application.routes.url_helpers.edit_user_password_url(
-                **Rails.application.config.action_mailer.default_url_options,
+                **action_mailer_url_options,
                 reset_password_token: token
             )
         end
 
         def account_confirmation_url(token)
             Rails.application.routes.url_helpers.user_confirmation_url(
-                **Rails.application.config.action_mailer.default_url_options,
+                **action_mailer_url_options,
                 confirmation_token: token
             )
+        end
+
+        def action_mailer_url_options
+            options = Rails.application.config.action_mailer.default_url_options
+            (options || {}).to_h.symbolize_keys
         end
     end
 end

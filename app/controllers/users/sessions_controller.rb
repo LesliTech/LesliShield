@@ -80,7 +80,8 @@ class Users::SessionsController < Devise::SessionsController
         # cannot validate the user
         unless resource
             danger(I18n.t("lesli_shield.devise/sessions.message_not_valid_credentials"))
-            redirect_to user_session_path(r: sign_in_params[:redirect]) and return
+            redirect_to user_session_path(r: sign_in_params[:redirect]), status: :see_other
+            return
         end
 
         user = resource
@@ -88,7 +89,8 @@ class Users::SessionsController < Devise::SessionsController
         # check if user has a valid account
         unless user.account
             danger(I18n.t("lesli_shield.devise/sessions.message_not_confirmed_account"))
-            redirect_to user_session_path(r: sign_in_params[:redirect]) and return
+            redirect_to user_session_path(r: sign_in_params[:redirect]), status: :see_other
+            return
         end
 
         # check if user meet requirements to create a new session
@@ -107,7 +109,8 @@ class Users::SessionsController < Devise::SessionsController
             )
 
             danger(failures_string)
-            redirect_to user_session_path(r: sign_in_params[:redirect]) and return
+            redirect_to user_session_path(r: sign_in_params[:redirect]), status: :see_other
+            return
         end
 
         # Persist the session and its success event atomically. The success
@@ -124,7 +127,7 @@ class Users::SessionsController < Devise::SessionsController
         # respond successful and send the path user should go
         # respond_with_successful({ default_path: user.has_role_with_default_path?() })
         # respond_with_successful({ default_path: Lesli.config.path_after_login || "/" })
-        redirect_to safe_redirect_path(sign_in_params[:redirect])
+        redirect_to safe_redirect_path(sign_in_params[:redirect]), status: :see_other
     end
 
     private

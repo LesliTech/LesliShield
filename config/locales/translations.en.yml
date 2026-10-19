@@ -3,6 +3,7 @@
   lesli_shield:
     devise/sessions:
       message_not_valid_credentials: Not valid credentials
+      message_too_many_attempts: Too many login attempts. Try again later.
       view_title: Welcome to Lesli
       button_log_in: Log in
       view_still_not_registered: Still not registered?

@@ -156,8 +156,8 @@ module LesliShield
 
         # check if user is able to create a new session
         def active?
-            locked = current_user.locked_until.present? && current_user.locked_until > Time.current
-            locked ||= current_user.locked_at.present? if current_user.respond_to?(:locked_at)
+            locked = current_user.respond_to?(:access_locked?) && current_user.access_locked?
+            locked ||= current_user.locked_until.present? && current_user.locked_until > Time.current
 
             unless current_user.active? && !locked
 

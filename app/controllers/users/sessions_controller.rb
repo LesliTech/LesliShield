@@ -30,7 +30,29 @@ Building a better future, one line of code at a time.
 // · 
 =end
 
+require "openssl"
+
 class Users::SessionsController < Devise::SessionsController
+
+    LOGIN_RATE_LIMIT_WINDOW = 15.minutes
+
+    rate_limit(
+        to: 20,
+        within: LOGIN_RATE_LIMIT_WINDOW,
+        by: -> { request.remote_ip },
+        with: :respond_to_login_rate_limit,
+        only: :create,
+        name: "login-ip"
+    )
+
+    rate_limit(
+        to: 10,
+        within: LOGIN_RATE_LIMIT_WINDOW,
+        by: :login_email_rate_limit_key,
+        with: :respond_to_login_rate_limit,
+        only: :create,
+        name: "login-email"
+    )
 
     # Creates a new session for the user and allows them access to the platform.
     #
@@ -107,6 +129,36 @@ class Users::SessionsController < Devise::SessionsController
 
     private
 
+    def login_email_rate_limit_key
+        normalized_email = sign_in_params[:email].to_s.strip.downcase
+        identity = normalized_email.presence || "blank:#{request.remote_ip}"
+
+        OpenSSL::HMAC.hexdigest(
+            "SHA256",
+            Rails.application.secret_key_base,
+            identity
+        )
+    end
+
+    def respond_to_login_rate_limit
+        message = I18n.t("lesli_shield.devise/sessions.message_too_many_attempts")
+        response.set_header("Retry-After", LOGIN_RATE_LIMIT_WINDOW.to_i.to_s)
+
+        respond_to do |format|
+            format.html do
+                self.resource = resource_class.new(email: sign_in_params[:email])
+                flash.now[:alert] = message
+                render :new, status: :too_many_requests
+            end
+
+            format.json do
+                render json: { error: message }, status: :too_many_requests
+            end
+
+            format.any { head :too_many_requests }
+        end
+    end
+
     def create_authenticated_session!(user, user_agent)
         signed_in = false
 
@@ -116,7 +168,7 @@ class Users::SessionsController < Devise::SessionsController
             .result
 
             # Complete the Devise authentication before recording success.
-            sign_in(resource_name, user)
+            sign_in(resource_name, user, force: true)
             signed_in = true
 
             # Publish the application session after Devise renews its session.

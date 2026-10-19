@@ -35,6 +35,17 @@ module LesliShield
         isolate_namespace LesliShield
 
         config.to_prepare do
+                Lesli::User.devise(
+                    :database_authenticatable,
+                    :registerable,
+                    :rememberable,
+                    :recoverable,
+                    :validatable,
+                    :confirmable,
+                    :trackable,
+                    :lockable
+                )
+
             unless Lesli::User < LesliShield::UserSecurity
                 Lesli::User.include(LesliShield::UserSecurity)
             end

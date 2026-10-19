@@ -78,6 +78,46 @@ class Users::SessionsControllerTest < ActionController::TestCase
         assert_equal "/fallback", safe_redirect_path("http://[invalid")
     end
 
+    test "normalizes and protects email rate-limit identities" do
+        first_key = email_rate_limit_key(" User@Example.COM ")
+        second_key = email_rate_limit_key("user@example.com")
+        different_key = email_rate_limit_key("other@example.com")
+
+        assert_equal first_key, second_key
+        refute_equal first_key, different_key
+        assert_match(/\A\h{64}\z/, first_key)
+        refute_includes first_key, "user@example.com"
+    end
+
+    test "returns a generic 429 response when the login rate limit is exceeded" do
+        store = ActiveSupport::Cache::MemoryStore.new
+        @request.headers["Accept"] = "application/json"
+        @controller.set_response!(@response)
+        @controller.params = ActionController::Parameters.new(
+            user: { email: "user@example.com" }
+        )
+
+        2.times do
+            @controller.send(
+                :rate_limiting,
+                to: 1,
+                within: Users::SessionsController::LOGIN_RATE_LIMIT_WINDOW,
+                by: -> { "test-identity" },
+                with: :respond_to_login_rate_limit,
+                store: store,
+                name: "test",
+                scope: "sessions"
+            )
+        end
+
+        assert_response :too_many_requests
+        assert_equal "900", response.headers["Retry-After"]
+        assert_equal(
+            I18n.t("lesli_shield.devise/sessions.message_too_many_attempts"),
+            response.parsed_body["error"]
+        )
+    end
+
     test "records success only after Devise signs the user in" do
         events = []
         logs = []
@@ -164,6 +204,11 @@ class Users::SessionsControllerTest < ActionController::TestCase
 
     def create_authenticated_session(user)
         @controller.send(:create_authenticated_session!, user, {})
+    end
+
+    def email_rate_limit_key(email)
+        @controller.params = ActionController::Parameters.new(user: { email: email })
+        @controller.send(:login_email_rate_limit_key)
     end
 
     def stub_session_dependencies(service, events, &block)

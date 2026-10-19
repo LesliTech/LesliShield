@@ -67,7 +67,9 @@ module LesliShield
 
             # defaults for new accounts/users
             email_template = "devise/confirmation_instructions"
-            email_subject = I18n.t("core.users/confirmations.mailer_email_verification")
+            email_subject = opts[:subject] || I18n.t(
+                "lesli_shield.devise/confirmations.mailer_confirmation_subject"
+            )
 
             # # custom email and subject if user is changin his email address
             # if !record.unconfirmed_email.blank?
@@ -81,7 +83,7 @@ module LesliShield
 
             # email parameters
             params = {
-                url: build_url("/confirmation", { confirmation_token: token})
+                url: account_confirmation_url(token)
             }
 
             # send email
@@ -96,10 +98,12 @@ module LesliShield
         def welcome(user)
             email_recipient = user.unconfirmed_email || user.email
             email(
-                { :user => user },
-                to: email_recipient, 
-                subject: "test",
-                template_name: "devise/welcome"
+                { user: user },
+                to: email_recipient,
+                subject: I18n.t(
+                    "lesli_shield.devise/confirmations.mailer_welcome_subject"
+                ),
+                template_name: "lesli/welcome"
             )
         end
 
@@ -111,6 +115,13 @@ module LesliShield
             Rails.application.routes.url_helpers.edit_user_password_url(
                 **Rails.application.config.action_mailer.default_url_options,
                 reset_password_token: token
+            )
+        end
+
+        def account_confirmation_url(token)
+            Rails.application.routes.url_helpers.user_confirmation_url(
+                **Rails.application.config.action_mailer.default_url_options,
+                confirmation_token: token
             )
         end
     end

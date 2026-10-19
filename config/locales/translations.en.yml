@@ -25,6 +25,18 @@
       button_login: Log in
       message_registration_not_allowed: Account registration is not available.
       message_too_many_attempts: Too many account creation attempts. Try again later.
+    devise/confirmations:
+      view_title: Resend confirmation instructions
+      view_description: Enter your email address and, if confirmation is still pending, we will send you a new confirmation link.
+      view_success_title: Account confirmed
+      view_success_description: Your email address was confirmed successfully. You can now log in.
+      field_email: Email address
+      button_send_instructions: Resend confirmation instructions
+      button_sending: Sending instructions…
+      message_confirmation_failed: We could not finish confirming your account. Please try the confirmation link again.
+      message_too_many_attempts: Too many confirmation requests. Try again later.
+      mailer_confirmation_subject: Confirm your email address
+      mailer_welcome_subject: Welcome to Lesli
     devise/passwords:
       view_request_title: Forgot your password?
       view_request_description: Enter the email address associated with your account. If the account exists, we will send you a password recovery link.
@@ -51,5 +63,8 @@
       view_password_requirements_symbol: One symbol
       view_password_requirements_number: One number
   devise:
+    confirmations:
+      confirmed: Your email address has been confirmed successfully. You can now log in.
+      send_paranoid_instructions: If your account is awaiting confirmation, you will receive a new confirmation link in a few minutes.
     registrations:
       signed_up_but_invalid: Account created. Check your email to continue.

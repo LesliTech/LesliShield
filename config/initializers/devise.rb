@@ -40,6 +40,7 @@ Devise.setup do |config|
 
     # Confirmation and password recovery
     config.reconfirmable = true
+    config.confirm_within = 3.hours
     config.reset_password_within = 6.hours
 
     # Temporary account locking after repeated failed credentials.

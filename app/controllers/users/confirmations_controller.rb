@@ -29,89 +29,186 @@ Building a better future, one line of code at a time.
 @license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
+// ·
 =end
+
 class Users::ConfirmationsController < Devise::ConfirmationsController
+    CONFIRMATION_RATE_LIMIT_WINDOW = 1.hour
 
+    rate_limit(
+        to: 10,
+        within: CONFIRMATION_RATE_LIMIT_WINDOW,
+        by: -> { request.remote_ip },
+        with: :respond_to_confirmation_rate_limit,
+        only: :create,
+        name: "confirmation-request-ip"
+    )
+
+    rate_limit(
+        to: 3,
+        within: CONFIRMATION_RATE_LIMIT_WINDOW,
+        by: :confirmation_email_rate_limit_key,
+        with: :respond_to_confirmation_rate_limit,
+        only: :create,
+        name: "confirmation-request-email"
+    )
+
+    before_action :protect_confirmation_token, only: :show
+
+    # Devise validates and consumes the raw token. Account provisioning and the
+    # successful audit event share the same transaction so a partial account can
+    # never be left behind and a provisioning failure leaves the token reusable.
     def show
+        self.resource = confirm_user_and_provision_account
 
-        # delete all previus messages
-        flash.clear
+        if resource.errors.empty?
+            send_welcome_email_safely(resource)
+            set_flash_message!(:notice, :confirmed)
+            respond_with_navigational(resource) do
+                redirect_to after_confirmation_path_for(resource_name, resource)
+            end
+        else
+            respond_with_navigational(
+                resource.errors,
+                status: :unprocessable_content
+            ) do
+                render :new, status: :unprocessable_content
+            end
+        end
+    end
 
-        # get the confirmation token sent through get params
-        token = params[:confirmation_token]
+    protected
 
-        # validate that token were sent
-        if token.blank?
-            return flash[:danger] = I18n.t("core.users/confirmations.messages_warning_invalid_token")
+    # Keep the user on the resend page so Devise's generic paranoid-mode notice
+    # is visible without disclosing whether the email exists or is confirmed.
+    def after_resending_confirmation_instructions_path_for(_resource_name)
+        new_user_confirmation_path
+    end
+
+    private
+
+    def confirm_user_and_provision_account
+        confirmed_user = nil
+
+        resource_class.transaction do
+            confirmed_user = resource_class.confirm_by_token(
+                params[:confirmation_token]
+            )
+
+            if confirmed_user.errors.empty?
+                LesliShield::UserRegistrationService
+                    .new(confirmed_user)
+                    .provision_account!
+
+                confirmed_user.update!(confirmation_token: nil)
+                record_successful_confirmation!(confirmed_user)
+            end
         end
 
-        # check if token belongs to a unconfirmed user
-        user = Lesli::User.find_by(:confirmation_token => token, :confirmed_at => nil)
+        confirmed_user
+    rescue StandardError => exception
+        Rails.error.report(
+            exception,
+            handled: true,
+            context: {
+                controller: self.class.name,
+                operation: "user_confirmation_succeeded"
+            }
+        )
 
-        # validate that user were found
-        if user.blank?
-            return flash[:danger] = I18n.t("core.users/confirmations.messages_warning_invalid_token")
+        confirmation_failure_resource(confirmed_user)
+    end
+
+    def confirmation_failure_resource(user)
+        failed_resource = if user&.persisted?
+            resource_class.find_by(id: user.id)
         end
 
-        # A new signup does not have a tenant yet. Invitations can record the
-        # attempt immediately; new signups begin their history after the account
-        # is created in the transaction below.
+        failed_resource ||= resource_class.new
+        failed_resource.errors.add(
+            :base,
+            I18n.t(
+                "lesli_shield.devise/confirmations.message_confirmation_failed"
+            )
+        )
+        failed_resource
+    end
+
+    def record_successful_confirmation!(user)
         user.log(
             engine: LesliShield,
             source: self.class.name,
             action: action_name,
-            operation: "user_confirmation_attempted",
-            description: "Confirmation process started"
-        ) if user.account.present?
-        
-        # create a new instance of the registration service
-        registration_service = LesliShield::UserRegistrationService.new(user)
-
-        Lesli::User.transaction do
-            # confirm the user
-            registration_service.confirm
-
-            # setup the new account
-            registration_service.create_account if user.account.blank?
-
-            user.log(
-                engine: LesliShield,
-                source: self.class.name,
-                action: action_name,
-                operation: "user_confirmation_succeeded",
-                description: "User confirmed successfully"
-            )
-        end
-
-        # send a welcome email only after the confirmation transaction commits
-        LesliShield::DeviseMailer.with(user: resource).welcome.deliver_later
-
-        # let the user knows that the confirmation is done
-        flash[:success] = I18n.t("core.users/confirmations.messages_success_email_updated")
+            operation: "user_confirmation_succeeded",
+            description: "User confirmed successfully"
+        )
     end
 
-    
-    # @controller_action_param :email [String] The registered user email
-    # @return [Json] Json that contains wheter the email confirmation was sent or not. 
-    #     If it is not successful, it returs an error message
-    # @description Resends a email confirmation an already registered user
-    # @example
-    #     # Executing this controller's action from javascript's frontend
-    #     let email = 'john.doe@email.com';
-    #     let data = {
-    #         user: {
-    #             email: email
-    #         }
-    #     };
-    #     this.http.post('127.0.0.1/conformation', data);
-    def create
-        super do |resource|
-            if successfully_sent?(resource)
-                return respond_with_successful
-            else
-                return respond_with_error(resource.errors.full_messages.to_sentence)
+    def send_welcome_email_safely(user)
+        LesliShield::DeviseMailer.welcome(user).deliver_later
+    rescue StandardError => exception
+        Rails.error.report(
+            exception,
+            handled: true,
+            context: {
+                controller: self.class.name,
+                operation: "welcome_email_delivery"
+            }
+        )
+    end
+
+    def confirmation_email_rate_limit_key
+        normalized_email = confirmation_request_params[:email]
+            .to_s
+            .strip
+            .downcase
+        identity = normalized_email.presence || "blank:#{request.remote_ip}"
+
+        OpenSSL::HMAC.hexdigest(
+            "SHA256",
+            Rails.application.secret_key_base,
+            identity
+        )
+    end
+
+    def confirmation_request_params
+        params
+            .fetch(resource_name, ActionController::Parameters.new)
+            .permit(:email)
+    end
+
+    def respond_to_confirmation_rate_limit
+        message = I18n.t(
+            "lesli_shield.devise/confirmations.message_too_many_attempts"
+        )
+
+        response.set_header(
+            "Retry-After",
+            CONFIRMATION_RATE_LIMIT_WINDOW.to_i.to_s
+        )
+
+        respond_to do |format|
+            format.html { render_confirmation_rate_limit(message) }
+            format.json do
+                render json: { error: message }, status: :too_many_requests
             end
+            format.any { head :too_many_requests }
         end
+    end
+
+    def render_confirmation_rate_limit(message)
+        flash.now[:alert] = message
+        self.resource = resource_class.new(
+            email: confirmation_request_params[:email]
+        )
+        render :new, status: :too_many_requests
+    end
+
+    def protect_confirmation_token
+        # Prevent the token in the query string from being sent to third-party
+        # origins while keeping a valid Origin for the resend form rendered when
+        # Devise rejects an invalid or expired token.
+        response.set_header("Referrer-Policy", "same-origin")
+        response.set_header("Cache-Control", "no-store")
     end
 end

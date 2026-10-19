@@ -33,97 +33,63 @@ Building a better future, one line of code at a time.
 module LesliShield
     class UserRegistrationService < Lesli::ApplicationLesliService
 
-        def initialize(current_user)
-            @resource = current_user
-            @current_user = current_user
+        def initialize(user)
+            super(user)
+            self.resource = user
         end
 
-        def confirm
+        # Devise owns confirmation. This service performs only the Lesli account
+        # provisioning that must happen after Devise accepts the token.
+        def provision_account!
+            assign_account! if resource.account.blank?
+            assign_initial_role! unless resource.user_roles.exists?
+            synchronize_role_privileges!
 
-            # confirm the user
-            current_user.confirm
-            raise ActiveRecord::RecordInvalid, current_user unless current_user.confirmed?
-
-
-            # force token deletion so we are sure nobody 
-            # will be able to use the token again
-            current_user.update!(confirmation_token: nil)
-
-            # Minimum security settings required
-            #self.settings.create_with(:value => false).find_or_create_by(:name => "mfa_enabled")
-            #self.settings.create_with(:value => :email).find_or_create_by(:name => "mfa_method")
-
+            resource
         end
 
-        def create_account
+        private
 
-            add_account() if resource.account.blank?
-            add_role() if resource.user_roles.empty?
+        def assign_account!
+            account = if multiaccount?
+                create_owned_account!
+            else
+                Lesli::Account.first!
+            end
 
-            # Synchronize roles for the very first time
-            resource.roles.each do |role|
+            resource.update!(account: account)
+        end
+
+        def create_owned_account!
+            Lesli::Account.create!(
+                user: resource,
+                name: "Lesli",
+                email: resource.email,
+                status: :active
+            )
+        end
+
+        def assign_initial_role!
+            role = resource.account.roles.find_by!(name: initial_role_name)
+            resource.user_roles.create!(role: role)
+        end
+
+        def initial_role_name
+            return "owner" if multiaccount?
+
+            Lesli.config.shield.dig(:default_role).presence || "guest"
+        end
+
+        def synchronize_role_privileges!
+            resource.roles.find_each do |role|
                 LesliShield::RolePrivilegeService.new(nil).synchronize(role)
             end
-
-            # update user :)
-            resource.save!
-
-            # # initialize user dependencies
-            # def after_account_assignation
-            # return unless self.account
-
-            # #Courier::One::Firebase::User.sync_user(self)
-            # # Lesli::Courier.new(:lesli_calendar).from(:calendar_service, self).create({
-            # #     name: "Personal Calendar", 
-            # #     default: true
-            # # })
-            # end
-
         end
 
-        private 
-
-        # check if instance is for multi-account
-        ALLOW_MULTI_ACCOUNT = Lesli.config.security.dig(:allow_multiaccount)
-
-        # This is necessary when user is creating a brand new account
-        # and the platform is configured to create new Lesli accounts for every user
-        # The platform use the same account when the platform is not saas but
-        # proprietary instance (only one company is using the platform)
-        # Another scenario where it is not needed to create a new account for the 
-        # user is when the user is confirming the account through an invitation
-        def add_account
-
-            if ALLOW_MULTI_ACCOUNT === true
-                # create new account for the new user only if multi-account is allowed
-                account = Lesli::Account.create!({
-                    user: resource,     # set user as owner of his just created account
-                    name: "Lesli",      # temporary company name
-                    email: resource.email,
-                    status: :active     # account is active due user already confirmed his email
-                })
-            else
-                # if multi-account is not allowed user belongs to the first account in instance
-                account = Lesli::Account.first
-            end
-
-            # add user to his own account
-            resource.account = account
-        end
-
-        def add_role
-            if ALLOW_MULTI_ACCOUNT == true
-                # add owner role to user only if multi-account is allowed
-                resource.user_roles.create!({ role: resource.account.roles.find_by(name: "owner") })
-            else
-                # Assigning default role if defined in account settings
-                # Otherwise, the default role is "limited"
-                default_role_name = Lesli.config.shield.dig(:default_role) || "guest"
-
-                default_role = resource.account.roles.find_by(name: default_role_name)
-
-                resource.user_roles.create!({ role: default_role })
-            end
+        # Read the setting at execution time. Applications and tests can change
+        # Lesli configuration after this service class has been loaded.
+        def multiaccount?
+            Lesli.config.security.dig(:allow_multiaccount) == true
         end
     end
 end

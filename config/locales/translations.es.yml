@@ -25,6 +25,18 @@
       button_login: Iniciar sesión
       message_registration_not_allowed: La creación de cuentas no está disponible.
       message_too_many_attempts: Demasiados intentos de creación de cuenta. Inténtalo de nuevo más tarde.
+    devise/confirmations:
+      view_title: Reenviar instrucciones de confirmación
+      view_description: Ingresa tu correo electrónico y, si la confirmación sigue pendiente, te enviaremos un nuevo enlace.
+      view_success_title: Cuenta confirmada
+      view_success_description: Tu correo electrónico fue confirmado correctamente. Ya puedes iniciar sesión.
+      field_email: Correo electrónico
+      button_send_instructions: Reenviar instrucciones de confirmación
+      button_sending: Enviando instrucciones…
+      message_confirmation_failed: No pudimos terminar de confirmar tu cuenta. Intenta utilizar nuevamente el enlace de confirmación.
+      message_too_many_attempts: Demasiadas solicitudes de confirmación. Inténtalo de nuevo más tarde.
+      mailer_confirmation_subject: Confirma tu correo electrónico
+      mailer_welcome_subject: Te damos la bienvenida a Lesli
     devise/passwords:
       view_request_title: "¿Olvidaste tu contraseña?"
       view_request_description: Ingresa el correo electrónico asociado con tu cuenta. Si la cuenta existe, te enviaremos un enlace de recuperación.
@@ -51,5 +63,8 @@
       view_password_requirements_symbol: Un caracter especial
       view_password_requirements_number: Un número
   devise:
+    confirmations:
+      confirmed: Tu correo electrónico fue confirmado correctamente. Ya puedes iniciar sesión.
+      send_paranoid_instructions: Si tu cuenta está pendiente de confirmación, recibirás un nuevo enlace en unos minutos.
     registrations:
       signed_up_but_invalid: Cuenta creada. Revisa tu correo electrónico para continuar.

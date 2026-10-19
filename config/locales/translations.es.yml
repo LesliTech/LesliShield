@@ -6,6 +6,9 @@
       message_too_many_attempts: Demasiados intentos de inicio de sesión. Inténtalo de nuevo más tarde.
       view_title: ":lesli_shield.devise/sessions.view_title:"
       button_log_in: Iniciar sesión
+      demo_title: Cuenta de demostración
+      demo_email: Correo electrónico
+      demo_password: Contraseña
       view_still_not_registered: "¿Aún no tienes cuenta?"
       button_create_account: Crear cuenta
     devise/registrations:
@@ -15,6 +18,28 @@
       button_create_account: Crear cuenta
       view_already_have_an_account: "¿Ya tienes cuenta?"
       button_login: Iniciar sesión
+    devise/passwords:
+      view_request_title: "¿Olvidaste tu contraseña?"
+      view_request_description: Ingresa el correo electrónico asociado con tu cuenta. Si la cuenta existe, te enviaremos un enlace de recuperación.
+      view_update_title: Crea una nueva contraseña
+      view_update_description: Elige una nueva contraseña para tu cuenta e ingrésala dos veces para confirmarla.
+      field_email: Correo electrónico
+      field_password: Nueva contraseña
+      field_password_confirmation: Confirmar nueva contraseña
+      field_password_hint:
+        one: Usa al menos un carácter.
+        other: Usa al menos %{count} caracteres.
+      button_send_instructions: Enviar enlace de recuperación
+      button_sending: Enviando…
+      button_update_password: Cambiar contraseña
+      button_updating: Actualizando…
+      message_too_many_attempts: Demasiados intentos de recuperación de contraseña. Inténtalo de nuevo más tarde.
+      mailer_subject: Instrucciones para restablecer tu contraseña
+    devise/shared:
+      button_login: Iniciar sesión
+      button_reset_password: Restablecer contraseña
+      button_magic_link: Enlace mágico
+      button_one_time_password: Contraseña de un solo uso
     dashboards:
       view_password_requirements_symbol: Un caracter especial
       view_password_requirements_number: Un número

@@ -6,6 +6,9 @@
       message_too_many_attempts: Too many login attempts. Try again later.
       view_title: Welcome to Lesli
       button_log_in: Log in
+      demo_title: Demo account
+      demo_email: Email
+      demo_password: Password
       view_still_not_registered: Still not registered?
       button_create_account: Create account
     devise/registrations:
@@ -15,6 +18,28 @@
       button_create_account: Create account
       view_already_have_an_account: Already have an account?
       button_login: Log in
+    devise/passwords:
+      view_request_title: Forgot your password?
+      view_request_description: Enter the email address associated with your account. If the account exists, we will send you a password recovery link.
+      view_update_title: Create a new password
+      view_update_description: Choose a new password for your account and enter it twice to confirm it.
+      field_email: Email address
+      field_password: New password
+      field_password_confirmation: Confirm new password
+      field_password_hint:
+        one: Use at least one character.
+        other: Use at least %{count} characters.
+      button_send_instructions: Send recovery link
+      button_sending: Sending…
+      button_update_password: Change password
+      button_updating: Updating…
+      message_too_many_attempts: Too many password recovery attempts. Try again later.
+      mailer_subject: Password reset instructions
+    devise/shared:
+      button_login: Log in
+      button_reset_password: Reset password
+      button_magic_link: Magic link
+      button_one_time_password: One-time password
     dashboards:
       view_password_requirements_symbol: One symbol
       view_password_requirements_number: One number

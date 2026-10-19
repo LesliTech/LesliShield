@@ -30,23 +30,48 @@ Building a better future, one line of code at a time.
 // · 
 %>
 
-<% 
-
-# Check if demo mode is enable on initializer file
-if Lesli.config.demo
-    resource.email = Lesli.config.company[:email]
-    resource.password = Lesli.config.security[:password]
-end
-%>
-
 <%
 title = I18n.t("overrides.lesli_shield.devise/sessions.view_title",
         default: :"lesli_shield.devise/sessions.view_title")
+
+demo_credentials = if Lesli.config.demo
+    {
+        email: Lesli.config.company[:email].to_s,
+        password: Lesli.config.security[:password].to_s
+    }
+end
 %>
 
 <%= render("devise/shared/application-devise", title: title) do %>
 
     <% authentication_error = flash[:danger].presence || flash[:alert].presence || flash[:error].presence %>
+
+    <%
+    email_field_options = {
+        label: I18n.t("lesli_shield.devise/sessions.label_email", default: "Email address"),
+        category: authentication_error.present? ? :danger : nil,
+        icon: "person",
+        autofocus: true,
+        autocomplete: "email",
+        required: true,
+        placeholder: Lesli.config.company[:email]
+    }
+
+    password_field_options = {
+        label: I18n.t("lesli_shield.devise/sessions.label_password", default: "Password"),
+        message: authentication_error,
+        category: authentication_error.present? ? :danger : nil,
+        icon: "key",
+        autocomplete: "current-password",
+        required: true,
+        placeholder: "••••••••"
+    }
+
+    if demo_credentials
+        email_field_options[:value] = demo_credentials[:email]
+        password_field_options[:value] = demo_credentials[:password]
+    end
+    %>
 
     <%= form_for(
         resource,
@@ -57,31 +82,13 @@ title = I18n.t("overrides.lesli_shield.devise/sessions.view_title",
         data: { turbo: false }
     ) do |form| %>
 
-        <% if Lesli.config.demo %>
-            <%= render("devise/shared/demo") %>
+        <% if demo_credentials %>
+            <%= render("devise/shared/demo", credentials: demo_credentials) %>
         <% end %>
 
-        <%= form.field_control_email(
-            :email,
-            label: I18n.t("lesli_shield.devise/sessions.label_email", default: "Email address"),
-            category: authentication_error.present? ? :danger : nil,
-            icon: "person",
-            autofocus: true,
-            autocomplete: "email",
-            required: true,
-            placeholder: Lesli.config.company[:email]
-        ) %>
+        <%= form.field_control_email(:email, **email_field_options) %>
 
-        <%= form.field_control_password(
-            :password,
-            label: I18n.t("lesli_shield.devise/sessions.label_password", default: "Password"),
-            message: authentication_error,
-            category: authentication_error.present? ? :danger : nil,
-            icon: "key",
-            autocomplete: "current-password",
-            required: true,
-            placeholder: "••••••••"
-        ) %>
+        <%= form.field_control_password(:password, **password_field_options) %>
 
         <%
         redirect_after_login = params[:r].presence ||

@@ -1,35 +1,68 @@
 
-<%= render("devise/shared/application-devise-simple", title:"Forgot your password?") do %>
+<%= render(
+    "devise/shared/application-devise-simple",
+    title: I18n.t("lesli_shield.devise/passwords.view_request_title")
+) do %>
 
     <%= form_for(
-        resource, 
-        as: resource_name, 
-        url: user_password_path(),
-        html: { class: "text-center" },
+        resource,
+        as: resource_name,
+        url: user_password_path,
+        html: { class: "text-left" },
         builder: LesliView::Forms::Builder
-        ) do |form| %>
+    ) do |form| %>
 
-            <%= render "devise/shared/error_messages", resource: resource %>
+        <p class="mb-6 text-center text-sm leading-6 text-slate-600">
+            <%= I18n.t("lesli_shield.devise/passwords.view_request_description") %>
+        </p>
 
-            <%= form.field_control_email(
-                :email, 
-                icon: "person_search",
-                label: "Enter your email address you use in Lesli. We'll send instructions for setting a new password to your email.") 
-            %>
+        <%= render "devise/shared/error_messages", resource: resource %>
 
-            <%= form.field_control_button("Send me reset password instructions", icon:"mail") %>
+        <%= form.field_control_email(
+            :email,
+            icon: "mail",
+            label: I18n.t("lesli_shield.devise/passwords.field_email"),
+            required: true,
+            autofocus: true,
+            autocomplete: "email",
+            autocapitalize: "none",
+            spellcheck: false
+        ) %>
 
-            <% if Lesli.config.security.dig(:allow_registration) %>
-                <p class="mt-6 text-center text-sm text-slate-600">
-                    Still not registered?
-                    <%= link_to(
-                        "Create account",
-                        new_user_registration_path,
-                        class: "font-semibold text-[var(--lesli-color-primary)] underline underline-offset-2 hover:opacity-80 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"
-                    ) %>
-                </p> 
-            <% end %>
+        <%= form.field_control_button(
+            I18n.t("lesli_shield.devise/passwords.button_send_instructions"),
+            {
+                class: "is-fullwidth",
+                data: {
+                    turbo_submits_with: I18n.t(
+                        "lesli_shield.devise/passwords.button_sending"
+                    )
+                }
+            },
+            icon: "mail"
+        ) %>
+
+        <% if Lesli.config.security.dig(:allow_registration) %>
+            <p class="mt-6 text-center text-sm text-slate-600">
+                <%= I18n.t(
+                    "lesli_shield.devise/sessions.view_still_not_registered"
+                ) %>
+                <%= link_to(
+                    I18n.t(
+                        "lesli_shield.devise/registrations.button_create_account"
+                    ),
+                    new_user_registration_path,
+                    class: "font-semibold text-[var(--lesli-color-primary)] underline underline-offset-2 hover:opacity-80 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"
+                ) %>
+            </p>
         <% end %>
+    <% end %>
 
-    <%= render("devise/shared/links", login:true, password_reset:false, magic_link:false, otp:false) %>  
+    <%= render(
+        "devise/shared/links",
+        login: true,
+        password_reset: false,
+        magic_link: false,
+        otp: false
+    ) %>
 <% end %>

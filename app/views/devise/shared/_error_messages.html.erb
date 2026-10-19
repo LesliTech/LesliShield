@@ -1,28 +1,63 @@
-
-<% if flash[:danger] %>
-    <div class="notification is-danger">
-        <%= flash[:danger] %>
+<% if flash[:notice] %>
+    <div
+        class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-left text-sm text-emerald-900"
+        role="status"
+        aria-live="polite"
+        data-turbo-cache="false"
+    >
+        <%= flash[:notice] %>
     </div>
 <% end %>
 
 <% if flash[:success] %>
-    <div class="notification is-success">
+    <div
+        class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-left text-sm text-emerald-900"
+        role="status"
+        aria-live="polite"
+        data-turbo-cache="false"
+    >
         <%= flash[:success] %>
     </div>
 <% end %>
 
+<% if flash[:alert] %>
+    <div
+        class="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-left text-sm text-rose-900"
+        role="alert"
+        data-turbo-cache="false"
+    >
+        <%= flash[:alert] %>
+    </div>
+<% end %>
+
+<% if flash[:danger] %>
+    <div
+        class="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-left text-sm text-rose-900"
+        role="alert"
+        data-turbo-cache="false"
+    >
+        <%= flash[:danger] %>
+    </div>
+<% end %>
 
 <% if resource.errors.any? %>
-    <div id="error_explanation" data-turbo-cache="false">
-        <h5 class="is-size-5">
+    <div
+        id="error_explanation"
+        class="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-left text-rose-900"
+        role="alert"
+        tabindex="-1"
+        autofocus
+        data-turbo-cache="false"
+    >
+        <h2 class="text-sm font-semibold">
             <%= I18n.t("errors.messages.not_saved",
                 count: resource.errors.count,
                 resource: resource.class.model_name.human.downcase)
             %>
-        </h5>
-        <ul>
+        </h2>
+        <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
             <% resource.errors.full_messages.each do |message| %>
-                <li class="has-text-danger"><%= message %></li>
+                <li><%= message %></li>
             <% end %>
         </ul>
     </div>

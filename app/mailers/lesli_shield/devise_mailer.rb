@@ -32,16 +32,24 @@ Building a better future, one line of code at a time.
 module LesliShield
     class DeviseMailer < Lesli::ApplicationLesliMailer
 
+        default from: -> {
+            Devise.mailer_sender.presence ||
+                Rails.application.config.action_mailer.default_options&.dig(:from) ||
+                "no-reply@lesli.dev"
+        }
+
         # Sends an email with instructions to allow the user reset the password
         def reset_password_instructions(user, token, opts = {})
 
             # defaults for new accounts/users
             email_template = "devise/reset_password_instructions"
-            email_subject = I18n.t("core.users/confirmations.mailer_email_verification")
+            email_subject = opts[:subject] || I18n.t(
+                "lesli_shield.devise/passwords.mailer_subject"
+            )
 
             # email parameters
             params = {
-                url: build_url("/password/edit", { reset_password_token: token}),
+                url: password_reset_url(token),
                 full_name: user.full_name
             }
 
@@ -52,7 +60,7 @@ module LesliShield
                 subject: email_subject,
                 template_name: email_template
             )
-        end 
+        end
 
         # Sends an email to allow the user confirm the email address
         def confirmation_instructions(user, token, opts = {})
@@ -92,6 +100,17 @@ module LesliShield
                 to: email_recipient, 
                 subject: "test",
                 template_name: "devise/welcome"
+            )
+        end
+
+        private
+
+        # Use the host application's named route so password recovery continues
+        # to work when authentication is mounted under a custom path.
+        def password_reset_url(token)
+            Rails.application.routes.url_helpers.edit_user_password_url(
+                **Rails.application.config.action_mailer.default_url_options,
+                reset_password_token: token
             )
         end
     end

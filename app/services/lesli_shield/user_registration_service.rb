@@ -42,11 +42,12 @@ module LesliShield
 
             # confirm the user
             current_user.confirm
+            raise ActiveRecord::RecordInvalid, current_user unless current_user.confirmed?
 
 
             # force token deletion so we are sure nobody 
             # will be able to use the token again
-            current_user.update(confirmation_token: nil)
+            current_user.update!(confirmation_token: nil)
 
             # Minimum security settings required
             #self.settings.create_with(:value => false).find_or_create_by(:name => "mfa_enabled")
@@ -65,7 +66,7 @@ module LesliShield
             end
 
             # update user :)
-            resource.save
+            resource.save!
 
             # # initialize user dependencies
             # def after_account_assignation
@@ -113,7 +114,7 @@ module LesliShield
         def add_role
             if ALLOW_MULTI_ACCOUNT == true
                 # add owner role to user only if multi-account is allowed
-                resource.user_roles.create({ role: account.roles.find_by(name: "owner") })
+                resource.user_roles.create!({ role: resource.account.roles.find_by(name: "owner") })
             else
                 # Assigning default role if defined in account settings
                 # Otherwise, the default role is "limited"
@@ -121,7 +122,7 @@ module LesliShield
 
                 default_role = resource.account.roles.find_by(name: default_role_name)
 
-                resource.user_roles.create({ role: default_role })
+                resource.user_roles.create!({ role: default_role })
             end
         end
     end

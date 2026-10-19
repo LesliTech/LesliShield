@@ -33,11 +33,17 @@ Building a better future, one line of code at a time.
 module LesliShield
     class UserValidatorService < Lesli::ApplicationLesliService
 
-        def validate 
+        def initialize(user)
+            raise ArgumentError, "user is required" unless user
+
+            super(user)
+        end
+
+        def validate
             active?()
             confirmed?()
-            roles_empty?()
-            active_roles?()
+            active_roles?() unless roles_empty?()
+            self
         end
 
 
@@ -69,10 +75,10 @@ module LesliShield
             password_settings = []
 
             # get password settings from the database
-            if @resource.account
+            if current_user.account
 
                 # if user is already registered
-                password_settings = @resource.account.settings.where(password_values.join(" or "))
+                password_settings = current_user.account.settings.where(password_values.join(" or "))
 
             elseif Account.first
 
@@ -85,7 +91,7 @@ module LesliShield
 
                 # exit validations if password complexity is not enabled
                 if settings[:name] == 'password_enforce_complexity' && settings[:value] != "1"
-                    failures = []
+                    failures.clear
                     break
                 end
 
@@ -150,8 +156,10 @@ module LesliShield
 
         # check if user is able to create a new session
         def active?
+            locked = current_user.locked_until.present? && current_user.locked_until > Time.current
+            locked ||= current_user.locked_at.present? if current_user.respond_to?(:locked_at)
 
-            unless @resource.active? && @resource.locked_until != nil
+            unless current_user.active? && !locked
 
                 # save a locked log for the requested user
                 log_failure("user_locked")
@@ -166,7 +174,7 @@ module LesliShield
         def confirmed?
 
             # check if user is already confirmed
-            unless @resource.confirmed?
+            unless current_user.confirmed?
 
                 # save a invalid credentials log for the requested user
                 log_failure("email_not_confirmed")
@@ -182,7 +190,7 @@ module LesliShield
         def roles_empty?
 
             # check if user has roles assigned
-            if @resource.roles.empty?
+            if current_user.roles.empty?
 
                 log_failure("user_has_no_assigned_role")
 
@@ -197,7 +205,7 @@ module LesliShield
         def active_roles?
 
             # check user has at least one active role before authorize the sign-in request
-            unless (@resource.roles.map {|role| role.active}.include? true)
+            unless (current_user.roles.map {|role| role.active}.include? true)
                 log_failure("user_has_no_active_role")
 
                 return false
@@ -207,7 +215,9 @@ module LesliShield
         end
 
         def log_failure(description)
-            @resource.log(
+            failures.push(description) unless failures.include?(description)
+
+            current_user.log(
                 engine: LesliShield,
                 source: self.class.name,
                 action: "validate",

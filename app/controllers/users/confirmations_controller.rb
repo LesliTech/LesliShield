@@ -54,25 +54,41 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
             return flash[:danger] = I18n.t("core.users/confirmations.messages_warning_invalid_token")
         end
 
-        # register a log with a validation atempt for the user
-        log = user.log(engine: LesliShield, source: self.class.name, action: action_name, operation: "user_confirmation", description: "Confirmation process started")
+        # A new signup does not have a tenant yet. Invitations can record the
+        # attempt immediately; new signups begin their history after the account
+        # is created in the transaction below.
+        user.log(
+            engine: LesliShield,
+            source: self.class.name,
+            action: action_name,
+            operation: "user_confirmation_attempted",
+            description: "Confirmation process started"
+        ) if user.account.present?
         
         # create a new instance of the registration service
         registration_service = LesliShield::UserRegistrationService.new(user)
 
-        # confirm the user
-        registration_service.confirm
+        Lesli::User.transaction do
+            # confirm the user
+            registration_service.confirm
 
-        # send a welcome email to user as is confirmed
+            # setup the new account
+            registration_service.create_account if user.account.blank?
+
+            user.log(
+                engine: LesliShield,
+                source: self.class.name,
+                action: action_name,
+                operation: "user_confirmation_succeeded",
+                description: "User confirmed successfully"
+            )
+        end
+
+        # send a welcome email only after the confirmation transaction commits
         LesliShield::DeviseMailer.with(user: resource).welcome.deliver_later
 
         # let the user knows that the confirmation is done
         flash[:success] = I18n.t("core.users/confirmations.messages_success_email_updated")
-        
-        # setup the new account
-        registration_service.create_account if user.account.blank?
-
-        log.update(description: 'User confirmed successfully') if defined?(LesliAudit)
     end
 
     

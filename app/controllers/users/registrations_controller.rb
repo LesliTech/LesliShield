@@ -52,12 +52,22 @@ class Users::RegistrationsController < Devise::RegistrationsController
             # build new user
             user = build_resource(sign_up_params)
 
-            # persist new user
-            if user.save
-                user.log(engine: LesliShield, source: self.class.name, action: action_name, operation: 'user_creation', description: 'User creation successfully')
-                success("Account created, check your email")
-            else
-                raise(user.errors.full_messages.to_sentence)
+            Lesli::User.transaction do
+                # persist new user
+                if user.save
+                    # Standalone signups are not tenant-scoped until confirmation;
+                    # that flow records its durable event after creating the account.
+                    user.log(
+                        engine: LesliShield,
+                        source: self.class.name,
+                        action: action_name,
+                        operation: "user_creation_succeeded",
+                        description: "User created successfully"
+                    ) if user.account.present?
+                    success("Account created, check your email")
+                else
+                    raise(user.errors.full_messages.to_sentence)
+                end
             end
         rescue => exception
             #Honeybadger.notify(exception)

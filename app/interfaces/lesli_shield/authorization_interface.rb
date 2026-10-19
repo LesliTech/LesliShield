@@ -31,7 +31,7 @@ module LesliShield
                     :operation => :authorize_request,
                     :description => "Privilege not found for: #{request.path}"
                 )
-                return respond_with_unauthorized({ controller: params[:controller], action: params[:action] })
+                return respond_with_forbidden({ controller: params[:controller], action: params[:action] })
             end
 
             unless granted
@@ -39,7 +39,7 @@ module LesliShield
                     :operation => :authorize_request,
                     :description => "Privilege not granted for: #{request.path}"
                 )
-                return respond_with_unauthorized({ controller: params[:controller], action: params[:action] })
+                return respond_with_forbidden({ controller: params[:controller], action: params[:action] })
             end
         end
     end

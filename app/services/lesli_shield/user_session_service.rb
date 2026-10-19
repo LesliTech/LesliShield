@@ -55,7 +55,7 @@ module LesliShield
         def create(remote_ip, user_agent=nil, session_source="devise_standard_session")
 
             # register a new unique session
-            current_session = current_user.sessions.create({
+            current_session = current_user.sessions.create!({
                 :remote => remote_ip,
 
                 :agent_os => user_agent&.dig(:os) || "unknown",

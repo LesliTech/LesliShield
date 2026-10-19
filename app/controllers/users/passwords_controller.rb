@@ -36,47 +36,78 @@ class Users::PasswordsController < Devise::PasswordsController
 
     # Sends an email with a token, so the user can reset their password
     def create
-        self.resource = resource_class.send_reset_password_instructions(resource_params)
+        Lesli::User.transaction do
+            self.resource = resource_class.send_reset_password_instructions(resource_params)
 
-        user = self.resource
+            user = self.resource
 
-        if successfully_sent?(resource)
+            if successfully_sent?(resource)
 
-            user.log(
-                :engine => LesliShield, 
-                :source => self.class.name, 
-                :action => action_name, 
-                :operation => 'password_reset', 
-                :description => 'Reset password instructions sent'
-            )
+                record_activity(
+                    user,
+                    operation: "password_reset_instructions_sent",
+                    description: "Reset password instructions sent"
+                )
 
-            success(I18n.t("core.users/passwords.messages_success"))
-            redirect_to(new_user_password_path)
-        else
-            #respond_with(resource)
-            danger("Error sending reset password instructions")
-            redirect_to(new_user_password_path)
+                success(I18n.t("core.users/passwords.messages_success"))
+                redirect_to(new_user_password_path)
+            else
+                #respond_with(resource)
+                danger("Error sending reset password instructions")
+                redirect_to(new_user_password_path)
+            end
         end
     end
 
     def update
-        super do |user|
+        Lesli::User.transaction do
+            super do |user|
 
-            logs = user.log(engine: LesliShield, source: self.class.name, action: action_name, operation: 'password_update', description:"Password update attempt")
+                record_activity(
+                    user,
+                    operation: "password_update_attempted",
+                    description: "Password update attempt"
+                )
 
-            # check if password update was ok
-            if user.errors.empty?
+                # check if password update was ok
+                if user.errors.empty?
 
-                # reset password expiration due the user just updated his password
-                if user.has_expired_password?
-                    user.update(password_expiration_at: nil)
+                    # reset password expiration due the user just updated his password
+                    if user.has_expired_password?
+                        user.update!(password_expiration_at: nil)
+                    end
+
+                    record_activity(
+                        user,
+                        operation: "password_update_succeeded",
+                        description: "Password update successful"
+                    )
+                else
+                    failure_description = resource.errors.full_messages.to_sentence
+                    danger(failure_description)
+                    record_activity(
+                        user,
+                        operation: "password_update_failed",
+                        description: failure_description
+                    )
                 end
-
-                logs&.update(description: "Password update successful")
-            else
-                danger(user.errors.full_messages.to_sentence)
-                logs&.update(description: resource.errors.full_messages.to_sentence)
             end
         end
+    end
+
+    private
+
+    # Invalid or unknown reset tokens can produce a resource without a tenant.
+    # Those attempts cannot be written to tenant-scoped Audit tables.
+    def record_activity(user, operation:, description:)
+        return unless user&.account
+
+        user.log(
+            engine: LesliShield,
+            source: self.class.name,
+            action: action_name,
+            operation: operation,
+            description: description
+        )
     end
 end

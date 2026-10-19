@@ -68,34 +68,44 @@ class Users::SessionsController < Devise::SessionsController
             redirect_to user_session_path(r: sign_in_params[:redirect]) and return
         end
 
-        log = nil 
+        audit_enabled = defined?(LesliAudit::ActivityAudit) && LesliAudit::ActivityAudit.enabled?
 
         # Save a log for the current login attempt 
-        log = user.log(
+        user.log(
             engine: LesliShield,
             source: self.class.name,
             action: action_name,
-            operation: 'session_new',
+            operation: "session_creation_attempted",
             description: 'Session creation attempt'
-        ) if defined?(LesliAudit)
+        )
 
-        # check if user meet requirements to create a new session
-        LesliShield::UserValidatorService.new(user).valid? do |valid, failures|
+        # check if user meets the requirements to create a new session
+        validator = LesliShield::UserValidatorService.new(user)
+        validator.validate
 
-            # if user do not meet requirements to login
-            unless valid
-
-                failures_string = failures.join(", ")
-                danger(failures_string)
-                log.update(description: failures_string) if log
-                redirect_to user_session_path(r: sign_in_params[:redirect]) and return
-            end
+        unless validator.valid?
+            danger(validator.errors_as_sentence)
+            redirect_to user_session_path(r: sign_in_params[:redirect]) and return
         end
 
-        # create a new session for the user
-        current_session = LesliShield::UserSessionService.new(user)
-        .create(request.remote_ip, (get_user_agent(false) if log))
-        .result
+        # Persist the session and its success event atomically. If the activity
+        # event cannot be stored, the session record is rolled back as well.
+        current_session = Lesli::User.transaction do
+            created_session = LesliShield::UserSessionService.new(user)
+            .create(request.remote_ip, (get_user_agent(false) if audit_enabled))
+            .result
+
+            user.log(
+                engine: LesliShield,
+                source: self.class.name,
+                action: action_name,
+                operation: "session_creation_succeeded",
+                description: "Session creation successful",
+                session_id: created_session[:id]
+            )
+
+            created_session
+        end
 
         # make session id globally available
         session[:user_session_id] = current_session[:id]
@@ -103,19 +113,13 @@ class Users::SessionsController < Devise::SessionsController
         # do a user login
         sign_in(resource_name, user)
 
-        # update logs with a successful login
-        log.update(
-            description: "Session creation successful", 
-            session_id: current_session[:id]
-        ) if log
-
         # respond successful and send the path user should go
         # respond_with_successful({ default_path: user.has_role_with_default_path?() })
         # respond_with_successful({ default_path: Lesli.config.path_after_login || "/" })
         redirect_to safe_redirect_path(sign_in_params[:redirect])
 
         # Save the user_agent for every new session
-        log_devices if log
+        log_devices if audit_enabled
     end
 
     private 

@@ -44,7 +44,7 @@ module LesliShield
 
         test "configures Devise controllers through LesliShield" do
             assert_equal "Lesli::ApplicationDeviseController", Devise.parent_controller
-            assert_equal :lesli_shield, Devise.router_name
+            assert_equal :main_app, Devise.router_name
             assert_equal "lesli/layouts/application-devise",
                 Lesli::ApplicationDeviseController._layout
         end

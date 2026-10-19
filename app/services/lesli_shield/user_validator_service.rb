@@ -40,8 +40,8 @@ module LesliShield
         end
 
         def validate
+            account_present?()
             active?()
-            confirmed?()
             active_roles?() unless roles_empty?()
             self
         end
@@ -153,13 +153,25 @@ module LesliShield
 
         private
 
+        # Devise owns password, confirmation, and failed-attempt locking. This
+        # service contains only the additional access rules defined by Shield.
+        def account_present?
+            unless current_user.account.present?
+                log_failure("user_has_no_account")
+
+                return false
+            end
+
+            true
+        end
+
 
         # check if user is able to create a new session
         def active?
-            locked = current_user.respond_to?(:access_locked?) && current_user.access_locked?
-            locked ||= current_user.locked_until.present? && current_user.locked_until > Time.current
+            temporarily_locked = current_user.locked_until.present? &&
+                current_user.locked_until > Time.current
 
-            unless current_user.active? && !locked
+            unless current_user.active? && !temporarily_locked
 
                 # save a locked log for the requested user
                 log_failure("user_locked")
@@ -169,22 +181,6 @@ module LesliShield
             end
 
             return true
-        end
-
-        def confirmed?
-
-            # check if user is already confirmed
-            unless current_user.confirmed?
-
-                # save a invalid credentials log for the requested user
-                log_failure("email_not_confirmed")
-
-                return false
-
-            end
-
-            return true
-
         end
 
         def roles_empty?

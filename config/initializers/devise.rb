@@ -10,7 +10,10 @@ Devise.setup do |config|
     config.parent_controller = "Lesli::ApplicationDeviseController"
     config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
     config.mailer = "LesliShield::DeviseMailer"
-    config.router_name = :lesli_shield
+    # Authentication routes are intentionally mounted in the host application
+    # so every Lesli engine shares the same login. Devise must therefore build
+    # its URLs through main_app, not through LesliShield's isolated router.
+    config.router_name = :main_app
 
     # Authentication keys
     config.case_insensitive_keys = [:email]

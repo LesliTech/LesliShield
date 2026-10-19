@@ -19,11 +19,11 @@ module LesliShield
         end
 
         class InvalidUser
-            def active?
-                false
+            def account
+                nil
             end
 
-            def confirmed?
+            def active?
                 false
             end
 
@@ -45,11 +45,25 @@ module LesliShield
         end
 
         class ValidUser
-            def active? = true
-            def confirmed? = true
-            def locked_at = nil
-            def locked_until = nil
-            def roles = RoleCollection.new([Role.new(true)])
+            def account
+                Object.new
+            end
+
+            def active?
+                true
+            end
+
+            def locked_at
+                nil
+            end
+
+            def locked_until
+                nil
+            end
+
+            def roles
+                RoleCollection.new([Role.new(true)])
+            end
 
             def log(**)
                 raise "a valid user must not emit a failure event"
@@ -57,7 +71,15 @@ module LesliShield
         end
 
         class UserWithoutActiveRoles < ValidUser
-            def roles = RoleCollection.new([Role.new(false)])
+            def roles
+                RoleCollection.new([Role.new(false)])
+            end
+        end
+
+        class TemporarilyLockedUser < ValidUser
+            def locked_until
+                5.minutes.from_now
+            end
         end
 
         test "collects validation failures without emitting audit events" do
@@ -65,8 +87,8 @@ module LesliShield
 
             assert_same service, service.validate
             assert_equal [
+                "user_has_no_account",
                 "user_locked",
-                "email_not_confirmed",
                 "user_has_no_assigned_role"
             ], service.errors
             refute service.valid?
@@ -85,6 +107,16 @@ module LesliShield
 
             assert_same service, service.validate
             assert_equal ["user_has_no_active_role"], service.errors
+            refute service.valid?
+        end
+
+        test "rejects a user with an active temporary lock" do
+            service = LesliShield::UserValidatorService.new(
+                TemporarilyLockedUser.new
+            )
+
+            assert_same service, service.validate
+            assert_equal ["user_locked"], service.errors
             refute service.valid?
         end
 

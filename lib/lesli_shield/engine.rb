@@ -36,6 +36,13 @@ module LesliShield
     class Engine < ::Rails::Engine
         isolate_namespace LesliShield
 
+        # Rails 8 defers route loading in local environments. Load the main
+        # routes before the application starts accepting requests so Warden is
+        # initialized with the Devise mapping created by Shield's router.
+        config.after_initialize do |app|
+            app.routes_reloader.execute_unless_loaded
+        end
+
         initializer "lesli_shield.authentication_routes" do
             if Lesli::Router.respond_to?(:authentication_router=)
                 Lesli::Router.authentication_router = LesliShield::Router

@@ -83,8 +83,13 @@ title = I18n.t("overrides.lesli_shield.devise/sessions.view_title",
             placeholder: "••••••••"
         ) %>
 
-        <% if params[:r].presence %>
-            <%= hidden_field_tag "user[redirect]", params[:r] %>
+        <%
+        redirect_after_login = params[:r].presence ||
+            params.dig(:user, :redirect).presence
+        %>
+
+        <% if redirect_after_login %>
+            <%= hidden_field_tag "user[redirect]", redirect_after_login %>
         <% end %>
 
         <%= form.field_control_button(

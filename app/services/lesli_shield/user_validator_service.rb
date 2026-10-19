@@ -216,14 +216,6 @@ module LesliShield
 
         def log_failure(description)
             failures.push(description) unless failures.include?(description)
-
-            current_user.log(
-                engine: LesliShield,
-                source: self.class.name,
-                action: "validate",
-                operation: "session_creation_failed",
-                description: description
-            )
         end
     end
 end

@@ -2,7 +2,7 @@
 
 Lesli
 
-Copyright (c) 2025, Lesli Technologies, S. A.
+Copyright (c) 2026, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -50,8 +50,9 @@ class Users::SessionsController < Devise::SessionsController
     # maintained as needed.
     def create
 
-        # Use guarden to check if the users credetials are valid 
-        self.resource = warden.authenticate(auth_options)
+        # Validate credentials without publishing a Warden session. The user is
+        # signed in only after account validation and session persistence pass.
+        self.resource = warden.authenticate(auth_options.merge(store: false))
 
         # respond with a no valid credentials generic error if warden
         # cannot validate the user
@@ -68,32 +69,58 @@ class Users::SessionsController < Devise::SessionsController
             redirect_to user_session_path(r: sign_in_params[:redirect]) and return
         end
 
-        audit_enabled = defined?(LesliAudit::ActivityAudit) && LesliAudit::ActivityAudit.enabled?
+        # check if user meet requirements to create a new session
+        validator = LesliShield::UserValidatorService.new(user).validate
 
-        # Save a log for the current login attempt 
-        user.log(
-            engine: LesliShield,
-            source: self.class.name,
-            action: action_name,
-            operation: "session_creation_attempted",
-            description: 'Session creation attempt'
-        )
-
-        # check if user meets the requirements to create a new session
-        validator = LesliShield::UserValidatorService.new(user)
-        validator.validate
-
+        # if user do not meet requirements to login
         unless validator.valid?
-            danger(validator.errors_as_sentence)
+            failures_string = validator.errors_as_sentence
+
+            user.log(
+                engine: LesliShield,
+                source: self.class.name,
+                action: action_name,
+                operation: "session_creation_failed",
+                description: failures_string
+            )
+
+            danger(failures_string)
             redirect_to user_session_path(r: sign_in_params[:redirect]) and return
         end
 
-        # Persist the session and its success event atomically. If the activity
-        # event cannot be stored, the session record is rolled back as well.
-        current_session = Lesli::User.transaction do
+        # Persist the session and its success event atomically. The success
+        # event is written only after Devise has completed the sign-in.
+        user_agent = get_user_agent if respond_to?(:get_user_agent)
+
+        create_authenticated_session!(user, user_agent)
+
+        # Request analytics and device statistics are intentionally separate:
+        # devices represent successful logins, not every authenticated request.
+        log_requests if respond_to?(:log_requests)
+        log_devices if respond_to?(:log_devices)
+
+        # respond successful and send the path user should go
+        # respond_with_successful({ default_path: user.has_role_with_default_path?() })
+        # respond_with_successful({ default_path: Lesli.config.path_after_login || "/" })
+        redirect_to safe_redirect_path(sign_in_params[:redirect])
+    end
+
+    private
+
+    def create_authenticated_session!(user, user_agent)
+        signed_in = false
+
+        Lesli::User.transaction do
             created_session = LesliShield::UserSessionService.new(user)
-            .create(request.remote_ip, (get_user_agent(false) if audit_enabled))
+            .create(request.remote_ip, user_agent)
             .result
+
+            # Complete the Devise authentication before recording success.
+            sign_in(resource_name, user)
+            signed_in = true
+
+            # Publish the application session after Devise renews its session.
+            session[:user_session_id] = created_session[:id]
 
             user.log(
                 engine: LesliShield,
@@ -106,34 +133,20 @@ class Users::SessionsController < Devise::SessionsController
 
             created_session
         end
-
-        # make session id globally available
-        session[:user_session_id] = current_session[:id]
-
-        # do a user login
-        sign_in(resource_name, user)
-
-        # respond successful and send the path user should go
-        # respond_with_successful({ default_path: user.has_role_with_default_path?() })
-        # respond_with_successful({ default_path: Lesli.config.path_after_login || "/" })
-        redirect_to safe_redirect_path(sign_in_params[:redirect])
-
-        # Save the user_agent for every new session
-        log_devices if audit_enabled
+    rescue StandardError
+        # Do not leave a Warden session active when persistence or mandatory
+        # audit logging fails after sign-in.
+        session.delete(:user_session_id)
+        sign_out(resource_name) if signed_in
+        raise
     end
 
-    private 
+    def safe_redirect_path(redirect_path)
+        url_from(redirect_path) || default_after_sign_in_path
+    end
 
-    def safe_redirect_path redirect_path
-        if redirect_path.present?
-            uri = URI.parse(redirect_path)
-            # Ensures it's a local path
-            return redirect_path if uri.relative?  
-        end
+    def default_after_sign_in_path
         Lesli.config.shield.dig(:path_after_login) || root_path
-    rescue URI::InvalidURIError
-        # If the URL is invalid, fallback to root
-        root_path  
     end
 
     def sign_in_params

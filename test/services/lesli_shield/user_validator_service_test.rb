@@ -2,19 +2,29 @@ require "test_helper"
 
 module LesliShield
     class UserValidatorServiceTest < ActiveSupport::TestCase
-        class UserWithoutAudit
-            attr_reader :logged_payload
-
+        class InvalidUser
             def active?
                 false
+            end
+
+            def confirmed?
+                false
+            end
+
+            def locked_at
+                nil
             end
 
             def locked_until
                 nil
             end
 
-            def log(**payload)
-                @logged_payload = payload
+            def roles
+                []
+            end
+
+            def log(**)
+                raise "validation must not emit audit events"
             end
         end
 
@@ -32,20 +42,16 @@ module LesliShield
             end
         end
 
-        test "records validation failures through the optional log API" do
-            user = UserWithoutAudit.new
-            service = LesliShield::UserValidatorService.new(user)
+        test "collects validation failures without emitting audit events" do
+            service = LesliShield::UserValidatorService.new(InvalidUser.new)
 
-            refute service.send(:active?)
-            refute user.respond_to?(:logs)
-            assert_equal ["user_locked"], service.errors
-            assert_equal({
-                engine: LesliShield,
-                source: "LesliShield::UserValidatorService",
-                action: "validate",
-                operation: "session_creation_failed",
-                description: "user_locked"
-            }, user.logged_payload)
+            assert_same service, service.validate
+            assert_equal [
+                "user_locked",
+                "email_not_confirmed",
+                "user_has_no_assigned_role"
+            ], service.errors
+            refute service.valid?
         end
 
         test "accepts an active unlocked confirmed user with an active role" do

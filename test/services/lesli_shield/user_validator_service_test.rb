@@ -2,6 +2,22 @@ require "test_helper"
 
 module LesliShield
     class UserValidatorServiceTest < ActiveSupport::TestCase
+        Role = Struct.new(:active)
+
+        class RoleCollection
+            def initialize(roles)
+                @roles = roles
+            end
+
+            def exists?(attributes = nil)
+                return @roles.any? unless attributes
+
+                @roles.any? do |role|
+                    attributes.all? { |name, value| role.public_send(name) == value }
+                end
+            end
+        end
+
         class InvalidUser
             def active?
                 false
@@ -20,7 +36,7 @@ module LesliShield
             end
 
             def roles
-                []
+                RoleCollection.new([])
             end
 
             def log(**)
@@ -29,17 +45,19 @@ module LesliShield
         end
 
         class ValidUser
-            Role = Struct.new(:active)
-
             def active? = true
             def confirmed? = true
             def locked_at = nil
             def locked_until = nil
-            def roles = [Role.new(true)]
+            def roles = RoleCollection.new([Role.new(true)])
 
             def log(**)
                 raise "a valid user must not emit a failure event"
             end
+        end
+
+        class UserWithoutActiveRoles < ValidUser
+            def roles = RoleCollection.new([Role.new(false)])
         end
 
         test "collects validation failures without emitting audit events" do
@@ -60,6 +78,14 @@ module LesliShield
             assert_same service, service.validate
             assert service.valid?
             assert_empty service.errors
+        end
+
+        test "rejects a user whose assigned roles are inactive" do
+            service = LesliShield::UserValidatorService.new(UserWithoutActiveRoles.new)
+
+            assert_same service, service.validate
+            assert_equal ["user_has_no_active_role"], service.errors
+            refute service.valid?
         end
 
         test "requires a user" do

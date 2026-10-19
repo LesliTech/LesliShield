@@ -190,7 +190,7 @@ module LesliShield
         def roles_empty?
 
             # check if user has roles assigned
-            if current_user.roles.empty?
+            unless current_user.roles.exists?
 
                 log_failure("user_has_no_assigned_role")
 
@@ -205,7 +205,7 @@ module LesliShield
         def active_roles?
 
             # check user has at least one active role before authorize the sign-in request
-            unless (current_user.roles.map {|role| role.active}.include? true)
+            unless current_user.roles.exists?(active: true)
                 log_failure("user_has_no_active_role")
 
                 return false

@@ -4,7 +4,7 @@
 
 Lesli
 
-Copyright (c) 2025, Lesli Technologies, S. A.
+Copyright (c) 2026, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,108 +33,123 @@ Building a better future, one line of code at a time.
 =end
 
 class Users::RegistrationsController < Devise::RegistrationsController
-    before_action :configure_sign_up_params, only: [:create]
-    # before_action :configure_account_update_params, only: [:update]
+    REGISTRATION_RATE_LIMIT_WINDOW = 1.hour
 
-    # GET /resource/sign_up
-    # def new
-    #   super
-    # end
+    before_action :ensure_registration_allowed!, only: %i[new create]
 
+    rate_limit(
+        to: 10,
+        within: REGISTRATION_RATE_LIMIT_WINDOW,
+        by: -> { request.remote_ip },
+        with: :respond_to_registration_rate_limit,
+        only: :create,
+        name: "registration-ip"
+    )
+
+    rate_limit(
+        to: 3,
+        within: REGISTRATION_RATE_LIMIT_WINDOW,
+        by: :registration_email_rate_limit_key,
+        with: :respond_to_registration_rate_limit,
+        only: :create,
+        name: "registration-email"
+    )
+
+    # Devise owns user construction, validation, persistence, confirmation
+    # delivery, password cleanup, and the active/inactive response flow.
     def create
-        begin
-
-            # Check if instance allow multi-account
-            if !Lesli.config.security.dig(:allow_registration)
-                raise(I18n.t("core.users/registrations.messages_error_registration_not_allowed"))
-            end
-
-            # build new user
-            user = build_resource(sign_up_params)
-
-            Lesli::User.transaction do
-                # persist new user
-                if user.save
-                    # Standalone signups are not tenant-scoped until confirmation;
-                    # that flow records its durable event after creating the account.
-                    user.log(
-                        engine: LesliShield,
-                        source: self.class.name,
-                        action: action_name,
-                        operation: "user_creation_succeeded",
-                        description: "User created successfully"
-                    ) if user.account.present?
-                    success("Account created, check your email")
-                else
-                    raise(user.errors.full_messages.to_sentence)
-                end
-            end
-        rescue => exception
-            #Honeybadger.notify(exception)
-            danger(exception.message)
+        super do |user|
+            record_user_creation_safely(user)
         end
-        redirect_to(new_user_registration_path)
     end
-
-    # GET /resource/edit
-    # def edit
-    #   super
-    # end
-
-    # PUT /resource
-    # def update
-    #   super
-    # end
-
-    # DELETE /resource
-    # def destroy
-    #   super
-    # end
-
-    # GET /resource/cancel
-    # Forces the session data which is usually expired after sign
-    # in to be expired now. This is useful if the user wants to
-    # cancel oauth signing in/up in the middle of the process,
-    # removing all OAuth session data.
-    # def cancel
-    #   super
-    # end
 
     protected
 
-    # If you have extra params to permit, append them to the sanitizer.
-    # def configure_account_update_params
-    #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
-    # end
-
-    # If you have extra params to permit, append them to the sanitizer.
-    def configure_sign_up_params
-        devise_parameter_sanitizer.permit(:sign_up, keys: [
-            :email, 
-            :password, 
-            :password_confirmation
-        ])
+    # Standalone registrations remain inactive until confirmation creates the
+    # account and role. Preserve the existing UX by returning to the form with
+    # Devise's success notice instructing the user to check their email.
+    def after_inactive_sign_up_path_for(_user)
+        new_user_registration_path
     end
 
-    # The path used after sign up.
-    # def after_sign_up_path_for(resource)
-    #   super(resource)
-    # end
+    private
 
-    # The path used after sign up for inactive accounts.
-    # def after_inactive_sign_up_path_for(resource)
-    #   super(resource)
-    # end
+    def ensure_registration_allowed!
+        return if Lesli.config.security.dig(:allow_registration)
 
-    # def sign_up_params
-    #     params.permit(:sign_up, keys: [
-    #         :email, 
-    #         :password, 
-    #         :password_confirmation
-    #     ])
-    # end
+        redirect_to(
+            new_user_session_path,
+            alert: I18n.t(
+                "lesli_shield.devise/registrations.message_registration_not_allowed"
+            ),
+            status: request.post? ? :see_other : :found
+        )
+    end
 
-    def sign_up_params
-        params.fetch(:user, {}).permit(:email, :password, :password_confirmation)
+    def registration_email_rate_limit_key
+        normalized_email = registration_params[:email].to_s.strip.downcase
+        identity = normalized_email.presence || "blank:#{request.remote_ip}"
+
+        OpenSSL::HMAC.hexdigest(
+            "SHA256",
+            Rails.application.secret_key_base,
+            identity
+        )
+    end
+
+    def registration_params
+        params
+            .fetch(resource_name, ActionController::Parameters.new)
+            .permit(:email)
+    end
+
+    def respond_to_registration_rate_limit
+        message = I18n.t(
+            "lesli_shield.devise/registrations.message_too_many_attempts"
+        )
+
+        response.set_header(
+            "Retry-After",
+            REGISTRATION_RATE_LIMIT_WINDOW.to_i.to_s
+        )
+
+        respond_to do |format|
+            format.html { render_registration_rate_limit(message) }
+            format.json do
+                render json: { error: message }, status: :too_many_requests
+            end
+            format.any { head :too_many_requests }
+        end
+    end
+
+    def render_registration_rate_limit(message)
+        flash.now[:alert] = message
+        self.resource = resource_class.new(email: registration_params[:email])
+        set_minimum_password_length
+        render :new, status: :too_many_requests
+    end
+
+    # A standalone signup has no tenant yet, so its durable audit event belongs
+    # to the later confirmation transaction. Keep support for pre-associated
+    # resources without allowing an optional audit failure to undo registration.
+    def record_user_creation_safely(user)
+        return unless user.persisted? && user.account.present?
+
+        user.log(
+            engine: LesliShield,
+            source: self.class.name,
+            action: action_name,
+            operation: "user_creation_succeeded",
+            description: "User created successfully"
+        )
+    rescue StandardError => exception
+        Rails.error.report(
+            exception,
+            handled: true,
+            context: {
+                controller: self.class.name,
+                operation: "user_creation_succeeded"
+            }
+        )
     end
 end

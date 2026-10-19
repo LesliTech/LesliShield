@@ -13,11 +13,18 @@
       button_create_account: Create account
     devise/registrations:
       view_title: Create an account to discover Lesli
-      view_password_requirements: 'Password needs to contain:'
-      view_password_requirements_uppercase: 'Minimum one uppercase letter '
+      view_description: Enter your email address and choose a password to create your account.
+      view_password_length: Your password must contain between %{minimum} and %{maximum} characters.
+      view_legal_notice: By creating an account, you agree to the Terms and acknowledge the Global Privacy Statement.
+      label_email: Email address
+      label_password: Password
+      label_password_confirmation: Confirm password
       button_create_account: Create account
+      button_creating_account: Creating account…
       view_already_have_an_account: Already have an account?
       button_login: Log in
+      message_registration_not_allowed: Account registration is not available.
+      message_too_many_attempts: Too many account creation attempts. Try again later.
     devise/passwords:
       view_request_title: Forgot your password?
       view_request_description: Enter the email address associated with your account. If the account exists, we will send you a password recovery link.
@@ -43,3 +50,6 @@
     dashboards:
       view_password_requirements_symbol: One symbol
       view_password_requirements_number: One number
+  devise:
+    registrations:
+      signed_up_but_invalid: Account created. Check your email to continue.

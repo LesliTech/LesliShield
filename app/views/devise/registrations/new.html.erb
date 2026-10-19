@@ -30,68 +30,76 @@ Building a better future, one line of code at a time.
 // · 
 %>
 
-<% 
-
-# Check if demo mode is enable on initializer file
-if Lesli.config.demo
-    resource.email = Lesli.config.company[:email]
-    resource.password = Lesli.config.security[:password]
-end
-%>
-
 <%
 title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
         default: :"lesli_shield.devise/registrations.view_title")
 %>
 
-<%= render("devise/shared/application-devise", title:title) do %>
+<%= render("devise/shared/application-devise", title: title) do %>
 
     <%= form_for(
-        resource, 
-        as: resource_name, 
+        resource,
+        as: resource_name,
         url: user_registration_path,
+        html: { class: "text-left" },
         builder: LesliView::Forms::Builder
-        ) do |form| %>
+    ) do |form| %>
+
+        <p class="mb-6 text-center text-sm leading-6 text-slate-600">
+            <%= I18n.t("lesli_shield.devise/registrations.view_description") %>
+        </p>
+
+        <%= render "devise/shared/error_messages", resource: resource %>
 
         <%= form.field_control_email(
             :email,
-            label: "E-mail address",
-            category: flash.first&.first,
+            label: I18n.t("lesli_shield.devise/registrations.label_email"),
+            message: resource.errors[:email].to_sentence.presence,
+            category: resource.errors[:email].any? ? :danger : nil,
             icon: "person",
             autofocus: true,
             autocomplete: "email",
             required: true,
-            placeholder: Lesli.config.company[:email]
+            autocapitalize: "none",
+            spellcheck: false
         ) %>
 
         <%= form.field_control_password(
             :password,
-            label: I18n.t("lesli_shield.devise/registrations.label_password", default: "Password"),
-            message: flash.first&.second,
-            category: flash.first&.first,
+            label: I18n.t("lesli_shield.devise/registrations.label_password"),
+            message: resource.errors[:password].to_sentence.presence ||
+                I18n.t(
+                    "lesli_shield.devise/registrations.view_password_length",
+                    minimum: @minimum_password_length,
+                    maximum: Devise.password_length.max
+                ),
+            category: resource.errors[:password].any? ? :danger : nil,
             icon: "key",
             autocomplete: "new-password",
             required: true,
-            placeholder: "••••••••"
+            minlength: @minimum_password_length,
+            maxlength: Devise.password_length.max,
+            value: ""
         ) %>
 
-        <div class="mb-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left text-sm text-slate-600">
-            <p class="font-medium text-slate-700">
-                <%= I18n.t("lesli_shield.devise/registrations.view_password_requirements") %>
-            </p>
-            <ul class="mt-2 list-disc space-y-1 pl-5">
-                <li><%= I18n.t("lesli_shield.devise/registrations.view_password_requirements_uppercase") %></li>
-                <li><%= I18n.t("lesli_shield.dashboards.view_password_requirements_symbol") %></li>
-                <li><%= I18n.t("lesli_shield.dashboards.view_password_requirements_number") %></li>
-            </ul>
-        </div>
+        <%= form.field_control_password(
+            :password_confirmation,
+            label: I18n.t(
+                "lesli_shield.devise/registrations.label_password_confirmation"
+            ),
+            message: resource.errors[:password_confirmation].to_sentence.presence,
+            category: resource.errors[:password_confirmation].any? ? :danger : nil,
+            icon: "key",
+            autocomplete: "new-password",
+            required: true,
+            minlength: @minimum_password_length,
+            maxlength: Devise.password_length.max,
+            value: ""
+        ) %>
 
         <div class="mb-4">
             <p class="text-left text-xs leading-5 text-slate-500">
-                By creating an account, you agree to our
-                <span class="font-semibold text-[var(--lesli-color-primary)]">Terms</span>
-                and have read and acknowledge the
-                <span class="font-semibold text-[var(--lesli-color-primary)]">Global Privacy Statement</span>.
+                <%= I18n.t("lesli_shield.devise/registrations.view_legal_notice") %>
             </p>
         </div>
 
@@ -100,7 +108,15 @@ title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
                 "overrides.lesli_shield.devise/registrations.button_create_account",
                 default: :"lesli_shield.devise/registrations.button_create_account"
             ),
-            { class: "w-full" }
+            {
+                class: "w-full",
+                data: {
+                    turbo_submits_with: I18n.t(
+                        "lesli_shield.devise/registrations.button_creating_account"
+                    )
+                }
+            },
+            icon: "person_add"
         ) %>
 
         <p class="mt-1 text-center text-sm text-slate-600">
@@ -110,6 +126,6 @@ title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
                 new_user_session_path,
                 class: "font-semibold text-[var(--lesli-color-primary)] underline underline-offset-2 hover:opacity-80 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"
             ) %>
-        </p> 
+        </p>
     <% end %>
 <% end %>

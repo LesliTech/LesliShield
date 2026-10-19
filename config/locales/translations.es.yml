@@ -13,11 +13,18 @@
       button_create_account: Crear cuenta
     devise/registrations:
       view_title: Crea una cuenta y descubre Lesli
-      view_password_requirements: 'La contraseña debe incluir:'
-      view_password_requirements_uppercase: Una letra mayuscula
+      view_description: Ingresa tu correo electrónico y elige una contraseña para crear tu cuenta.
+      view_password_length: Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres.
+      view_legal_notice: Al crear una cuenta, aceptas los Términos y reconoces la Declaración global de privacidad.
+      label_email: Correo electrónico
+      label_password: Contraseña
+      label_password_confirmation: Confirmar contraseña
       button_create_account: Crear cuenta
+      button_creating_account: Creando cuenta…
       view_already_have_an_account: "¿Ya tienes cuenta?"
       button_login: Iniciar sesión
+      message_registration_not_allowed: La creación de cuentas no está disponible.
+      message_too_many_attempts: Demasiados intentos de creación de cuenta. Inténtalo de nuevo más tarde.
     devise/passwords:
       view_request_title: "¿Olvidaste tu contraseña?"
       view_request_description: Ingresa el correo electrónico asociado con tu cuenta. Si la cuenta existe, te enviaremos un enlace de recuperación.
@@ -43,3 +50,6 @@
     dashboards:
       view_password_requirements_symbol: Un caracter especial
       view_password_requirements_number: Un número
+  devise:
+    registrations:
+      signed_up_but_invalid: Cuenta creada. Revisa tu correo electrónico para continuar.

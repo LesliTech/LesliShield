@@ -41,4 +41,6 @@ bin/rails routes -g shield
 bin/rails server
 ```
 
-Visit `http://127.0.0.1:3000/shield`. Run the [privilege synchronization task](/engines/shield/about/tasks) after changing roles, actions, or protected resources.
+Visit `http://127.0.0.1:3000/shield`. After signing in, visit `/shield/profile` to verify the authenticated user's [self-service profile](/engines/shield/profile/overview).
+
+Run the [privilege synchronization task](/engines/shield/about/tasks) after changing roles, actions, or protected resources.

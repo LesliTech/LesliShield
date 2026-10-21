@@ -46,6 +46,7 @@ It centralizes account security, role-based access control, and user onboarding 
 ## Features
 
 - Authentication and session management
+- Self-service profile and password management
 - Role-based access control
 - Permission and privilege administration
 - Account-scoped security policies
@@ -143,6 +144,7 @@ bin/rails test
 
 - [Lesli website](https://www.lesli.dev/)
 - [Documentation](https://www.lesli.dev/engines/shield)
+- [User profile](https://www.lesli.dev/engines/shield/profile/overview)
 - [Release notes](https://github.com/LesliTech/LesliShield/releases)
 - [Issue tracker](https://github.com/LesliTech/LesliShield/issues)
 - [Source code](https://github.com/LesliTech/LesliShield)

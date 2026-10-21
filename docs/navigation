@@ -1,1 +1,2 @@
 <%= navigation_for_folder("engines", "shield", "about", order:["installation", "translations", "dashboards", "database", "tasks"]) %>
+<%= navigation_for_folder("engines", "shield", "profile", order:["overview"]) %>

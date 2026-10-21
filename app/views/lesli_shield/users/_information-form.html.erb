@@ -1,4 +1,12 @@
-<%= form_with(model: @user, builder: LesliView::Forms::Builder) do |form| %>
+<%
+    form_options = {
+        model: @user,
+        builder: LesliView::Forms::Builder
+    }
+    form_options[:url] = local_assigns[:form_url] if local_assigns[:form_url]
+%>
+
+<%= form_with(**form_options) do |form| %>
     <%= form.fieldset do %>
         <%= form.field_control(:alias) %>
         <%= form.field_control(:title) %>

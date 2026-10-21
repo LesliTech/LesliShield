@@ -1,0 +1,12 @@
+<%= render LesliView::Layout::Container.new("shield-profile-show") do %>
+    <%= render "lesli_shield/users/information-card" %>
+
+    <%= render LesliView::Components::Tabs.new(active_tab: "information") do |tabs| %>
+        <% tabs.with_tab(title: "Information", icon: "info") do %>
+            <%= render(
+                "lesli_shield/users/information-form",
+                form_url: profile_path
+            ) %>
+        <% end %>
+    <% end %>
+<% end %>

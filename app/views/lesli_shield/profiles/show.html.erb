@@ -1,11 +1,28 @@
 <%= render LesliView::Layout::Container.new("shield-profile-show") do %>
     <%= render "lesli_shield/users/information-card" %>
 
-    <%= render LesliView::Components::Tabs.new(active_tab: "information") do |tabs| %>
-        <% tabs.with_tab(title: "Information", icon: "info") do %>
+    <%= render LesliView::Components::Tabs.new(
+        active_tab: @active_profile_tab.presence || params[:tab].presence_in(%w[information security]) || "information"
+    ) do |tabs| %>
+        <% tabs.with_tab(
+            id: "information",
+            title: I18n.t("lesli_shield.profiles.information"),
+            icon: "info"
+        ) do %>
             <%= render(
                 "lesli_shield/users/information-form",
                 form_url: profile_path
+            ) %>
+        <% end %>
+
+        <% tabs.with_tab(
+            id: "security",
+            title: I18n.t("lesli_shield.profiles.security"),
+            icon: "lock"
+        ) do %>
+            <%= render(
+                "lesli_shield/profiles/password-form",
+                user: @user
             ) %>
         <% end %>
     <% end %>

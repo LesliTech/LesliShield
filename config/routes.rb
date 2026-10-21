@@ -46,7 +46,9 @@ LesliShield::Engine.routes.draw do
 
     Lesli::Router.mount_lesli_engine_routes(self)
 
-    resource :profile, only: [:show, :update]
+    resource :profile, only: [:show, :update] do
+        resource :password, only: :update, module: :profile
+    end
 
     resources :sessions, only: [:index, :show]
     resources :users, only: [:index, :show, :update, :new, :create] do 

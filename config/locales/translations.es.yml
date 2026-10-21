@@ -62,6 +62,18 @@
     dashboards:
       view_password_requirements_symbol: Un caracter especial
       view_password_requirements_number: Un número
+    profiles:
+      information: Información
+      security: Seguridad
+      password_description: Ingresa tu contraseña actual para elegir una nueva. Al cambiarla se cerrarán tus otras sesiones.
+      current_password: Contraseña actual
+      new_password: Nueva contraseña
+      password_confirmation: Confirmar nueva contraseña
+      password_hint: Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres.
+      change_password: Cambiar contraseña
+      changing_password: Cambiando contraseña…
+      password_updated: Tu contraseña fue cambiada correctamente.
+      password_too_many_attempts: Demasiados intentos de cambio de contraseña. Inténtalo de nuevo más tarde.
   devise:
     confirmations:
       confirmed: Tu correo electrónico fue confirmado correctamente. Ya puedes iniciar sesión.

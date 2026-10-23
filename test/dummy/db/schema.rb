@@ -66,7 +66,7 @@ ActiveRecord::Schema[8.1].define(version: 801120110) do
     t.string "name"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index ["account_id"], name: "index_lesli_shield_accounts_on_account_id"
+    t.index ["account_id"], name: "index_lesli_shield_accounts_on_account_id", unique: true
     t.index ["deleted_at"], name: "index_lesli_shield_accounts_on_deleted_at"
   end
 

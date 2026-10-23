@@ -1,58 +1,53 @@
 require "test_helper"
 
+load Lesli::Engine.root.join("db", "seed", "xyz.rb")
+
 module LesliShield
     class UserSeederTest < ActiveSupport::TestCase
-        test "adds Devise credentials to a user created by core" do
+        test "creates a user with Devise credentials and the requested role" do
             account = create_account
             email = "shield-seed-#{SecureRandom.hex(4)}@example.com"
             password = "InitialPassword123!"
-            timestamp = Time.current
+            role = create_role(account, "owner")
 
-            Lesli::User.insert_all!([{
-                uid: "LID-#{SecureRandom.hex(4).upcase}",
-                active: true,
+            user = create_account_user(
+                account: account,
                 email: email,
-                encrypted_password: "",
-                account_id: account.id,
-                created_at: timestamp,
-                updated_at: timestamp
-            }])
+                role_name: role.name,
+                first_name: "Shield",
+                last_name: "User",
+                password: password
+            )
 
-            user = Lesli::User.find_by!(email: email)
-
-            assert_equal "", user.encrypted_password
             assert_respond_to user, :password=
             assert_respond_to user, :password_confirmation=
             assert_respond_to user, :skip_confirmation!
-
-            user.password = password
-            user.password_confirmation = password
-            user.skip_confirmation!
-            user.save!
-
             assert user.valid_password?(password)
             assert_predicate user, :confirmed?
+            assert_equal account, user.account
+            assert_equal [role], user.roles.to_a
         end
 
-        test "supports idempotent role assignment for core seeds" do
+        test "does not duplicate the user or role assignment" do
             account = create_account
-            user = Lesli::User.create!(
-                account: account,
-                email: "shield-role-seed-#{SecureRandom.hex(4)}@example.com",
-                password: "InitialPassword123!",
-                confirmed_at: Time.current
-            )
-            role = Lesli::Role.create!(
-                account: account,
-                active: true,
-                name: "seed-role-#{SecureRandom.hex(4)}",
-                permission_level: 10
-            )
+            email = "shield-role-seed-#{SecureRandom.hex(4)}@example.com"
+            password = "InitialPassword123!"
+            role = create_role(account, "guest")
 
             2.times do
-                user.user_roles.find_or_create_by!(role: role)
+                create_account_user(
+                    account: account,
+                    email: email,
+                    role_name: role.name,
+                    first_name: "Shield",
+                    last_name: "User",
+                    password: password
+                )
             end
 
+            user = Lesli::User.find_by!(email: email)
+
+            assert_equal 1, Lesli::User.where(email: email).count
             assert_equal 1, user.user_roles.where(role: role).count
         end
 
@@ -72,6 +67,15 @@ module LesliShield
             }])
 
             Lesli::Account.find_by!(email: email)
+        end
+
+        def create_role(account, name)
+            Lesli::Role.create!(
+                account: account,
+                active: true,
+                name: name,
+                permission_level: 10
+            )
         end
     end
 end

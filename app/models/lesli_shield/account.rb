@@ -32,7 +32,10 @@ Building a better future, one line of code at a time.
 
 module LesliShield
     class Account < ApplicationRecord
-        belongs_to :account, class_name: "Lesli::Account"
+        belongs_to :account,
+            class_name: "Lesli::Account",
+            inverse_of: :shield
+        validates :account_id, uniqueness: true
         has_many :dashboards
         has_many :invites
 

@@ -1,6 +1,6 @@
 module LesliShield
     class Invite < ApplicationRecord
-        belongs_to :account
+        belongs_to :account, class_name: "LesliShield::Account"
         belongs_to :user, class_name: "Lesli::User"
 
         validates :email, presence: true, on: :create

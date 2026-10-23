@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lesli_shield (1.1.6)
+    lesli_shield (1.1.7)
       devise (~> 5.0.0)
       lesli (~> 5.1.0)
 

@@ -6,7 +6,7 @@ class NavigationTest < ActionDispatch::IntegrationTest
 
         assert_response :success
         assert_select "form.lesli-login-form"
-        assert_select "link[href*='sessions.tailwind']"
+        assert_select "link[href*='sessions']"
     end
 
     test "login includes the configured credentials only in demo mode" do

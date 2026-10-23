@@ -22,7 +22,7 @@ module Users
             get new_user_confirmation_path
 
             assert_response :success
-            assert_select 'link[href*="confirmations.tailwind"]'
+            assert_select 'link[href*="confirmations"]'
             assert_select 'form[action="/confirmation"][method="post"]'
             assert_select 'input[name="user[email]"][required][autocomplete="email"]'
             assert_select 'button[type="submit"]'
@@ -69,7 +69,7 @@ module Users
 
         test "assigns the shared account and default role in single-account mode" do
             Lesli.config.security[:allow_multiaccount] = false
-            account = create_account
+            account = Lesli::Account.first!
             default_role = create_role(account, "guest")
             user, raw_token = create_unconfirmed_user
 

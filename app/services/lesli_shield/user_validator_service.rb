@@ -52,7 +52,7 @@ module LesliShield
         def password_complexity(password)
 
             if password.blank?
-                failures.push('error_password_cannot_be_blank') 
+                errors.push('error_password_cannot_be_blank')
                 return self
             end
 
@@ -91,7 +91,7 @@ module LesliShield
 
                 # exit validations if password complexity is not enabled
                 if settings[:name] == 'password_enforce_complexity' && settings[:value] != "1"
-                    failures.clear
+                    errors.clear
                     break
                 end
 
@@ -100,7 +100,7 @@ module LesliShield
 
                     # this regex removes all "normal" letters and numbers leaving special characters
                     if settings[:value].to_i > password.scan(/[^0-9A-Za-z]/).length
-                        failures.push('error_password_special_char_count')
+                        errors.push('error_password_special_char_count')
                     end
 
                 end
@@ -109,7 +109,7 @@ module LesliShield
                 if settings[:name] == 'password_lowercase_count'
 
                     if settings[:value].to_i > password_string_no_special.scan(/[^0-9A-Z]/).length
-                        failures.push('error_password_lowercase_count')
+                        errors.push('error_password_lowercase_count')
                     end
 
                 end
@@ -118,7 +118,7 @@ module LesliShield
                 if settings[:name] == 'password_uppercase_count'
 
                     if settings[:value].to_i > password_string_no_special.scan(/[^0-9a-z]/).length
-                        failures.push('error_password_uppercase_count')
+                        errors.push('error_password_uppercase_count')
                     end
 
                 end
@@ -127,7 +127,7 @@ module LesliShield
                 if settings[:name] == 'password_digit_count'
 
                     if settings[:value].to_i > password_string_no_special.scan(/[^A-Za-z]/).length
-                        failures.push('error_password_digit_count')
+                        errors.push('error_password_digit_count')
                     end
 
                 end
@@ -136,7 +136,7 @@ module LesliShield
                 if settings[:name] == 'password_minimum_length'
 
                     if settings[:value].to_i > password.length
-                        failures.push('error_password_minimum_length')
+                        errors.push('error_password_minimum_length')
                     end
 
                 end
@@ -148,7 +148,7 @@ module LesliShield
         end
 
         def valid?
-            failures.empty?
+            errors.empty?
         end
 
         private
@@ -211,7 +211,7 @@ module LesliShield
         end
 
         def log_failure(description)
-            failures.push(description) unless failures.include?(description)
+            errors.push(description) unless errors.include?(description)
         end
     end
 end

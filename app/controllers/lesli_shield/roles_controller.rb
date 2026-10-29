@@ -35,7 +35,7 @@ module LesliShield
         before_action :set_role, only: %i[ show update destroy deploy ]
 
         def deploy
-            RolePrivilegeService.new.synchronize(@role.result)
+            RolePrivilegeService.new(current_user).synchronize(@role.result)
             respond_with_lesli(
                 :turbo => stream_notification_success("success")
             )

@@ -1,9 +1,7 @@
-<%
-=begin
-
+<%#
 Lesli
 
-Copyright (c) 2023, Lesli Technologies, S. A.
+Copyright (c) 2026, Lesli Technologies, S. A.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,7 +18,7 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 
 Lesli · Ruby on Rails SaaS Development Framework.
 
-Made with ♥ by https://www.lesli.tech
+Made with ♥ by LesliTech
 Building a better future, one line of code at a time.
 
 @contact  hello@lesli.tech
@@ -29,7 +27,6 @@ Building a better future, one line of code at a time.
 
 // · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
 // · 
-=end
 %>
 
 <% login = defined?(login) ? login : false %>
@@ -61,7 +58,7 @@ Building a better future, one line of code at a time.
     <%# Dynamic check if instance allow users to login through magic links (passes) %>
     <%# if Rails.application.config.lesli.dig(:security, :enable_login_link) %>
     <% if magic_link %>
-        <%= link_to("pass_path") do %>
+        <%= link_to(pass_path) do %>
             <span class="icon mr-1">
                 <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17.5 7.25005H15.25C14.6748 7.25005 14.0996 7.34967 13.5498 7.52545C14.1748 8.00005 14.7002 8.57525 15.0996 9.25005H15.25H17.5C19.2998 9.25005 20.75 10.7003 20.75 12.5001C20.75 14.2999 19.2998 15.7501 17.5 15.7501H15.25C15.0996 15.7501 14.9248 15.7247 14.7754 15.7003H14.75C13.2002 15.4503 12 14.125 12 12.5C12 11.5 11.3496 10.6504 10.4502 10.375C10.1504 11.0254 10 11.75 10 12.5C10 15.4005 12.3496 17.75 15.25 17.75H17.5C20.4005 17.75 22.75 15.4004 22.75 12.5C22.75 9.5996 20.4004 7.25 17.5 7.25V7.25005Z" fill="#112A62"/>

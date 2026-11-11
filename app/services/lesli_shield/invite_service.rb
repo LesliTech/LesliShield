@@ -32,12 +32,41 @@ Building a better future, one line of code at a time.
 
 module LesliShield
     class InviteService < Lesli::ApplicationLesliService
+        STATUS_FILTERS = %w[pending accepted cancelled expired].freeze
 
-        def index(_params)
-            Invite.for_account(current_user.account.shield)
-            .page(query[:pagination][:page])
-            .per(query[:pagination][:perPage])
-            .order(updated_at: :desc)
+        def self.status_filter(value)
+            value.to_s.presence_in(STATUS_FILTERS)
+        end
+
+        def index(params)
+            invitations = Invite
+                .for_account(current_user.account.shield)
+                .includes(:invited_by, :role)
+
+            invitations = filter_by_status(
+                invitations,
+                self.class.status_filter(params&.[](:status))
+            )
+
+            invitations
+                .page(query[:pagination][:page])
+                .per(query[:pagination][:perPage])
+                .order(created_at: :desc)
+        end
+
+        private
+
+        def filter_by_status(invitations, status)
+            case status
+            when "pending"
+                invitations.active
+            when "expired"
+                invitations.expired
+            when "accepted", "cancelled"
+                invitations.where(status: Invite.statuses.fetch(status))
+            else
+                invitations
+            end
         end
     end
 end

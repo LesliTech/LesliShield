@@ -110,6 +110,20 @@ module LesliShield
             expired?
         end
 
+        def resend_available?
+            resendable? || (pending? && expires_at.present? && expires_at.past?)
+        end
+
+        def cancellable?
+            pending?
+        end
+
+        def lifecycle_status
+            return "expired" if pending? && expires_at.present? && expires_at.past?
+
+            status
+        end
+
         def acceptance_available?
             pending? && expires_at.present? && expires_at.future?
         end

@@ -25,8 +25,8 @@ module Users
             assert_includes response.body, @context.fetch(:role).name
             assert_select 'input[name="user[email]"][readonly]',
                 value: @invitation.email
-            assert_select 'input[name="user[first_name]"]'
-            assert_select 'input[name="user[last_name]"]'
+            assert_select 'input[name="user[first_name]"][required]'
+            assert_select 'input[name="user[last_name]"][required]'
             assert_select 'input[name="user[telephone]"]'
             assert_select 'input[name="user[password]"][required]'
             assert_select 'input[name="user[password_confirmation]"][required]'
@@ -71,17 +71,50 @@ module Users
             assert_nil @invitation.accepted_user
         end
 
-        test "returns not found for an invalid or already used invitation" do
+        test "renders a clear error for an invalid invitation" do
             get user_invitation_path(invitation_token: "invalid-token")
-            assert_response :not_found
 
+            assert_response :not_found
+            assert_equal "no-store", response.headers["Cache-Control"]
+            assert_select "h1", text: I18n.t(
+                "lesli_shield.invites.acceptance_invalid_title"
+            )
+        end
+
+        test "renders a clear error for an already used invitation" do
             LesliShield::InvitationService.new(nil).accept!(
                 token: @token,
                 user_attributes: valid_user_attributes
             )
 
             get user_invitation_path(invitation_token: @token)
-            assert_response :not_found
+
+            assert_response :gone
+            assert_select "h1", text: I18n.t(
+                "lesli_shield.invites.acceptance_used_title"
+            )
+        end
+
+        test "renders a clear error for a cancelled invitation" do
+            @invitation.cancel!
+
+            get user_invitation_path(invitation_token: @token)
+
+            assert_response :gone
+            assert_select "h1", text: I18n.t(
+                "lesli_shield.invites.acceptance_cancelled_title"
+            )
+        end
+
+        test "renders a clear error for an expired invitation" do
+            @invitation.expire!
+
+            get user_invitation_path(invitation_token: @token)
+
+            assert_response :gone
+            assert_select "h1", text: I18n.t(
+                "lesli_shield.invites.acceptance_expired_title"
+            )
         end
 
         private

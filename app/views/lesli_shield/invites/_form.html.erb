@@ -1,18 +1,61 @@
-<%= form_with(model: @invite, builder: LesliView::Forms::Builder) do |form| %>
+<%
+role_errors = (@invite.errors[:role_id] + @invite.errors[:role])
+    .to_sentence
+    .presence
+%>
+
+<%= form_with(
+    model: @invite,
+    builder: LesliView::Forms::Builder,
+    html: { class: "space-y-6" }
+) do |form| %>
     <%= form.fieldset do %>
-        <%= form.field_control_email(:email) %>
-        <%= form.field_control(:full_name) %>
-        <%= form.field_control(:telephone) %>
+        <%= form.field_control_email(
+            :email,
+            label: I18n.t("lesli_shield.invites.field_email"),
+            message: @invite.errors[:email].to_sentence.presence,
+            category: @invite.errors[:email].any? ? :danger : nil,
+            autocomplete: "email",
+            required: true
+        ) %>
+
+        <%= form.field_control(
+            :full_name,
+            label: "#{I18n.t("lesli_shield.invites.field_name")} " \
+                "(#{I18n.t("lesli_shield.invites.field_optional")})",
+            message: @invite.errors[:full_name].to_sentence.presence ||
+                I18n.t("lesli_shield.invites.field_name_hint"),
+            category: @invite.errors[:full_name].any? ? :danger : nil,
+            autocomplete: "name"
+        ) %>
+
         <%= form.field_control_select(
             :role_id,
             @assignable_roles.pluck(:name, :id),
-            label: "Role"
+            label: I18n.t("lesli_shield.invites.field_role"),
+            message: role_errors,
+            category: role_errors.present? ? :danger : nil,
+            humanize: false,
+            options: {
+                prompt: I18n.t("lesli_shield.invites.role_prompt")
+            },
+            html_options: { required: true }
         ) %>
-        <%= form.field_control_textarea_rich(:notes) %>
-        <hr/>
+
+        <%= form.field_control_textarea(
+            :notes,
+            label: "#{I18n.t("lesli_shield.invites.field_message")} " \
+                "(#{I18n.t("lesli_shield.invites.field_optional")})",
+            message: @invite.errors[:notes].to_sentence.presence ||
+                I18n.t("lesli_shield.invites.field_message_hint"),
+            category: @invite.errors[:notes].any? ? :danger : nil,
+            rows: 5
+        ) %>
+
         <%= form.field_control_button(
             I18n.t("lesli_shield.invites.button_create_and_send"),
             {
+                class: "w-full sm:w-auto",
                 data: {
                     turbo_submits_with: I18n.t(
                         "lesli_shield.invites.button_creating_and_sending"

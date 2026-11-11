@@ -1,69 +1,15 @@
-<%#
-
-Lesli
-
-Copyright (c) 2023, Lesli Technologies, S. A.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see http://www.gnu.org/licenses/.
-
-Lesli · Ruby on Rails SaaS Development Framework.
-
-Made with ♥ by https://www.lesli.tech
-Building a better future, one line of code at a time.
-
-@contact  hello@lesli.tech
-@website  https://www.lesli.tech
-@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
-
-// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
+<%
+recipient = @invite.full_name.presence || @invite.email
 %>
-<%= render LesliView::Layout::Container.new('shield-invites') do %>
+
+<%= render LesliView::Layout::Container.new("shield-invites") do %>
     <%= render LesliView::Components::Header.new(
-        "Invite for #{@invite.full_name.presence || @invite.email}",
+        I18n.t("lesli_shield.invites.detail_title", recipient: recipient),
+        nil,
         back: invites_path
     ) do %>
-        <% if @invite.resendable? ||
-            (@invite.pending? && !@invite.acceptance_available?) %>
-            <%= render LesliView::Elements::Button.new(
-                "Resend invitation",
-                url: resend_invite_path(@invite),
-                method: :post,
-                icon: "send",
-                info: false,
-                success: true,
-                data: {
-                    turbo_confirm: "Send a new invitation email?"
-                }
-            ) %>
-        <% end %>
-
-        <% if @invite.pending? %>
-            <%= render LesliView::Elements::Button.new(
-                "Cancel invitation",
-                url: cancel_invite_path(@invite),
-                method: :patch,
-                icon: "cancel",
-                info: false,
-                danger: true,
-                data: {
-                    turbo_confirm: "Cancel this invitation? " \
-                        "This action preserves its audit history."
-                }
-            ) %>
-        <% end %>
+        <%= render "invite_actions", invite: @invite, show_view: false %>
     <% end %>
 
     <%= render "invite", invite: @invite %>
-<% end %> 
+<% end %>

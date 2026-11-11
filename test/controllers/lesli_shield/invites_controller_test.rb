@@ -54,6 +54,38 @@ module LesliShield
             assert_equal [current_invite.id], service.index(nil).ids
         end
 
+        test "filters invitations by their effective lifecycle status" do
+            context = insert_account_context("status-filters")
+            active = insert_invite(
+                context,
+                email: "active-filter@example.com"
+            )
+            overdue = insert_invite(
+                context,
+                email: "overdue-filter@example.com",
+                expires_at: 1.minute.ago
+            )
+            accepted = insert_invite(
+                context,
+                email: "accepted-filter@example.com",
+                status: :accepted
+            )
+            cancelled = insert_invite(
+                context,
+                email: "cancelled-filter@example.com",
+                status: :cancelled
+            )
+            service = InviteService.new(
+                context.fetch(:user),
+                pagination: { page: 1, perPage: 20 }
+            )
+
+            assert_equal [active.id], service.index(status: "pending").ids
+            assert_equal [overdue.id], service.index(status: "expired").ids
+            assert_equal [accepted.id], service.index(status: "accepted").ids
+            assert_equal [cancelled.id], service.index(status: "cancelled").ids
+        end
+
         test "shows a pending invitation without editable fields" do
             context = insert_account_context("readonly-show")
             invite = insert_invite(
@@ -61,13 +93,7 @@ module LesliShield
                 email: "readonly-invite@example.com"
             )
 
-            with_controller_methods(
-                current_user: context.fetch(:user),
-                authenticate_request: true,
-                authorize_request: true,
-                log_requests: true
-            ) do
-                @routes = LesliShield::Engine.routes
+            with_authenticated_request(context.fetch(:user)) do
                 get :show, params: { id: invite.id }
             end
 
@@ -79,11 +105,107 @@ module LesliShield
             assert_includes response.body, invite.email
         end
 
+        test "renders the creation form with only invitation fields" do
+            context = insert_account_context("new-form")
+            owner_role = insert_role(
+                context,
+                name: "owner-role",
+                permission_level: 100
+            )
+            target_role = insert_role(
+                context,
+                name: "target-role",
+                permission_level: 50
+            )
+            assign_role(context.fetch(:user), owner_role)
+
+            with_authenticated_request(context.fetch(:user)) do
+                get :new
+            end
+
+            assert_response :success
+            assert_select "input[name='invite[email]'][required]"
+            assert_select "input[name='invite[full_name]']"
+            assert_select "select[name='invite[role_id]'][required]" do
+                assert_select "option[value='#{target_role.id}']"
+            end
+            assert_select "textarea[name='invite[notes]']"
+            assert_select "input[name='invite[telephone]']", count: 0
+            assert_select "button[data-turbo-submits-with]", text: I18n.t(
+                "lesli_shield.invites.button_create_and_send"
+            )
+        end
+
+        test "renders creation errors inline" do
+            context = insert_account_context("inline-errors")
+
+            with_authenticated_request(context.fetch(:user)) do
+                post :create, params: {
+                    invite: {
+                        email: "person@example.com",
+                        role_id: ""
+                    }
+                }
+            end
+
+            assert_response :unprocessable_content
+            assert_select ".lesli-form-field.is-danger"
+            assert_select ".lesli-form-help.is-danger", text: I18n.t(
+                "lesli_shield.invites.role_required"
+            )
+        end
+
+        test "renders status filters contextual actions and an empty state" do
+            context = insert_account_context("index-ux")
+            invite = insert_invite(
+                context,
+                email: "index-ux@example.com"
+            )
+
+            with_authenticated_request(context.fetch(:user)) do
+                get :index
+            end
+
+            assert_response :success
+            assert_select "a[href='#{invites_path(status: "expired")}']"
+            assert_select "span", text: I18n.t(
+                "lesli_shield.invites.statuses.pending"
+            )
+            assert_select "form[action='#{cancel_invite_path(invite)}']"
+
+            empty_context = insert_account_context("index-empty")
+
+            with_authenticated_request(empty_context.fetch(:user)) do
+                get :index
+            end
+
+            assert_response :success
+            assert_select "h2", text: I18n.t(
+                "lesli_shield.invites.empty_title"
+            )
+            assert_select "a[href='#{new_invite_path}']", text: I18n.t(
+                "lesli_shield.invites.empty_action"
+            )
+
+            with_authenticated_request(context.fetch(:user)) do
+                get :index, params: { status: "accepted" }
+            end
+
+            assert_response :success
+            assert_select "h2", text: I18n.t(
+                "lesli_shield.invites.empty_filtered_title"
+            )
+            assert_select "a[href='#{invites_path}']", text: I18n.t(
+                "lesli_shield.invites.empty_filtered_action"
+            )
+        end
+
         test "ignores lifecycle attributes submitted by the browser" do
             @controller.params = ActionController::Parameters.new(
                 invite: {
                     email: "person@example.com",
                     role_id: "12",
+                    telephone: "+502 5555 5555",
                     status: "accepted",
                     accepted_user_id: "34",
                     accepted_at: Time.current,
@@ -98,6 +220,7 @@ module LesliShield
             refute permitted_attributes.key?(:status)
             refute permitted_attributes.key?(:accepted_user_id)
             refute permitted_attributes.key?(:invited_by_id)
+            refute permitted_attributes.key?(:telephone)
         end
 
         test "offers only active roles assignable by the current user" do
@@ -252,14 +375,19 @@ module LesliShield
             }
         end
 
-        def insert_invite(context, email:)
+        def insert_invite(
+            context,
+            email:,
+            status: :pending,
+            expires_at: 1.day.from_now
+        )
             timestamp = Time.current
             invite_id = Invite.insert_all!([{
                 account_id: context.fetch(:shield_account).id,
                 invited_by_id: context.fetch(:user).id,
                 email: email,
-                status: Invite.statuses.fetch("pending"),
-                expires_at: 1.day.from_now,
+                status: Invite.statuses.fetch(status.to_s),
+                expires_at: expires_at,
                 created_at: timestamp,
                 updated_at: timestamp
             }]).rows.first.first
@@ -294,6 +422,18 @@ module LesliShield
 
         def with_current_user(user)
             with_controller_methods(current_user: user) { yield }
+        end
+
+        def with_authenticated_request(user)
+            with_controller_methods(
+                current_user: user,
+                authenticate_request: true,
+                authorize_request: true,
+                log_requests: true
+            ) do
+                @routes = LesliShield::Engine.routes
+                yield
+            end
         end
 
         def with_controller_methods(overrides)

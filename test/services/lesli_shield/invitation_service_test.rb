@@ -25,6 +25,7 @@ module LesliShield
                     @invitation = @service.create_and_send!(
                         email: invited_email,
                         full_name: "New Person",
+                        notes: "Welcome to the team.",
                         role_id: @context.fetch(:target_role).id
                     )
                 end
@@ -36,6 +37,7 @@ module LesliShield
             assert_equal @context.fetch(:shield_account), @invitation.account
             assert_equal @context.fetch(:owner), @invitation.invited_by
             assert_equal @context.fetch(:target_role), @invitation.role
+            assert_equal "Welcome to the team.", @invitation.notes
             assert @invitation.sent_at.present?
             assert @invitation.expires_at.future?
         end
@@ -46,6 +48,7 @@ module LesliShield
             perform_enqueued_jobs do
                 invitation = @service.create_and_send!(
                     email: unique_email("mail"),
+                    notes: "We would love to have you on the team.",
                     role_id: @context.fetch(:target_role).id
                 )
             end
@@ -67,6 +70,7 @@ module LesliShield
 
             assert_includes html, invitation.account.account.name
             assert_includes html, invitation.invited_by.full_name
+            assert_includes html, invitation.notes
             assert_includes html, I18n.l(invitation.expires_at, format: :long)
             assert_includes html,
                 I18n.t("lesli_shield.invites.mailer_ignore_notice")

@@ -29,6 +29,7 @@ module LesliShield
                 ignore_notice: I18n.t(
                     "lesli_shield.invites.mailer_ignore_notice"
                 ),
+                message: invitation.notes.to_s.strip.presence,
                 acceptance_url: acceptance_url
             }
 

@@ -5,3 +5,4 @@
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
 @source "../../app/views/lesli_shield/users/_information-card.html.erb";
+@source "../../app/views/lesli_shield/invites/*.html.erb";

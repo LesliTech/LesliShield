@@ -58,7 +58,8 @@ title = I18n.t("lesli_shield.invites.acceptance_title")
             label: I18n.t("lesli_shield.invites.acceptance_first_name"),
             message: @user.errors[:first_name].to_sentence.presence,
             category: @user.errors[:first_name].any? ? :danger : nil,
-            autocomplete: "given-name"
+            autocomplete: "given-name",
+            required: true
         ) %>
 
         <%= form.field_control(
@@ -66,16 +67,31 @@ title = I18n.t("lesli_shield.invites.acceptance_title")
             label: I18n.t("lesli_shield.invites.acceptance_last_name"),
             message: @user.errors[:last_name].to_sentence.presence,
             category: @user.errors[:last_name].any? ? :danger : nil,
-            autocomplete: "family-name"
+            autocomplete: "family-name",
+            required: true
         ) %>
 
         <%= form.field_control(
             :telephone,
-            label: I18n.t("lesli_shield.invites.acceptance_telephone"),
+            label: "#{I18n.t("lesli_shield.invites.acceptance_telephone")} " \
+                "(#{I18n.t("lesli_shield.invites.acceptance_optional")})",
             message: @user.errors[:telephone].to_sentence.presence,
             category: @user.errors[:telephone].any? ? :danger : nil,
             autocomplete: "tel"
         ) %>
+
+        <div class="mb-4 rounded-xl border border-sky-100 bg-sky-50 px-4 py-3" role="note">
+            <p class="text-sm font-semibold text-sky-900">
+                <%= I18n.t("lesli_shield.invites.acceptance_password_requirements") %>
+            </p>
+            <p class="mt-1 text-sm leading-5 text-sky-700">
+                <%= I18n.t(
+                    "lesli_shield.invites.acceptance_password_length",
+                    minimum: @minimum_password_length,
+                    maximum: Devise.password_length.max
+                ) %>
+            </p>
+        </div>
 
         <%= form.field_control_password(
             :password,

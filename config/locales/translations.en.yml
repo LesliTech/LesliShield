@@ -2,8 +2,60 @@
 :en:
   lesli_shield:
     invites:
+      title: Invitations
+      subtitle: Invite people to join your organization and track each invitation.
+      new_title: New invitation
+      new_description: Choose the recipient and the role they will receive after accepting.
       button_create_and_send: Create and send invitation
       button_creating_and_sending: Creating and sending invitation…
+      field_email: Email address
+      field_name: Name
+      field_role: Role
+      field_message: Personal message
+      field_optional: optional
+      field_name_hint: Helps your team identify the recipient before they accept.
+      field_message_hint: This message will be included in the invitation email.
+      role_prompt: Select a role
+      filters_label: Filter invitations by status
+      filter_all: All
+      statuses:
+        pending: Pending
+        accepted: Accepted
+        cancelled: Cancelled
+        expired: Expired
+      column_recipient: Recipient
+      column_role: Role
+      column_status: Status
+      column_sent_at: Sent
+      column_expires_at: Expires
+      column_actions: Actions
+      action_view: View
+      action_resend: Resend
+      action_cancel: Cancel
+      action_create: Create invitation
+      confirm_resend: Send a new invitation email?
+      confirm_cancel: Cancel this invitation? Its audit history will be preserved.
+      empty_title: No invitations yet
+      empty_description: Invite the first person to join this organization.
+      empty_action: Create an invitation
+      empty_filtered_title: No invitations match this filter
+      empty_filtered_description: Try another status or clear the active filter.
+      empty_filtered_action: Clear filter
+      detail_title: Invitation for %{recipient}
+      detail_recipient: Recipient
+      detail_email: Email
+      detail_name: Name
+      detail_role: Assigned role
+      detail_invited_by: Invited by
+      detail_sent_at: Sent at
+      detail_expires_at: Expires at
+      detail_accepted_at: Accepted at
+      detail_cancelled_at: Cancelled at
+      detail_message: Personal message
+      value_not_available: Not available
+      created_successfully: Invitation created and queued for delivery.
+      resent_successfully: Invitation queued for delivery.
+      cancelled_successfully: Invitation cancelled.
       email_member: This person is already a member of the account.
       email_other_account: This email address belongs to another account.
       email_deleted: A deleted user already uses this email address.
@@ -29,9 +81,22 @@
       acceptance_password: Password
       acceptance_password_confirmation: Confirm password
       acceptance_password_hint: Your password must contain between %{minimum} and %{maximum} characters.
+      acceptance_password_requirements: Password requirements
+      acceptance_password_length: Use between %{minimum} and %{maximum} characters.
+      acceptance_optional: optional
       acceptance_action: Create account
       acceptance_submitting: Creating account…
       acceptance_success: Your account for %{email} was created successfully. You can now log in.
+      acceptance_invalid_title: Invalid invitation link
+      acceptance_invalid_description: This invitation link is invalid or has reached its cryptographic expiration. Ask an administrator for a new invitation.
+      acceptance_expired_title: Invitation expired
+      acceptance_expired_description: This invitation has expired. Ask an administrator to resend it.
+      acceptance_cancelled_title: Invitation cancelled
+      acceptance_cancelled_description: This invitation was cancelled and can no longer be accepted.
+      acceptance_used_title: Invitation already used
+      acceptance_used_description: This invitation has already been accepted. You can log in with the account that was created.
+      acceptance_unavailable_title: Invitation unavailable
+      acceptance_unavailable_description: This invitation can no longer be accepted. Its organization or assigned role may no longer be available.
       invalid_status_transition: This invitation status transition is not allowed.
     devise/sessions:
       message_not_valid_credentials: Not valid credentials

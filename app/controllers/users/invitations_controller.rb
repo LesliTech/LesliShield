@@ -24,7 +24,12 @@ class Users::InvitationsController < Lesli::ApplicationDeviseController
             status: :see_other
         )
     rescue ActiveRecord::RecordInvalid => exception
-        return render_not_found unless exception.record.is_a?(Lesli::User)
+        unless exception.record.is_a?(Lesli::User)
+            return render_invitation_unavailable(
+                invitation_failure_reason(exception.record),
+                :gone
+            )
+        end
 
         @user = exception.record
         set_minimum_password_length
@@ -39,11 +44,15 @@ class Users::InvitationsController < Lesli::ApplicationDeviseController
         @invitation = invitation_service.invitation_from_token!(
             @invitation_token
         )
+    rescue ActiveRecord::RecordInvalid => exception
+        render_invitation_unavailable(
+            invitation_failure_reason(exception.record),
+            :gone
+        )
     rescue ActiveSupport::MessageVerifier::InvalidSignature,
         ActiveRecord::RecordNotFound,
-        ActiveRecord::RecordInvalid,
         ActionController::ParameterMissing
-        render_not_found
+        render_invitation_unavailable(:invalid, :not_found)
     end
 
     def invitation_service
@@ -69,7 +78,24 @@ class Users::InvitationsController < Lesli::ApplicationDeviseController
         response.set_header("Referrer-Policy", "same-origin")
     end
 
-    def render_not_found
-        head :not_found
+    def invitation_failure_reason(invitation)
+        return :used if invitation.accepted? || invitation.accepted_at.present?
+        return :cancelled if invitation.cancelled? ||
+            invitation.cancelled_at.present?
+        return :expired if invitation.expired? ||
+            invitation.expires_at&.past?
+
+        :unavailable
+    end
+
+    def render_invitation_unavailable(reason, status)
+        @invitation_error_title = I18n.t(
+            "lesli_shield.invites.acceptance_#{reason}_title"
+        )
+        @invitation_error_description = I18n.t(
+            "lesli_shield.invites.acceptance_#{reason}_description"
+        )
+
+        render :unavailable, status: status
     end
 end

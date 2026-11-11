@@ -2,8 +2,60 @@
 :es:
   lesli_shield:
     invites:
+      title: Invitaciones
+      subtitle: Invita personas a tu organización y consulta el estado de cada invitación.
+      new_title: Nueva invitación
+      new_description: Elige al destinatario y el rol que recibirá después de aceptar.
       button_create_and_send: Crear y enviar invitación
       button_creating_and_sending: Creando y enviando invitación…
+      field_email: Correo electrónico
+      field_name: Nombre
+      field_role: Rol
+      field_message: Mensaje personal
+      field_optional: opcional
+      field_name_hint: Ayuda a tu equipo a identificar al destinatario antes de que acepte.
+      field_message_hint: Este mensaje se incluirá en el correo de invitación.
+      role_prompt: Selecciona un rol
+      filters_label: Filtrar invitaciones por estado
+      filter_all: Todas
+      statuses:
+        pending: Pendiente
+        accepted: Aceptada
+        cancelled: Cancelada
+        expired: Expirada
+      column_recipient: Destinatario
+      column_role: Rol
+      column_status: Estado
+      column_sent_at: Enviada
+      column_expires_at: Expira
+      column_actions: Acciones
+      action_view: Ver
+      action_resend: Reenviar
+      action_cancel: Cancelar
+      action_create: Crear invitación
+      confirm_resend: "¿Enviar un nuevo correo de invitación?"
+      confirm_cancel: "¿Cancelar esta invitación? Su historial de auditoría se conservará."
+      empty_title: Aún no hay invitaciones
+      empty_description: Invita a la primera persona a unirse a esta organización.
+      empty_action: Crear una invitación
+      empty_filtered_title: Ninguna invitación coincide con este filtro
+      empty_filtered_description: Prueba otro estado o elimina el filtro activo.
+      empty_filtered_action: Limpiar filtro
+      detail_title: Invitación para %{recipient}
+      detail_recipient: Destinatario
+      detail_email: Correo electrónico
+      detail_name: Nombre
+      detail_role: Rol asignado
+      detail_invited_by: Invitado por
+      detail_sent_at: Enviada el
+      detail_expires_at: Expira el
+      detail_accepted_at: Aceptada el
+      detail_cancelled_at: Cancelada el
+      detail_message: Mensaje personal
+      value_not_available: No disponible
+      created_successfully: Invitación creada y puesta en cola para su envío.
+      resent_successfully: Invitación puesta en cola para su envío.
+      cancelled_successfully: Invitación cancelada.
       email_member: Esta persona ya pertenece a la cuenta.
       email_other_account: Este correo electrónico pertenece a otra cuenta.
       email_deleted: Un usuario eliminado ya utiliza este correo electrónico.
@@ -29,9 +81,22 @@
       acceptance_password: Contraseña
       acceptance_password_confirmation: Confirmar contraseña
       acceptance_password_hint: Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres.
+      acceptance_password_requirements: Requisitos de contraseña
+      acceptance_password_length: Usa entre %{minimum} y %{maximum} caracteres.
+      acceptance_optional: opcional
       acceptance_action: Crear cuenta
       acceptance_submitting: Creando cuenta…
       acceptance_success: Tu cuenta para %{email} fue creada correctamente. Ya puedes iniciar sesión.
+      acceptance_invalid_title: Enlace de invitación inválido
+      acceptance_invalid_description: Este enlace es inválido o alcanzó su vencimiento criptográfico. Solicita una nueva invitación a un administrador.
+      acceptance_expired_title: Invitación expirada
+      acceptance_expired_description: Esta invitación expiró. Solicita a un administrador que la reenvíe.
+      acceptance_cancelled_title: Invitación cancelada
+      acceptance_cancelled_description: Esta invitación fue cancelada y ya no puede aceptarse.
+      acceptance_used_title: Invitación ya utilizada
+      acceptance_used_description: Esta invitación ya fue aceptada. Puedes iniciar sesión con la cuenta creada.
+      acceptance_unavailable_title: Invitación no disponible
+      acceptance_unavailable_description: Esta invitación ya no puede aceptarse. Es posible que la organización o el rol asignado ya no estén disponibles.
       invalid_status_transition: Este cambio de estado de la invitación no está permitido.
     devise/sessions:
       message_not_valid_credentials: Credenciales no validas

@@ -114,6 +114,9 @@ module LesliShield
             )
 
             refute invite.acceptance_available?
+            assert invite.resend_available?
+            assert invite.cancellable?
+            assert_equal "expired", invite.lifecycle_status
         end
 
         test "accepted and cancelled invitations are terminal" do
@@ -122,6 +125,10 @@ module LesliShield
 
             assert_raises(Invite::InvalidStatusTransition) { accepted.resend! }
             assert_raises(Invite::InvalidStatusTransition) { cancelled.resend! }
+            refute accepted.cancellable?
+            refute cancelled.cancellable?
+            assert_equal "accepted", accepted.lifecycle_status
+            assert_equal "cancelled", cancelled.lifecycle_status
         end
 
         test "filters pending active expired and account invitations" do

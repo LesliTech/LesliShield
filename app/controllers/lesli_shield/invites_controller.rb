@@ -5,6 +5,7 @@ module LesliShield
 
         # GET /invites
         def index
+            @status_filter = InviteService.status_filter(params[:status])
             invite_service = LesliShield::InviteService.new(current_user, query)
             @invites = respond_with_pagination(invite_service.index(params))
         end
@@ -28,7 +29,7 @@ module LesliShield
                 description: "Invitation created and queued for #{@invite.email}"
             )
 
-            success("Invite was successfully created and queued for delivery.")
+            success(I18n.t("lesli_shield.invites.created_successfully"))
             respond_with_lesli(
                 turbo: stream_redirection(invite_path(@invite)),
                 redirect: invite_path(@invite)
@@ -55,7 +56,7 @@ module LesliShield
                 description: "Invitation queued for resend"
             )
 
-            success("Invite was successfully queued for delivery.")
+            success(I18n.t("lesli_shield.invites.resent_successfully"))
             respond_with_lesli(
                 turbo: stream_redirection(invite_path(@invite)),
                 redirect: invite_path(@invite)
@@ -78,7 +79,7 @@ module LesliShield
                 description: "Invitation cancelled"
             )
 
-            success("Invite was successfully cancelled.")
+            success(I18n.t("lesli_shield.invites.cancelled_successfully"))
             respond_with_lesli(
                 turbo: stream_redirection(invite_path(@invite)),
                 redirect: invite_path(@invite)
@@ -125,7 +126,6 @@ module LesliShield
             params.require(:invite).permit(
                 :email,
                 :full_name,
-                :telephone,
                 :notes,
                 :role_id
             )

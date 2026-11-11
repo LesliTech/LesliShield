@@ -1,67 +1,123 @@
-<%#
-
-Lesli
-
-Copyright (c) 2026, Lesli Technologies, S. A.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program. If not, see http://www.gnu.org/licenses/.
-
-Lesli · Ruby on Rails SaaS Development Framework.
-
-Made with ♥ by LesliTech
-Building a better future, one line of code at a time.
-
-@contact  hello@lesli.tech
-@website  https://www.lesli.tech
-@license  GPLv3 http://www.gnu.org/licenses/gpl-3.0.en.html
-
-// · ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~     ~·~
-// · 
-%>
-
 <%
-columns = [{
-    field: "id",
-    label: "ID",
-    sort: true
-}, {
-    field: "full_name",
-    label: "Name",
-    sort: true
-}, {
-    field: "email",
-    label: "Email",
-    sort: true
-}, {
-    field: "telephone",
-    label: "Telephone",
-    sort: true
-}, {
-    field: "status",
-    label: "status",
-    sort: true
-}]
+records = @invites.fetch(:records)
+status_filters = [
+    [nil, I18n.t("lesli_shield.invites.filter_all")],
+    *LesliShield::InviteService::STATUS_FILTERS.map do |status|
+        [status, I18n.t("lesli_shield.invites.statuses.#{status}")]
+    end
+]
 %>
-<%= render LesliView::Layout::Container.new('shield-invites') do %>
-    <%= render LesliView::Components::Header.new('Invites') do %>
-        <%= render(LesliView::Elements::Button.new('Create invitation', url: new_invite_path, icon: "add", solid:true)) %>
-        <%= render(LesliView::Elements::Button.new(icon: 'refresh')) %>
+
+<%= render LesliView::Layout::Container.new("shield-invites") do %>
+    <%= render LesliView::Components::Header.new(
+        I18n.t("lesli_shield.invites.title"),
+        I18n.t("lesli_shield.invites.subtitle")
+    ) do %>
+        <%= link_to new_invite_path,
+            class: "inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20" do %>
+            <span class="material-symbols" aria-hidden="true">person_add</span>
+            <span><%= I18n.t("lesli_shield.invites.action_create") %></span>
+        <% end %>
     <% end %>
-    <%= render LesliView::Components::Toolbar.new() %>
-    <%= render(LesliView::Elements::Table.new(
-        columns: columns,
-        records: @invites[:records],
-        link: lambda {|invite| invite_path(invite.id) }
-    )) %>
-<% end %> 
+
+    <nav
+        class="mb-6 flex flex-wrap gap-2"
+        aria-label="<%= I18n.t("lesli_shield.invites.filters_label") %>">
+        <% status_filters.each do |status, label| %>
+            <%
+            active = @status_filter == status
+            filter_classes = class_names(
+                "inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-medium transition focus:outline-none focus:ring-4 focus:ring-sky-500/10",
+                active ?
+                    "border-sky-600 bg-sky-600 text-white" :
+                    "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+            )
+            %>
+            <%= link_to label,
+                invites_path(status: status),
+                class: filter_classes,
+                aria: { current: active ? "page" : nil } %>
+        <% end %>
+    </nav>
+
+    <% if records.any? %>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <% %w[recipient role status sent_at expires_at actions].each do |column| %>
+                                <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                    <%= I18n.t("lesli_shield.invites.column_#{column}") %>
+                                </th>
+                            <% end %>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        <% records.each do |invite| %>
+                            <tr class="transition hover:bg-slate-50/80">
+                                <td class="whitespace-nowrap px-5 py-4">
+                                    <%= link_to invite_path(invite), class: "block focus:outline-none" do %>
+                                        <span class="block text-sm font-semibold text-slate-900">
+                                            <%= invite.full_name.presence || invite.email %>
+                                        </span>
+                                        <% if invite.full_name.present? %>
+                                            <span class="mt-0.5 block text-sm text-slate-500"><%= invite.email %></span>
+                                        <% end %>
+                                    <% end %>
+                                </td>
+                                <td class="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+                                    <%= invite.role&.name || I18n.t("lesli_shield.invites.value_not_available") %>
+                                </td>
+                                <td class="whitespace-nowrap px-5 py-4">
+                                    <%= render "status_badge", invite: invite %>
+                                </td>
+                                <td class="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+                                    <%= invite.sent_at.present? ? I18n.l(invite.sent_at, format: :short) : "—" %>
+                                </td>
+                                <td class="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+                                    <%= invite.expires_at.present? ? I18n.l(invite.expires_at, format: :short) : "—" %>
+                                </td>
+                                <td class="whitespace-nowrap px-5 py-4">
+                                    <%= render "invite_actions", invite: invite, show_view: true %>
+                                </td>
+                            </tr>
+                        <% end %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% else %>
+        <%
+        if @status_filter.present?
+            empty_title = I18n.t("lesli_shield.invites.empty_filtered_title")
+            empty_description = I18n.t(
+                "lesli_shield.invites.empty_filtered_description"
+            )
+            empty_action = I18n.t(
+                "lesli_shield.invites.empty_filtered_action"
+            )
+            empty_action_path = invites_path
+        else
+            empty_title = I18n.t("lesli_shield.invites.empty_title")
+            empty_description = I18n.t(
+                "lesli_shield.invites.empty_description"
+            )
+            empty_action = I18n.t("lesli_shield.invites.empty_action")
+            empty_action_path = new_invite_path
+        end
+        %>
+        <section class="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center shadow-sm">
+            <span class="material-symbols mx-auto mb-4 block text-5xl text-slate-300" aria-hidden="true">person_add</span>
+            <h2 class="text-lg font-semibold text-slate-900">
+                <%= empty_title %>
+            </h2>
+            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+                <%= empty_description %>
+            </p>
+            <%= link_to empty_action,
+                empty_action_path,
+                class: "mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20" %>
+        </section>
+    <% end %>
+<% end %>

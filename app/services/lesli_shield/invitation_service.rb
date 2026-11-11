@@ -43,7 +43,12 @@ module LesliShield
                 invitation.sent_at = Time.current
                 invitation.save!
 
-                enqueue_delivery_after_commit(transaction, invitation)
+                enqueue_delivery_after_commit(
+                    transaction,
+                    invitation,
+                    operation: :invitation_sent,
+                    actor: current_user
+                )
             end
 
             invitation
@@ -65,7 +70,12 @@ module LesliShield
                 resent_invitation.resend!
                 resent_invitation.update!(sent_at: Time.current)
 
-                enqueue_delivery_after_commit(transaction, resent_invitation)
+                enqueue_delivery_after_commit(
+                    transaction,
+                    resent_invitation,
+                    operation: :invitation_resent,
+                    actor: current_user
+                )
             end
 
             resent_invitation
@@ -77,6 +87,11 @@ module LesliShield
             Invite.transaction do
                 cancelled_invitation = lock_owned_invitation!(invitation)
                 cancelled_invitation.cancel!
+                record_audit_event!(
+                    :invitation_cancelled,
+                    cancelled_invitation,
+                    actor: current_user
+                )
             end
 
             cancelled_invitation
@@ -104,6 +119,11 @@ module LesliShield
                 assign_role!(accepted_user, role)
                 confirm_user!(accepted_user)
                 invitation.accept!(accepted_user)
+                record_audit_event!(
+                    :invitation_accepted,
+                    invitation,
+                    actor: accepted_user
+                )
             end
 
             accepted_user
@@ -294,14 +314,62 @@ module LesliShield
             user.user_roles.find_or_create_by!(role: role)
         end
 
-        def enqueue_delivery_after_commit(transaction, invitation)
+        def record_audit_event!(operation, invitation, actor:)
+            InvitationAudit.record!(
+                operation,
+                invitation: invitation,
+                actor: actor,
+                source: self.class
+            )
+        end
+
+        def enqueue_delivery_after_commit(
+            transaction,
+            invitation,
+            operation:,
+            actor:
+        )
             acceptance_url = signed_acceptance_url(invitation)
 
             transaction.after_commit do
-                InvitationMailer
-                    .account_invitation(invitation, acceptance_url)
-                    .deliver_later
+                enqueue_invitation_delivery(
+                    invitation,
+                    acceptance_url,
+                    operation: operation,
+                    actor: actor
+                )
             end
+        end
+
+        def enqueue_invitation_delivery(
+            invitation,
+            acceptance_url,
+            operation:,
+            actor:
+        )
+            delivery_job = InvitationDeliveryJob.perform_later(
+                invitation.id,
+                acceptance_url,
+                operation.to_s,
+                actor.id
+            )
+
+            unless delivery_job.successfully_enqueued?
+                enqueue_error = delivery_job.enqueue_error ||
+                    RuntimeError.new("Invitation delivery was not enqueued")
+
+                InvitationDeliveryJob.report_enqueue_failure(
+                    invitation.id,
+                    actor.id,
+                    enqueue_error
+                )
+            end
+        rescue StandardError => exception
+            InvitationDeliveryJob.report_enqueue_failure(
+                invitation.id,
+                actor.id,
+                exception
+            )
         end
 
         def signed_token_lifetime(invitation)

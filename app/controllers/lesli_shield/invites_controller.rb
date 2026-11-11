@@ -23,12 +23,6 @@ module LesliShield
         def create
             @invite = invitation_service.create_and_send!(invite_params)
 
-            log(
-                subject: @invite,
-                operation: "invite.created",
-                description: "Invitation created and queued for #{@invite.email}"
-            )
-
             success(I18n.t("lesli_shield.invites.created_successfully"))
             respond_with_lesli(
                 turbo: stream_redirection(invite_path(@invite)),
@@ -50,12 +44,6 @@ module LesliShield
         def resend
             @invite = invitation_service.resend!(@invite)
 
-            log(
-                subject: @invite,
-                operation: "invite.resent",
-                description: "Invitation queued for resend"
-            )
-
             success(I18n.t("lesli_shield.invites.resent_successfully"))
             respond_with_lesli(
                 turbo: stream_redirection(invite_path(@invite)),
@@ -72,12 +60,6 @@ module LesliShield
         # PATCH /invites/1/cancel
         def cancel
             @invite = invitation_service.cancel!(@invite)
-
-            log(
-                subject: @invite,
-                operation: "invite.cancelled",
-                description: "Invitation cancelled"
-            )
 
             success(I18n.t("lesli_shield.invites.cancelled_successfully"))
             respond_with_lesli(

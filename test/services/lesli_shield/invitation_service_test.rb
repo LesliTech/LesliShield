@@ -5,6 +5,74 @@ require "cgi"
 require "uri"
 
 module LesliShield
+    class AuditedInvitationServiceForTest < InvitationService
+        attr_accessor :failing_audit_event
+        attr_reader :audit_events
+
+        def initialize(current_user)
+            super
+            @audit_events = []
+        end
+
+        private
+
+        def record_audit_event!(operation, invitation, actor:)
+            @audit_events << {
+                operation: operation.to_s,
+                invitation: invitation,
+                actor: actor
+            }
+
+            if operation.to_s == failing_audit_event.to_s
+                raise "Audit persistence failed"
+            end
+        end
+    end
+
+    class InvitationDeliveryErrorReporterForTest
+        attr_reader :error, :options
+
+        def report(error, **options)
+            @error = error
+            @options = options
+        end
+    end
+
+    class FailingInvitationDeliveryJobForTest < InvitationDeliveryJob
+        attr_reader :failed_event
+
+        private
+
+        def deliver_invitation(_invitation, _acceptance_url)
+            raise "SMTP delivery failed"
+        end
+
+        def record_delivery_failure_event(invitation, actor)
+            @failed_event = {
+                operation: "invitation_delivery_failed",
+                invitation: invitation,
+                actor: actor
+            }
+        end
+    end
+
+    class SuccessfulInvitationDeliveryJobForTest < InvitationDeliveryJob
+        attr_reader :successful_event
+
+        private
+
+        def deliver_invitation(_invitation, _acceptance_url)
+        end
+
+        def record_delivery_success(operation, invitation:, actor:)
+            @successful_event = {
+                operation: operation,
+                invitation: invitation,
+                actor: actor
+            }
+        end
+    end
+
     class InvitationServiceTest < ActiveSupport::TestCase
         include ActiveJob::TestHelper
 
@@ -12,6 +80,7 @@ module LesliShield
             clear_enqueued_jobs
             clear_performed_jobs
             ActionMailer::Base.deliveries.clear
+            use_local_lesli_assets_views
 
             @context = insert_account_context
             @service = InvitationService.new(@context.fetch(:owner))
@@ -21,7 +90,7 @@ module LesliShield
             invited_email = " New.Person.#{SecureRandom.hex(4)}@Example.COM "
 
             assert_no_difference -> { Lesli::User.count } do
-                assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
+                assert_enqueued_jobs 1, only: InvitationDeliveryJob do
                     @invitation = @service.create_and_send!(
                         email: invited_email,
                         full_name: "New Person",
@@ -176,7 +245,7 @@ module LesliShield
             )
 
             travel_to Time.zone.local(2026, 11, 11, 12, 0, 0) do
-                assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
+                assert_enqueued_jobs 1, only: InvitationDeliveryJob do
                     @service.resend!(invitation)
                 end
 
@@ -237,6 +306,126 @@ module LesliShield
             end
         end
 
+        test "records cancellation and acceptance inside their transactions" do
+            service = AuditedInvitationServiceForTest.new(
+                @context.fetch(:owner)
+            )
+
+            cancelled_invitation = insert_invitation(
+                email: unique_email("audited-cancel")
+            )
+            service.cancel!(cancelled_invitation)
+            accepted_invitation = insert_invitation(
+                email: unique_email("audited-accept")
+            )
+            accepted_user = service.accept!(
+                token: acceptance_token(accepted_invitation),
+                user_attributes: valid_user_attributes
+            )
+
+            assert_equal(
+                %w[
+                    invitation_cancelled
+                    invitation_accepted
+                ],
+                service.audit_events.pluck(:operation)
+            )
+            assert_equal cancelled_invitation,
+                service.audit_events.first.fetch(:invitation)
+            assert_equal accepted_user,
+                service.audit_events.last.fetch(:actor)
+        end
+
+        test "audits sent and resent only after successful delivery" do
+            invitation = insert_invitation(
+                email: unique_email("delivery-success")
+            )
+
+            %w[invitation_sent invitation_resent].each do |operation|
+                job = SuccessfulInvitationDeliveryJobForTest.new(
+                    invitation.id,
+                    "https://example.test/invitation",
+                    operation,
+                    @context.fetch(:owner).id
+                )
+
+                job.perform_now
+
+                assert_equal operation,
+                    job.successful_event.fetch(:operation)
+                assert_equal invitation,
+                    job.successful_event.fetch(:invitation)
+                assert_equal @context.fetch(:owner),
+                    job.successful_event.fetch(:actor)
+            end
+        end
+
+        test "rolls back the complete acceptance when its audit event fails" do
+            service = AuditedInvitationServiceForTest.new(
+                @context.fetch(:owner)
+            )
+            service.failing_audit_event = "invitation_accepted"
+            invitation = insert_invitation(
+                email: unique_email("audit-rollback")
+            )
+            original_user_role_count = User::Role.count
+
+            assert_no_difference -> { Lesli::User.count } do
+                error = assert_raises(RuntimeError) do
+                    service.accept!(
+                        token: acceptance_token(invitation),
+                        user_attributes: valid_user_attributes
+                    )
+                end
+
+                assert_equal "Audit persistence failed", error.message
+            end
+
+            assert_equal original_user_role_count, User::Role.count
+            invitation.reload
+            assert invitation.pending?
+            assert_nil invitation.accepted_user
+            assert_nil invitation.accepted_at
+        end
+
+        test "audits and reports a delivery failure without changing its message" do
+            invitation = insert_invitation(
+                email: unique_email("delivery-failure")
+            )
+            reporter = InvitationDeliveryErrorReporterForTest.new
+            job = FailingInvitationDeliveryJobForTest.new(
+                invitation.id,
+                "https://example.test/invitation",
+                "invitation_sent",
+                @context.fetch(:owner).id
+            )
+            Rails.error.subscribe(reporter)
+
+            begin
+                error = assert_raises(RuntimeError) { job.perform_now }
+            ensure
+                Rails.error.unsubscribe(reporter)
+            end
+
+            assert_equal "SMTP delivery failed", error.message
+            assert_equal "invitation_delivery_failed",
+                job.failed_event.fetch(:operation)
+            assert_equal invitation, job.failed_event.fetch(:invitation)
+            assert_equal invitation.invited_by,
+                job.failed_event.fetch(:actor)
+            assert_equal error, reporter.error
+            assert_equal false, reporter.options.fetch(:handled)
+            assert_equal(
+                {
+                    job: FailingInvitationDeliveryJobForTest.name,
+                    operation: "invitation_delivery_failed",
+                    invitation_id: invitation.id,
+                    stage: "delivery"
+                },
+                reporter.options.fetch(:context)
+            )
+        end
+
         test "recovers the same unconfirmed user only during acceptance" do
             email = unique_email("recover")
             recoverable_user = Lesli::User.new(
@@ -287,6 +476,18 @@ module LesliShield
         end
 
         private
+
+        def use_local_lesli_assets_views
+            views_path = Pathname.new(__dir__).join(
+                "../../../../../gems/LesliAssets/app/views"
+            ).expand_path
+            return unless views_path.directory?
+            return if InvitationMailer.view_paths.any? do |path|
+                path.to_path == views_path.to_s
+            end
+
+            InvitationMailer.prepend_view_path(views_path)
+        end
 
         def insert_account_context
             identifier = SecureRandom.hex(6)

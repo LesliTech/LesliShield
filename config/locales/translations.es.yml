@@ -20,6 +20,8 @@
       mailer_ignore_notice: Si no esperabas esta invitación, puedes ignorar este correo de forma segura.
       acceptance_title: Acepta tu invitación
       acceptance_description: Completa tu perfil para unirte a %{account}.
+      acceptance_organization: Organización
+      acceptance_role: Rol
       acceptance_email: Correo electrónico
       acceptance_first_name: Nombres
       acceptance_last_name: Apellidos

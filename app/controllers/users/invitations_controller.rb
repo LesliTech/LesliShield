@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class Users::InvitationsController < Lesli::ApplicationDeviseController
+    before_action :protect_invitation_response
     before_action :load_invitation
 
-    def edit
+    def show
         @user = Lesli::User.new(email: @invitation.email)
         set_minimum_password_length
     end
@@ -28,7 +29,7 @@ class Users::InvitationsController < Lesli::ApplicationDeviseController
         @user = exception.record
         set_minimum_password_length
         flash.now[:alert] = @user.errors.full_messages.to_sentence
-        render :edit, status: :unprocessable_content
+        render :show, status: :unprocessable_content
     end
 
     private
@@ -61,6 +62,11 @@ class Users::InvitationsController < Lesli::ApplicationDeviseController
 
     def set_minimum_password_length
         @minimum_password_length = Devise.password_length.min
+    end
+
+    def protect_invitation_response
+        response.set_header("Cache-Control", "no-store")
+        response.set_header("Referrer-Policy", "same-origin")
     end
 
     def render_not_found

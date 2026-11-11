@@ -19,6 +19,10 @@ module Users
             end
 
             assert_response :success
+            assert_equal "no-store", response.headers["Cache-Control"]
+            assert_equal "same-origin", response.headers["Referrer-Policy"]
+            assert_includes response.body, @context.fetch(:account).name
+            assert_includes response.body, @context.fetch(:role).name
             assert_select 'input[name="user[email]"][readonly]',
                 value: @invitation.email
             assert_select 'input[name="user[first_name]"]'
@@ -60,6 +64,8 @@ module Users
             end
 
             assert_response :unprocessable_content
+            assert_equal "no-store", response.headers["Cache-Control"]
+            assert_equal "same-origin", response.headers["Referrer-Policy"]
             assert_select "#error_explanation"
             assert @invitation.reload.pending?
             assert_nil @invitation.accepted_user

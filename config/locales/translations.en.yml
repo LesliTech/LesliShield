@@ -20,6 +20,8 @@
       mailer_ignore_notice: If you did not expect this invitation, you can safely ignore this email.
       acceptance_title: Accept your invitation
       acceptance_description: Complete your profile to join %{account}.
+      acceptance_organization: Organization
+      acceptance_role: Role
       acceptance_email: Email address
       acceptance_first_name: First name
       acceptance_last_name: Last name

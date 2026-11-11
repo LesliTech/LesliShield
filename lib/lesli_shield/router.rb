@@ -32,7 +32,7 @@ module LesliShield
 
             router.get(
                 "#{path}/invitation",
-                to: "users/invitations#edit",
+                to: "users/invitations#show",
                 as: :user_invitation
             )
             router.patch(

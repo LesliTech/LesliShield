@@ -1,11 +1,12 @@
 module LesliShield
     class InvitesController < ApplicationController
-        before_action :set_invite, only: %i[show update resend cancel]
-        before_action :set_assignable_roles, only: %i[new show create update]
+        before_action :set_invite, only: %i[show resend cancel]
+        before_action :set_assignable_roles, only: %i[new create]
 
         # GET /invites
         def index
-            @invites = respond_with_pagination(LesliShield::InviteService.new(current_user, query).index(params))
+            invite_service = LesliShield::InviteService.new(current_user, query)
+            @invites = respond_with_pagination(invite_service.index(params))
         end
 
         # GET /invites/1
@@ -29,32 +30,19 @@ module LesliShield
 
             success("Invite was successfully created and queued for delivery.")
             respond_with_lesli(
-                turbo: stream_redirection(invite_path(@invite))
+                turbo: stream_redirection(invite_path(@invite)),
+                redirect: invite_path(@invite)
             )
         rescue ActiveRecord::RecordInvalid => exception
             @invite = exception.record
             respond_with_lesli(
                 turbo: stream_notification_danger(
                     @invite.errors.full_messages.to_sentence
-                )
+                ),
+                json: { errors: @invite.errors },
+                html: "lesli_shield/invites/new",
+                status: :unprocessable_content
             )
-        end
-
-        # PATCH/PUT /invites/1
-        def update
-            if @invite.update(invite_attributes)
-                log(
-                    subject: @invite,
-                    description: "Invitation updated successfully"
-                )
-                respond_with_lesli(
-                    :turbo => stream_notification_success("Invite was successfully updated.")
-                ) 
-            else
-                respond_with_lesli(
-                    :turbo => stream_notification_danger(@invite.errors.full_messages.to_sentence)
-                ) 
-            end
         end
 
         # POST /invites/1/resend
@@ -67,15 +55,16 @@ module LesliShield
                 description: "Invitation queued for resend"
             )
 
+            success("Invite was successfully queued for delivery.")
             respond_with_lesli(
-                turbo: stream_notification_success(
-                    "Invite was successfully queued for delivery."
-                )
+                turbo: stream_redirection(invite_path(@invite)),
+                redirect: invite_path(@invite)
             )
         rescue Invite::InvalidStatusTransition,
             ActiveRecord::RecordInvalid => exception
             respond_with_lesli(
-                turbo: stream_notification_danger(error_message(exception))
+                turbo: stream_notification_danger(error_message(exception)),
+                redirect: invite_path(@invite)
             )
         end
 
@@ -89,15 +78,16 @@ module LesliShield
                 description: "Invitation cancelled"
             )
 
+            success("Invite was successfully cancelled.")
             respond_with_lesli(
-                turbo: stream_notification_success(
-                    "Invite was successfully cancelled."
-                )
+                turbo: stream_redirection(invite_path(@invite)),
+                redirect: invite_path(@invite)
             )
         rescue Invite::InvalidStatusTransition,
             ActiveRecord::RecordInvalid => exception
             respond_with_lesli(
-                turbo: stream_notification_danger(error_message(exception))
+                turbo: stream_notification_danger(error_message(exception)),
+                redirect: invite_path(@invite)
             )
         end
 
@@ -129,22 +119,6 @@ module LesliShield
                 exception.respond_to?(:record)
 
             exception.message
-        end
-
-        def invite_attributes
-            attributes = invite_params.to_h.symbolize_keys
-            return attributes unless attributes.key?(:role_id)
-
-            role_id = attributes.delete(:role_id)
-            attributes[:role] = role_id.present? ? assignable_role!(role_id) : nil
-            attributes
-        end
-
-        def assignable_role!(role_id)
-            role = current_user.account.roles.find(role_id)
-            return role if current_user.can_assign_role?(role)
-
-            raise ActiveRecord::RecordNotFound
         end
 
         def invite_params

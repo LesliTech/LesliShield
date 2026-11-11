@@ -54,6 +54,31 @@ module LesliShield
             assert_equal [current_invite.id], service.index(nil).ids
         end
 
+        test "shows a pending invitation without editable fields" do
+            context = insert_account_context("readonly-show")
+            invite = insert_invite(
+                context,
+                email: "readonly-invite@example.com"
+            )
+
+            with_controller_methods(
+                current_user: context.fetch(:user),
+                authenticate_request: true,
+                authorize_request: true,
+                log_requests: true
+            ) do
+                @routes = LesliShield::Engine.routes
+                get :show, params: { id: invite.id }
+            end
+
+            assert_response :success
+            assert_select "input[name='invite[email]']", count: 0
+            assert_select "form[action='#{cancel_invite_path(invite)}']"
+            assert_select "form[action='#{resend_invite_path(invite)}']",
+                count: 0
+            assert_includes response.body, invite.email
+        end
+
         test "ignores lifecycle attributes submitted by the browser" do
             @controller.params = ActionController::Parameters.new(
                 invite: {
@@ -75,7 +100,7 @@ module LesliShield
             refute permitted_attributes.key?(:invited_by_id)
         end
 
-        test "accepts only active roles assignable by the current user" do
+        test "offers only active roles assignable by the current user" do
             current_context = insert_account_context("roles-current")
             another_context = insert_account_context("roles-another")
             current_role = insert_role(
@@ -124,33 +149,28 @@ module LesliShield
             refute current_user.can_assign_role?(foreign_role)
 
             with_current_user(current_user) do
-                assert_equal assignable_role,
-                    @controller.send(:assignable_role!, assignable_role.id)
+                @controller.send(:set_assignable_roles)
+                offered_roles = @controller.instance_variable_get(
+                    :@assignable_roles
+                )
 
-                assert_raises(ActiveRecord::RecordNotFound) do
-                    @controller.send(:assignable_role!, elevated_role.id)
-                end
-
-                assert_raises(ActiveRecord::RecordNotFound) do
-                    @controller.send(:assignable_role!, inactive_role.id)
-                end
-
-                assert_raises(ActiveRecord::RecordNotFound) do
-                    @controller.send(:assignable_role!, foreign_role.id)
-                end
+                assert_includes offered_roles, current_role
+                assert_includes offered_roles, assignable_role
+                refute_includes offered_roles, elevated_role
+                refute_includes offered_roles, inactive_role
+                refute_includes offered_roles, foreign_role
             end
         end
 
-        test "registers independent resend and cancel routes" do
+        test "registers only the supported invitation actions" do
             actions = LesliShield::Engine.routes.routes.filter_map do |route|
                 defaults = route.defaults
                 next unless defaults[:controller] == "lesli_shield/invites"
 
                 defaults[:action]
-            end
+            end.uniq.sort
 
-            assert_includes actions, "resend"
-            assert_includes actions, "cancel"
+            assert_equal %w[cancel create index new resend show], actions
         end
 
         test "exposes resend and cancel in the role privilege matrix" do
@@ -273,18 +293,32 @@ module LesliShield
         end
 
         def with_current_user(user)
-            controller_singleton = @controller.singleton_class
-            method_was_defined = controller_singleton
-                .instance_methods(false)
-                .include?(:current_user)
-            original_method = controller_singleton.instance_method(:current_user) if method_was_defined
+            with_controller_methods(current_user: user) { yield }
+        end
 
-            controller_singleton.define_method(:current_user) { user }
+        def with_controller_methods(overrides)
+            controller_singleton = @controller.singleton_class
+            original_methods = {}
+
+            overrides.each do |method_name, return_value|
+                if controller_singleton.instance_methods(false).include?(method_name)
+                    original_methods[method_name] = controller_singleton
+                        .instance_method(method_name)
+                end
+
+                controller_singleton.define_method(method_name) { return_value }
+            end
+
             yield
         ensure
-            controller_singleton.remove_method(:current_user)
-            if method_was_defined
-                controller_singleton.define_method(:current_user, original_method)
+            overrides.each_key do |method_name|
+                controller_singleton.remove_method(method_name)
+                next unless original_methods.key?(method_name)
+
+                controller_singleton.define_method(
+                    method_name,
+                    original_methods.fetch(method_name)
+                )
             end
         end
     end

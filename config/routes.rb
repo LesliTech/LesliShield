@@ -81,7 +81,7 @@ LesliShield::Engine.routes.draw do
         end
     end
 
-    resources :invites, only: [:index, :show, :new, :create, :update] do
+    resources :invites, only: %i[index show new create] do
         member do
             post :resend
             patch :cancel

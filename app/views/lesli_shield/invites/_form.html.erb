@@ -10,19 +10,15 @@
         ) %>
         <%= form.field_control_textarea_rich(:notes) %>
         <hr/>
-        <% if @invite.new_record? %>
-            <%= form.field_control_button(
-                I18n.t("lesli_shield.invites.button_create_and_send"),
-                {
-                    data: {
-                        turbo_submits_with: I18n.t(
-                            "lesli_shield.invites.button_creating_and_sending"
-                        )
-                    }
+        <%= form.field_control_button(
+            I18n.t("lesli_shield.invites.button_create_and_send"),
+            {
+                data: {
+                    turbo_submits_with: I18n.t(
+                        "lesli_shield.invites.button_creating_and_sending"
+                    )
                 }
-            ) %>
-        <% else %>
-            <%= form.field_control_submit %>
-        <% end %>
+            }
+        ) %>
     <% end %>
 <% end %>

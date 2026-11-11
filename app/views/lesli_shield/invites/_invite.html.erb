@@ -1,2 +1,37 @@
 <div id="<%= dom_id invite %>">
+    <%
+    format_time = lambda do |value|
+        value.present? ? I18n.l(value, format: :long) : "—"
+    end
+
+    inviter_name = invite.invited_by.full_name.to_s.strip.presence ||
+        invite.invited_by.email
+
+    details = [
+        { attribute: "Email", value: invite.email },
+        { attribute: "Name", value: invite.full_name.presence || "—" },
+        { attribute: "Telephone", value: invite.telephone.presence || "—" },
+        { attribute: "Role", value: invite.role&.name || "—" },
+        { attribute: "Status", value: invite.status.humanize },
+        { attribute: "Invited by", value: inviter_name },
+        { attribute: "Sent at", value: format_time.call(invite.sent_at) },
+        { attribute: "Expires at", value: format_time.call(invite.expires_at) },
+        { attribute: "Accepted at", value: format_time.call(invite.accepted_at) },
+        {
+            attribute: "Cancelled at",
+            value: format_time.call(invite.cancelled_at)
+        },
+        { attribute: "Notes", value: invite.notes.presence || "—" }
+    ]
+    %>
+
+    <%= render LesliView::Elements::Table.new(
+        columns: [
+            { field: :attribute, label: "Attribute", width: "30%" },
+            { field: :value, label: "Value" }
+        ],
+        records: details,
+        caption: "Invitation details",
+        striped: true
+    ) %>
 </div>

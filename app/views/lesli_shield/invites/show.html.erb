@@ -30,6 +30,40 @@ Building a better future, one line of code at a time.
 // · 
 %>
 <%= render LesliView::Layout::Container.new('shield-invites') do %>
-    <%= render LesliView::Components::Header.new("Invite for #{ @invite.full_name.presence || @invite.email }") %>
-    <%= render "form" %>
+    <%= render LesliView::Components::Header.new(
+        "Invite for #{@invite.full_name.presence || @invite.email}",
+        back: invites_path
+    ) do %>
+        <% if @invite.resendable? ||
+            (@invite.pending? && !@invite.acceptance_available?) %>
+            <%= render LesliView::Elements::Button.new(
+                "Resend invitation",
+                url: resend_invite_path(@invite),
+                method: :post,
+                icon: "send",
+                info: false,
+                success: true,
+                data: {
+                    turbo_confirm: "Send a new invitation email?"
+                }
+            ) %>
+        <% end %>
+
+        <% if @invite.pending? %>
+            <%= render LesliView::Elements::Button.new(
+                "Cancel invitation",
+                url: cancel_invite_path(@invite),
+                method: :patch,
+                icon: "cancel",
+                info: false,
+                danger: true,
+                data: {
+                    turbo_confirm: "Cancel this invitation? " \
+                        "This action preserves its audit history."
+                }
+            ) %>
+        <% end %>
+    <% end %>
+
+    <%= render "invite", invite: @invite %>
 <% end %> 

@@ -9,6 +9,25 @@
       email_deleted: Un usuario eliminado ya utiliza este correo electrónico.
       email_existing_without_account: Este correo electrónico no puede ser invitado.
       role_account_mismatch: El rol seleccionado no pertenece a esta cuenta.
+      role_required: Selecciona un rol para esta invitación.
+      not_acceptable: Esta invitación ya no está disponible.
+      mailer_subject: Te han invitado a Lesli
+      mailer_title: Has recibido una invitación
+      mailer_description: Te han invitado a unirte a %{account}.
+      mailer_action: Aceptar invitación
+      mailer_expiration: Esta invitación vence el %{expiration}.
+      acceptance_title: Acepta tu invitación
+      acceptance_description: Completa tu perfil para unirte a %{account}.
+      acceptance_email: Correo electrónico
+      acceptance_first_name: Nombres
+      acceptance_last_name: Apellidos
+      acceptance_telephone: Teléfono
+      acceptance_password: Contraseña
+      acceptance_password_confirmation: Confirmar contraseña
+      acceptance_password_hint: Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres.
+      acceptance_action: Crear cuenta
+      acceptance_submitting: Creando cuenta…
+      acceptance_success: Tu cuenta para %{email} fue creada correctamente. Ya puedes iniciar sesión.
       invalid_status_transition: Este cambio de estado de la invitación no está permitido.
     devise/sessions:
       message_not_valid_credentials: Credenciales no validas

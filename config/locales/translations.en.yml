@@ -9,6 +9,25 @@
       email_deleted: A deleted user already uses this email address.
       email_existing_without_account: This email address cannot be invited.
       role_account_mismatch: The selected role does not belong to this account.
+      role_required: Select a role for this invitation.
+      not_acceptable: This invitation is no longer available.
+      mailer_subject: You have been invited to Lesli
+      mailer_title: You have been invited
+      mailer_description: You have been invited to join %{account}.
+      mailer_action: Accept invitation
+      mailer_expiration: This invitation expires on %{expiration}.
+      acceptance_title: Accept your invitation
+      acceptance_description: Complete your profile to join %{account}.
+      acceptance_email: Email address
+      acceptance_first_name: First name
+      acceptance_last_name: Last name
+      acceptance_telephone: Telephone
+      acceptance_password: Password
+      acceptance_password_confirmation: Confirm password
+      acceptance_password_hint: Your password must contain between %{minimum} and %{maximum} characters.
+      acceptance_action: Create account
+      acceptance_submitting: Creating account…
+      acceptance_success: Your account for %{email} was created successfully. You can now log in.
       invalid_status_transition: This invitation status transition is not allowed.
     devise/sessions:
       message_not_valid_credentials: Not valid credentials

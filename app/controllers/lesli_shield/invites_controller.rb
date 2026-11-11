@@ -19,25 +19,25 @@ module LesliShield
 
         # POST /invites
         def create
-            @invite = current_account_invites.new(invite_attributes)
-            @invite.invited_by = current_user
-            if @invite.save
+            @invite = invitation_service.create_and_send!(invite_params)
 
-                log(
-                    subject: @invite,
-                    operation: 'invite.created',
-                    description: "Invitation created successfully created for: #{@invite.email}"
+            log(
+                subject: @invite,
+                operation: "invite.created",
+                description: "Invitation created and queued for #{@invite.email}"
+            )
+
+            success("Invite was successfully created and queued for delivery.")
+            respond_with_lesli(
+                turbo: stream_redirection(invite_path(@invite))
+            )
+        rescue ActiveRecord::RecordInvalid => exception
+            @invite = exception.record
+            respond_with_lesli(
+                turbo: stream_notification_danger(
+                    @invite.errors.full_messages.to_sentence
                 )
-                
-                success("Invite was successfully created.")
-                respond_with_lesli(
-                    turbo: stream_redirection(invite_path(@invite))
-                ) 
-            else
-                respond_with_lesli(
-                    turbo: stream_notification_danger(@invite.errors.full_messages.to_sentence)
-                ) 
-            end
+            )
         end
 
         # PATCH/PUT /invites/1
@@ -58,31 +58,30 @@ module LesliShield
         end
 
         # POST /invites/1/resend
-        # The email delivery will be added in the next phase. This action owns
-        # only the explicit lifecycle transition and its authorization boundary.
         def resend
-            @invite.resend!
+            @invite = invitation_service.resend!(@invite)
 
             log(
                 subject: @invite,
                 operation: "invite.resent",
-                description: "Invitation marked for resend"
+                description: "Invitation queued for resend"
             )
 
             respond_with_lesli(
                 turbo: stream_notification_success(
-                    "Invite is ready to be sent again."
+                    "Invite was successfully queued for delivery."
                 )
             )
-        rescue Invite::InvalidStatusTransition => exception
+        rescue Invite::InvalidStatusTransition,
+            ActiveRecord::RecordInvalid => exception
             respond_with_lesli(
-                turbo: stream_notification_danger(exception.message)
+                turbo: stream_notification_danger(error_message(exception))
             )
         end
 
         # PATCH /invites/1/cancel
         def cancel
-            @invite.cancel!
+            @invite = invitation_service.cancel!(@invite)
 
             log(
                 subject: @invite,
@@ -95,9 +94,10 @@ module LesliShield
                     "Invite was successfully cancelled."
                 )
             )
-        rescue Invite::InvalidStatusTransition => exception
+        rescue Invite::InvalidStatusTransition,
+            ActiveRecord::RecordInvalid => exception
             respond_with_lesli(
-                turbo: stream_notification_danger(exception.message)
+                turbo: stream_notification_danger(error_message(exception))
             )
         end
 
@@ -118,6 +118,17 @@ module LesliShield
 
         def current_account_invites
             current_user.account.shield.invites
+        end
+
+        def invitation_service
+            @invitation_service ||= InvitationService.new(current_user)
+        end
+
+        def error_message(exception)
+            return exception.record.errors.full_messages.to_sentence if
+                exception.respond_to?(:record)
+
+            exception.message
         end
 
         def invite_attributes

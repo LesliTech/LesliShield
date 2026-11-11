@@ -1,0 +1,107 @@
+<%
+title = I18n.t("lesli_shield.invites.acceptance_title")
+%>
+
+<%= render(
+    "devise/shared/application-devise",
+    title: title,
+    back_to_login: true
+) do %>
+    <p class="mb-6 text-center text-sm leading-6 text-slate-600">
+        <%= I18n.t(
+            "lesli_shield.invites.acceptance_description",
+            account: @invitation.account.account.name
+        ) %>
+    </p>
+
+    <%= form_for(
+        @user,
+        as: :user,
+        url: user_invitation_path,
+        method: :patch,
+        html: { class: "text-left" },
+        builder: LesliView::Forms::Builder
+    ) do |form| %>
+        <%= hidden_field_tag :invitation_token, @invitation_token %>
+
+        <%= render "devise/shared/error_messages", resource: @user %>
+
+        <%= form.field_control_email(
+            :email,
+            label: I18n.t("lesli_shield.invites.acceptance_email"),
+            icon: "mail",
+            readonly: true,
+            autocomplete: "email"
+        ) %>
+
+        <%= form.field_control(
+            :first_name,
+            label: I18n.t("lesli_shield.invites.acceptance_first_name"),
+            message: @user.errors[:first_name].to_sentence.presence,
+            category: @user.errors[:first_name].any? ? :danger : nil,
+            autocomplete: "given-name"
+        ) %>
+
+        <%= form.field_control(
+            :last_name,
+            label: I18n.t("lesli_shield.invites.acceptance_last_name"),
+            message: @user.errors[:last_name].to_sentence.presence,
+            category: @user.errors[:last_name].any? ? :danger : nil,
+            autocomplete: "family-name"
+        ) %>
+
+        <%= form.field_control(
+            :telephone,
+            label: I18n.t("lesli_shield.invites.acceptance_telephone"),
+            message: @user.errors[:telephone].to_sentence.presence,
+            category: @user.errors[:telephone].any? ? :danger : nil,
+            autocomplete: "tel"
+        ) %>
+
+        <%= form.field_control_password(
+            :password,
+            label: I18n.t("lesli_shield.invites.acceptance_password"),
+            message: @user.errors[:password].to_sentence.presence ||
+                I18n.t(
+                    "lesli_shield.invites.acceptance_password_hint",
+                    minimum: @minimum_password_length,
+                    maximum: Devise.password_length.max
+                ),
+            category: @user.errors[:password].any? ? :danger : nil,
+            icon: "key",
+            autocomplete: "new-password",
+            required: true,
+            minlength: @minimum_password_length,
+            maxlength: Devise.password_length.max,
+            value: ""
+        ) %>
+
+        <%= form.field_control_password(
+            :password_confirmation,
+            label: I18n.t(
+                "lesli_shield.invites.acceptance_password_confirmation"
+            ),
+            message: @user.errors[:password_confirmation].to_sentence.presence,
+            category: @user.errors[:password_confirmation].any? ? :danger : nil,
+            icon: "key",
+            autocomplete: "new-password",
+            required: true,
+            minlength: @minimum_password_length,
+            maxlength: Devise.password_length.max,
+            value: ""
+        ) %>
+
+        <%= form.field_control_button(
+            I18n.t("lesli_shield.invites.acceptance_action"),
+            {
+                class: "w-full",
+                data: {
+                    turbo_submits_with: I18n.t(
+                        "lesli_shield.invites.acceptance_submitting"
+                    )
+                }
+            },
+            icon: "person_add"
+        ) %>
+    <% end %>
+<% end %>

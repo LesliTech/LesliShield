@@ -32,6 +32,15 @@ confirms the email, and marks the invitation as accepted in one transaction.
 If any operation fails, no user is persisted and the invitation remains
 pending.
 
+`LesliShield::InvitationService` is the single mutation boundary for this
+flow. It exposes `create_and_send!`, `resend!`, `cancel!`, and `accept!` so
+controllers never change lifecycle state directly.
+
+Acceptance locks the invitation and selected role before rechecking the
+policy. This prevents two requests from accepting the same invitation and
+ensures a role cannot be replaced or disabled unnoticed while the user is
+being provisioned.
+
 ## Existing email policy
 
 The email policy is evaluated both before delivery and again during acceptance:
@@ -50,6 +59,12 @@ initial validation cannot prevent another process from creating a user later.
 ## Administrative action
 
 The primary administrative operation is **Create and send invitation**. The
-visible action must not be enabled until mail delivery is implemented; the UI
-must never claim that an invitation was sent when only a database record was
-created.
+service creates the invitation in a transaction, generates a purpose-bound
+signed link whose lifetime cannot exceed `expires_at`, and schedules delivery
+only after the transaction commits. Resending performs the same policy and
+role checks before renewing the expiration and scheduling a new message.
+
+The signed link opens the public invitation form. The invited address is
+readonly; the recipient supplies their profile and password. Invalid,
+expired, cancelled, and already accepted links return `404` and cannot create
+or modify a user.

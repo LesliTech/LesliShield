@@ -1,0 +1,14 @@
+<%= I18n.t("lesli_shield.invites.mailer_title") %>
+
+<%= I18n.t(
+    "lesli_shield.invites.mailer_description",
+    account: @invitation.account.account.name
+) %>
+
+<%= I18n.t("lesli_shield.invites.mailer_action") %>:
+<%= @acceptance_url %>
+
+<%= I18n.t(
+    "lesli_shield.invites.mailer_expiration",
+    expiration: I18n.l(@invitation.expires_at, format: :long)
+) %>

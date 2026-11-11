@@ -30,6 +30,16 @@ module LesliShield
                 }
             )
 
+            router.get(
+                "#{path}/invitation",
+                to: "users/invitations#edit",
+                as: :user_invitation
+            )
+            router.patch(
+                "#{path}/invitation",
+                to: "users/invitations#update"
+            )
+
             configure_warden_user_mapping
         end
 

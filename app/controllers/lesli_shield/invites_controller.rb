@@ -23,7 +23,7 @@ module LesliShield
         # POST /invites
         def create
             @invite = current_user.account.shield.invites.new(invite_params)
-            @invite.user = current_user
+            @invite.invited_by = current_user
             if @invite.save
 
                 log(

@@ -71,24 +71,33 @@ ActiveRecord::Schema[8.1].define(version: 801120110) do
   end
 
   create_table "lesli_shield_invites", force: :cascade do |t|
-    t.integer "account_id"
+    t.datetime "accepted_at"
+    t.integer "accepted_user_id"
+    t.integer "account_id", null: false
+    t.datetime "cancelled_at"
     t.datetime "created_at", null: false
     t.datetime "deleted_at"
     t.string "email", null: false
-    t.datetime "expired_at"
+    t.datetime "expires_at"
     t.string "full_name"
+    t.integer "invited_by_id", null: false
     t.text "notes"
+    t.integer "role_id"
     t.datetime "sent_at"
-    t.integer "status"
+    t.integer "status", default: 0, null: false
     t.string "telephone"
     t.datetime "updated_at", null: false
-    t.integer "user_id"
+    t.index ["accepted_at"], name: "index_lesli_shield_invites_on_accepted_at"
+    t.index ["accepted_user_id"], name: "index_lesli_shield_invites_on_accepted_user_id"
     t.index ["account_id"], name: "index_lesli_shield_invites_on_account_id"
+    t.index ["account_id", "email"], name: "idx_shield_invites_unique_pending_email", unique: true, where: "status = 0 AND deleted_at IS NULL"
+    t.index ["cancelled_at"], name: "index_lesli_shield_invites_on_cancelled_at"
     t.index ["deleted_at"], name: "index_lesli_shield_invites_on_deleted_at"
-    t.index ["expired_at"], name: "index_lesli_shield_invites_on_expired_at"
+    t.index ["expires_at"], name: "index_lesli_shield_invites_on_expires_at"
+    t.index ["invited_by_id"], name: "index_lesli_shield_invites_on_invited_by_id"
+    t.index ["role_id"], name: "index_lesli_shield_invites_on_role_id"
     t.index ["sent_at"], name: "index_lesli_shield_invites_on_sent_at"
     t.index ["status"], name: "index_lesli_shield_invites_on_status"
-    t.index ["user_id"], name: "index_lesli_shield_invites_on_user_id"
   end
 
   create_table "lesli_shield_role_actions", force: :cascade do |t|
@@ -221,7 +230,9 @@ ActiveRecord::Schema[8.1].define(version: 801120110) do
   add_foreign_key "lesli_roles", "lesli_accounts", column: "account_id"
   add_foreign_key "lesli_shield_accounts", "lesli_accounts", column: "account_id"
   add_foreign_key "lesli_shield_invites", "lesli_shield_accounts", column: "account_id"
-  add_foreign_key "lesli_shield_invites", "lesli_users", column: "user_id"
+  add_foreign_key "lesli_shield_invites", "lesli_roles", column: "role_id"
+  add_foreign_key "lesli_shield_invites", "lesli_users", column: "accepted_user_id"
+  add_foreign_key "lesli_shield_invites", "lesli_users", column: "invited_by_id"
   add_foreign_key "lesli_shield_role_actions", "lesli_resources", column: "action_id"
   add_foreign_key "lesli_shield_role_actions", "lesli_roles", column: "role_id"
   add_foreign_key "lesli_shield_role_privileges", "lesli_roles", column: "role_id"

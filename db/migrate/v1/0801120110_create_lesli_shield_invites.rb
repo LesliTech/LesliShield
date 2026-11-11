@@ -37,13 +37,47 @@ class CreateLesliShieldInvites < ActiveRecord::Migration[8.0]
             t.string :full_name
             t.string :telephone
             t.text   :notes
-            t.integer  :status,     index: true
-            t.datetime :sent_at,    index: true
-            t.datetime :expired_at, index: true
-            t.datetime :deleted_at, index: true
+            t.integer  :status,       null: false, default: 0, index: true
+            t.datetime :sent_at,      index: true
+            t.datetime :expires_at,   index: true
+            t.datetime :accepted_at,  index: true
+            t.datetime :cancelled_at, index: true
+            t.datetime :deleted_at,   index: true
             t.timestamps
         end
-        add_reference(:lesli_shield_invites, :user,    foreign_key: { to_table: :lesli_users })
-        add_reference(:lesli_shield_invites, :account, foreign_key: { to_table: :lesli_shield_accounts })
+
+        add_reference(
+            :lesli_shield_invites,
+            :account,
+            null: false,
+            foreign_key: { to_table: :lesli_shield_accounts }
+        )
+
+        add_reference(
+            :lesli_shield_invites,
+            :invited_by,
+            null: false,
+            foreign_key: { to_table: :lesli_users }
+        )
+
+        add_reference(
+            :lesli_shield_invites,
+            :role,
+            foreign_key: { to_table: :lesli_roles }
+        )
+
+        add_reference(
+            :lesli_shield_invites,
+            :accepted_user,
+            foreign_key: { to_table: :lesli_users }
+        )
+
+        add_index(
+            :lesli_shield_invites,
+            %i[account_id email],
+            unique: true,
+            where: "status = 0 AND deleted_at IS NULL",
+            name: "idx_shield_invites_unique_pending_email"
+        )
     end
 end

@@ -8,6 +8,7 @@
       email_other_account: This email address belongs to another account.
       email_deleted: A deleted user already uses this email address.
       email_existing_without_account: This email address cannot be invited.
+      role_account_mismatch: The selected role does not belong to this account.
       invalid_status_transition: This invitation status transition is not allowed.
     devise/sessions:
       message_not_valid_credentials: Not valid credentials

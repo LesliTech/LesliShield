@@ -11,18 +11,40 @@ module LesliShield
         }.freeze
 
         belongs_to :account, class_name: "LesliShield::Account"
-        belongs_to :user, class_name: "Lesli::User"
-
-        # Keep phase one compatible with the current database. The schema
-        # migration will rename expired_at in the next phase.
-        alias_attribute :expires_at, :expired_at
+        belongs_to :invited_by,
+            class_name: "Lesli::User",
+            foreign_key: :invited_by_id
+        belongs_to :role,
+            class_name: "Lesli::Role",
+            foreign_key: :role_id,
+            optional: true
+        belongs_to :accepted_user,
+            class_name: "Lesli::User",
+            foreign_key: :accepted_user_id,
+            optional: true
 
         enum :status, {
             pending: 0,
             accepted: 1,
             cancelled: 2,
             expired: 3
-        }, default: :pending, validate: true
+        }, default: :pending, validate: true, scopes: false
+
+        scope :pending, -> {
+            where(status: statuses.fetch("pending"))
+        }
+        scope :active, -> {
+            pending.where(expires_at: Time.current..)
+        }
+        scope :expired, -> {
+            expired_by_status = where(status: statuses.fetch("expired"))
+            expired_by_time = pending.where(expires_at: (..Time.current))
+
+            expired_by_status.or(expired_by_time)
+        }
+        scope :for_account, ->(account) {
+            where(account: account)
+        }
 
         before_validation :normalize_email
         before_validation :set_default_expiration, on: :create
@@ -31,6 +53,7 @@ module LesliShield
             presence: true,
             format: { with: URI::MailTo::EMAIL_REGEXP }
         validate :email_can_be_invited, on: :create
+        validate :role_belongs_to_inviting_account
         validate :status_transition_is_allowed, on: :update
 
         class << self
@@ -50,12 +73,19 @@ module LesliShield
         # Accepting an invitation is intentionally a terminal operation. The
         # acceptance service will call this only after creating the user,
         # assigning its account and role, and confirming its email atomically.
-        def accept!
-            transition_to!(:accepted)
+        def accept!(accepted_user)
+            transition_to!(
+                :accepted,
+                accepted_user: accepted_user,
+                accepted_at: Time.current
+            )
         end
 
         def cancel!
-            transition_to!(:cancelled)
+            transition_to!(
+                :cancelled,
+                cancelled_at: Time.current
+            )
         end
 
         def expire!
@@ -65,10 +95,19 @@ module LesliShield
         # Resending is the only operation that can reactivate an expired
         # invitation. No user record is created or modified here.
         def resend!
+            unless resendable?
+                raise InvalidStatusTransition,
+                    "cannot resend an invitation with status #{status}"
+            end
+
             transition_to!(
                 :pending,
                 expires_at: Time.current + self.class.expiration_period
             )
+        end
+
+        def resendable?
+            expired?
         end
 
         def acceptance_available?
@@ -98,6 +137,16 @@ module LesliShield
             errors.add(
                 :email,
                 I18n.t("lesli_shield.invites.email_#{decision.status}")
+            )
+        end
+
+        def role_belongs_to_inviting_account
+            return if role.blank? || account.blank?
+            return if role.account == account.account
+
+            errors.add(
+                :role,
+                I18n.t("lesli_shield.invites.role_account_mismatch")
             )
         end
 

@@ -162,6 +162,17 @@ module LesliShield
             end
         end
 
+        test "rejects a manipulated signed invitation token" do
+            invitation = insert_invitation(email: unique_email("tampered"))
+            token = acceptance_token(invitation)
+            replacement = token.end_with?("a") ? "b" : "a"
+            manipulated_token = "#{token[0...-1]}#{replacement}"
+
+            assert_raises(ActiveSupport::MessageVerifier::InvalidSignature) do
+                @service.invitation_from_token!(manipulated_token)
+            end
+        end
+
         test "rejects a token when invitation timestamps are inconsistent" do
             invitation = insert_invitation(email: unique_email("terminal"))
             token = acceptance_token(invitation)
@@ -237,6 +248,21 @@ module LesliShield
             end
         end
 
+        test "rejects a role belonging to another account" do
+            foreign_context = insert_account_context
+
+            assert_no_difference -> { Invite.count } do
+                assert_no_enqueued_jobs do
+                    assert_raises(ActiveRecord::RecordNotFound) do
+                        @service.create_and_send!(
+                            email: unique_email("foreign-role"),
+                            role_id: foreign_context.fetch(:target_role).id
+                        )
+                    end
+                end
+            end
+        end
+
         test "resends only expired invitations and renews their expiration" do
             invitation = insert_invitation(
                 email: unique_email("expired"),
@@ -277,12 +303,14 @@ module LesliShield
             invitation = insert_invitation(email: unique_email("accept"))
             token = acceptance_token(invitation)
 
-            assert_difference -> { Lesli::User.count }, 1 do
-                assert_difference -> { User::Role.count }, 1 do
-                    @accepted_user = @service.accept!(
-                        token: token,
-                        user_attributes: valid_user_attributes
-                    )
+            assert_no_difference -> { Lesli::Account.count } do
+                assert_difference -> { Lesli::User.count }, 1 do
+                    assert_difference -> { User::Role.count }, 1 do
+                        @accepted_user = @service.accept!(
+                            token: token,
+                            user_attributes: valid_user_attributes
+                        )
+                    end
                 end
             end
 

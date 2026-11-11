@@ -72,6 +72,33 @@ module LesliShield
             )
         end
 
+        test "prevents duplicate pending invitations after normalizing email" do
+            context = insert_account_context("duplicate-pending")
+            first_invitation = Invite.create!(
+                account: context.fetch(:shield_account),
+                invited_by: context.fetch(:user),
+                email: " Duplicate@Example.COM "
+            )
+
+            assert_equal "duplicate@example.com", first_invitation.email
+            assert_raises(ActiveRecord::RecordNotUnique) do
+                Invite.create!(
+                    account: context.fetch(:shield_account),
+                    invited_by: context.fetch(:user),
+                    email: "duplicate@example.com"
+                )
+            end
+
+            first_invitation.cancel!
+
+            replacement = Invite.create!(
+                account: context.fetch(:shield_account),
+                invited_by: context.fetch(:user),
+                email: "duplicate@example.com"
+            )
+            assert replacement.pending?
+        end
+
         test "does not overwrite an explicitly assigned status during validation" do
             invite = Invite.new(
                 email: "person@example.com",

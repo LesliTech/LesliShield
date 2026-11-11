@@ -53,6 +53,42 @@ module Users
             assert @invitation.accepted?
         end
 
+        test "accepts the invitation through Turbo with a native 303 redirect" do
+            assert_difference -> { Lesli::User.count }, 1 do
+                patch user_invitation_path,
+                    params: {
+                        invitation_token: @token,
+                        user: valid_user_attributes
+                    },
+                    headers: {
+                        "ACCEPT" => Mime[:turbo_stream].to_s
+                    }
+            end
+
+            assert_response :see_other
+            assert_redirected_to new_user_session_path
+            refute_includes response.body, "Turbo.visit"
+            assert @invitation.reload.accepted?
+        end
+
+        test "rejects a second public acceptance without creating another user" do
+            patch user_invitation_path, params: {
+                invitation_token: @token,
+                user: valid_user_attributes
+            }
+            accepted_user = Lesli::User.find_by!(email: @invitation.email)
+
+            assert_no_difference -> { Lesli::User.count } do
+                patch user_invitation_path, params: {
+                    invitation_token: @token,
+                    user: valid_user_attributes
+                }
+            end
+
+            assert_response :gone
+            assert_equal accepted_user, @invitation.reload.accepted_user
+        end
+
         test "keeps the invitation pending when user validation fails" do
             assert_no_difference -> { Lesli::User.count } do
                 patch user_invitation_path, params: {

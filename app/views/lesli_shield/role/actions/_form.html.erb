@@ -1,18 +1,10 @@
 
 <%
-columns = [{
-    label: "Controller"
-}, {
-    label: "Index"
-}, {
-    label: "Show"
-}, {
-    label: "Create"
-}, {
-    label: "Update"
-}, {
-    label: "Destroy"
-}]
+action_names = @role_actions.values.first&.keys || []
+columns = [{ label: "Controller" }]
+columns.concat(action_names.map { |action_name| {
+    label: action_name.to_s.humanize
+} })
 %>
 
 

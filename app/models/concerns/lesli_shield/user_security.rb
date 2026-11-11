@@ -39,7 +39,7 @@ module LesliShield
 
         # get the max level permission from roles assigned to the user
         def max_level_permission
-            self.roles.maximum(:permission_level) || 0
+            roles.where(active: true).maximum(:permission_level) || 0
         end
 
         # check if user has roles with specific names
@@ -62,26 +62,26 @@ module LesliShield
             end
         end
 
-        # Check if user has enough privilege to work with the given role
-        def can_work_with_role?(role_id)
+        # A user can assign only active roles from their own account and never
+        # roles above the highest active permission level they already hold.
+        def can_assign_role?(role)
+            return false if role.blank? || !role.active?
+            return false unless role.account_id == account_id
+            return false if role.permission_level.blank?
 
-            # get the role if only id is given
-            role = self.account.roles.find_by(:id => role_id)
+            role.permission_level <= max_level_permission
+        end
 
-            # false if role not found
-            return false if role.blank?
+        # Preserve the existing public API while using the current
+        # permission_level column and the stricter assignment rules.
+        def can_work_with_role?(role_or_id)
+            role = if role_or_id.is_a?(Lesli::Role)
+                role_or_id
+            else
+                account.roles.find_by(id: role_or_id)
+            end
 
-            # not valid role without object levelpermission defined
-            return false if role.level_permission.blank?
-
-            # get the max level permission from the roles the user has assigned
-            user_role_max_level_permission = self.roles.map(&:level_permission).max()
-
-            # check if user can work with the level permission of the role is trying to modify
-            # Note: user only can assigned an level permission below the max of his own roles
-            # Current user cannot assign role if role to assign is the same of the greater role 
-            # assigned to the current user
-            user_role_max_level_permission >= role.level_permission
+            can_assign_role?(role)
         end
 
         # Checks configuration of all the roles assigned to the user

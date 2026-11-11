@@ -17,9 +17,7 @@ module LesliShield
                 }
             end
 
-            role_actions = {}
-
-            Role::Action.with_deleted.joins(action: :parent)
+            records = Role::Action.with_deleted.joins(action: :parent)
             .where(:role_id => role_id)
             .order('parents_lesli_resources.route')
             .select(
@@ -32,37 +30,25 @@ module LesliShield
                 "lesli_resources.action as action_name",
                 "lesli_resources.id as action_id",
                 "case when lesli_shield_role_actions.deleted_at is null then TRUE else FALSE end active"
-            ).each do |action|
+            ).to_a
 
-                unless role_actions.has_key?(action[:controller_route])
-                    role_actions[action[:controller_route]] = {
-                        index: nil,
-                        show:nil,
-                        create:nil,
-                        update:nil,
-                        destroy:nil
-                    }
-                end
+            standard_action_order = %w[index show new edit create update destroy]
+            registered_actions = records.map { |action| action[:action_name] }.uniq
+            action_order = standard_action_order.select do |action_name|
+                registered_actions.include?(action_name)
+            end
+            action_order.concat((registered_actions - standard_action_order).sort)
+            action_order.map!(&:to_sym)
 
-                if  action[:action_name] == "index"
-                    role_actions[action[:controller_route]][:index] = clean(action)
-                end
+            role_actions = {}
 
-                if  action[:action_name] == "show"
-                    role_actions[action[:controller_route]][:show] = clean(action)
-                end
-
-                if  action[:action_name] == "create"
-                    role_actions[action[:controller_route]][:create] = clean(action)
-                end
-
-                if  action[:action_name] == "update"
-                    role_actions[action[:controller_route]][:update] = clean(action)
-                end
-
-                if  action[:action_name] == "destroy"
-                    role_actions[action[:controller_route]][:destroy] = clean(action)
-                end
+            records.each do |action|
+                controller_actions = role_actions.fetch(
+                    action[:controller_route],
+                    action_order.index_with(nil)
+                )
+                controller_actions[action[:action_name].to_sym] = clean(action)
+                role_actions[action[:controller_route]] = controller_actions
             end
 
             role_actions

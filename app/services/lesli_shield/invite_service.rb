@@ -33,8 +33,8 @@ Building a better future, one line of code at a time.
 module LesliShield
     class InviteService < Lesli::ApplicationLesliService
 
-        def index params
-            Invite.all
+        def index(_params)
+            Invite.for_account(current_user.account.shield)
             .page(query[:pagination][:page])
             .per(query[:pagination][:perPage])
             .order(updated_at: :desc)

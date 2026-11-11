@@ -14,8 +14,10 @@
       mailer_subject: Te han invitado a Lesli
       mailer_title: Has recibido una invitación
       mailer_description: Te han invitado a unirte a %{account}.
+      mailer_invited_by: Invitación enviada por %{inviter}.
       mailer_action: Aceptar invitación
       mailer_expiration: Esta invitación vence el %{expiration}.
+      mailer_ignore_notice: Si no esperabas esta invitación, puedes ignorar este correo de forma segura.
       acceptance_title: Acepta tu invitación
       acceptance_description: Completa tu perfil para unirte a %{account}.
       acceptance_email: Correo electrónico

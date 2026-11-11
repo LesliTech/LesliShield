@@ -5,7 +5,8 @@ module LesliShield
     # Administrative operations require an actor; public acceptance authenticates
     # the operation with the purpose-bound signed invitation token instead.
     class InvitationService < Lesli::ApplicationLesliService
-        ACCEPTANCE_PURPOSE = :lesli_shield_invitation_acceptance
+        ACCEPTANCE_PURPOSE = :account_invitation
+        TOKEN_LIFETIME = 7.days
         USER_ATTRIBUTES = %i[
             first_name
             last_name
@@ -86,7 +87,10 @@ module LesliShield
 
             Invite.transaction do
                 invitation = lock_signed_invitation!(token)
-                role = validate_acceptance!(invitation)
+                role = validate_token_constraints!(
+                    invitation,
+                    lock_associations: true
+                )
 
                 decision = locked_email_decision(invitation)
                 validate_email_decision!(invitation, decision)
@@ -106,13 +110,15 @@ module LesliShield
         end
 
         def invitation_from_token!(token)
-            Invite.find_signed!(token, purpose: ACCEPTANCE_PURPOSE)
+            invitation = signed_invitation!(token)
+            validate_token_constraints!(invitation)
+            invitation
         end
 
         def signed_acceptance_url(invitation)
             token = invitation.signed_id(
                 purpose: ACCEPTANCE_PURPOSE,
-                expires_in: signed_link_lifetime(invitation)
+                expires_in: signed_token_lifetime(invitation)
             )
 
             Rails.application.routes.url_helpers.user_invitation_url(
@@ -163,12 +169,21 @@ module LesliShield
         end
 
         def lock_signed_invitation!(token)
-            signed_invitation = invitation_from_token!(token)
+            signed_invitation = signed_invitation!(token)
             Invite.lock.find(signed_invitation.id)
         end
 
-        def validate_acceptance!(invitation)
-            unless invitation.acceptance_available?
+        def signed_invitation!(token)
+            Invite.find_signed!(token, purpose: ACCEPTANCE_PURPOSE)
+        end
+
+        def validate_token_constraints!(invitation, lock_associations: false)
+            invitation_is_available = invitation.acceptance_available? &&
+                invitation.accepted_at.nil? &&
+                invitation.accepted_user_id.nil? &&
+                invitation.cancelled_at.nil?
+
+            unless invitation_is_available
                 invalid_invitation!(
                     invitation,
                     :base,
@@ -176,9 +191,29 @@ module LesliShield
                 )
             end
 
-            role = Lesli::Role.lock.find_by(id: invitation.role_id)
+            account_relation = relation_for(
+                Lesli::Account,
+                lock: lock_associations
+            )
+            account = account_relation.find_by(
+                id: invitation.account&.account_id
+            )
+
+            unless account&.active?
+                invalid_invitation!(
+                    invitation,
+                    :base,
+                    I18n.t("lesli_shield.invites.not_acceptable")
+                )
+            end
+
+            role_relation = relation_for(
+                Lesli::Role,
+                lock: lock_associations
+            )
+            role = role_relation.find_by(id: invitation.role_id)
             valid_role = role&.active? &&
-                role.account_id == invitation.account.account_id
+                role.account_id == account.id
             return role if valid_role
 
             invalid_invitation!(
@@ -264,22 +299,29 @@ module LesliShield
 
             transaction.after_commit do
                 InvitationMailer
-                    .invitation(invitation, acceptance_url)
+                    .account_invitation(invitation, acceptance_url)
                     .deliver_later
             end
         end
 
-        def signed_link_lifetime(invitation)
+        def signed_token_lifetime(invitation)
             remaining_lifetime = if invitation.expires_at.present?
                 invitation.expires_at - Time.current
             end
-            return remaining_lifetime if remaining_lifetime&.positive?
+
+            if remaining_lifetime&.positive?
+                return [TOKEN_LIFETIME, remaining_lifetime].min
+            end
 
             invalid_invitation!(
                 invitation,
                 :base,
                 I18n.t("lesli_shield.invites.not_acceptable")
             )
+        end
+
+        def relation_for(model, lock:)
+            lock ? model.lock : model.all
         end
 
         def action_mailer_url_options

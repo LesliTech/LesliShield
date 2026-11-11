@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "cgi"
 require "uri"
 
 module LesliShield
@@ -53,11 +54,87 @@ module LesliShield
             assert_equal [invitation.email], mail.to
             assert_equal I18n.t("lesli_shield.invites.mailer_subject"), mail.subject
 
-            acceptance_url = URI.extract(mail.text_part.body.to_s, %w[http https]).first
+            html = mail.body.decoded
+            acceptance_link = html.match(
+                /href="([^"]*invitation_token=[^"]+)"/
+            )
+            assert acceptance_link
+            acceptance_url = CGI.unescapeHTML(
+                acceptance_link[1]
+            )
             token = Rack::Utils.parse_query(URI(acceptance_url).query)
                 .fetch("invitation_token")
 
+            assert_includes html, invitation.account.account.name
+            assert_includes html, invitation.invited_by.full_name
+            assert_includes html, I18n.l(invitation.expires_at, format: :long)
+            assert_includes html,
+                I18n.t("lesli_shield.invites.mailer_ignore_notice")
             assert_equal invitation, @service.invitation_from_token!(token)
+        end
+
+        test "limits signed links to seven days" do
+            invitation = insert_invitation(
+                email: unique_email("token-lifetime"),
+                expires_at: 30.days.from_now
+            )
+            acceptance_url = @service.signed_acceptance_url(invitation)
+            token = Rack::Utils.parse_query(URI(acceptance_url).query)
+                .fetch("invitation_token")
+
+            travel 7.days + 1.second do
+                assert_raises(ActiveSupport::MessageVerifier::InvalidSignature) do
+                    @service.invitation_from_token!(token)
+                end
+            end
+        end
+
+        test "rejects a token when invitation timestamps are inconsistent" do
+            invitation = insert_invitation(email: unique_email("terminal"))
+            token = acceptance_token(invitation)
+            invitation.update_column(:cancelled_at, Time.current)
+
+            assert_raises(ActiveRecord::RecordInvalid) do
+                @service.invitation_from_token!(token)
+            end
+        end
+
+        test "rejects a token after the account is suspended" do
+            invitation = insert_invitation(email: unique_email("account"))
+            token = acceptance_token(invitation)
+            @context.fetch(:account).update!(status: :suspended)
+
+            assert_no_difference -> { Lesli::User.count } do
+                assert_raises(ActiveRecord::RecordInvalid) do
+                    @service.accept!(
+                        token: token,
+                        user_attributes: valid_user_attributes
+                    )
+                end
+            end
+        end
+
+        test "rejects a token after its role is disabled or removed" do
+            disabled_role_invitation = insert_invitation(
+                email: unique_email("disabled-role")
+            )
+            disabled_role_token = acceptance_token(disabled_role_invitation)
+            @context.fetch(:target_role).update!(active: false)
+
+            assert_raises(ActiveRecord::RecordInvalid) do
+                @service.invitation_from_token!(disabled_role_token)
+            end
+
+            @context.fetch(:target_role).update!(active: true)
+            missing_role_invitation = insert_invitation(
+                email: unique_email("missing-role")
+            )
+            missing_role_token = acceptance_token(missing_role_invitation)
+            missing_role_invitation.update_column(:role_id, nil)
+
+            assert_raises(ActiveRecord::RecordInvalid) do
+                @service.invitation_from_token!(missing_role_token)
+            end
         end
 
         test "rejects members and roles that the inviter cannot assign" do
@@ -226,6 +303,8 @@ module LesliShield
                 account_id: account_id,
                 uid: "OWNER-#{identifier}",
                 email: "owner-#{identifier}@example.com",
+                first_name: "Ada",
+                last_name: "Inviter",
                 encrypted_password: "",
                 active: true,
                 confirmed_at: timestamp,

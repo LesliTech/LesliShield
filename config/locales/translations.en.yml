@@ -14,8 +14,10 @@
       mailer_subject: You have been invited to Lesli
       mailer_title: You have been invited
       mailer_description: You have been invited to join %{account}.
+      mailer_invited_by: Invited by %{inviter}.
       mailer_action: Accept invitation
       mailer_expiration: This invitation expires on %{expiration}.
+      mailer_ignore_notice: If you did not expect this invitation, you can safely ignore this email.
       acceptance_title: Accept your invitation
       acceptance_description: Complete your profile to join %{account}.
       acceptance_email: Email address

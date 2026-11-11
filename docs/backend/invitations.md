@@ -60,9 +60,15 @@ initial validation cannot prevent another process from creating a user later.
 
 The primary administrative operation is **Create and send invitation**. The
 service creates the invitation in a transaction, generates a purpose-bound
-signed link whose lifetime cannot exceed `expires_at`, and schedules delivery
-only after the transaction commits. Resending performs the same policy and
-role checks before renewing the expiration and scheduling a new message.
+signed link with the `:account_invitation` purpose, a maximum lifetime of seven
+days, and a lifetime that cannot exceed `expires_at`. Delivery is scheduled
+only after the transaction commits. Resending performs the same policy and role
+checks before renewing the expiration and scheduling a new message.
+
+Resolving the token also requires a pending invitation without acceptance or
+cancellation timestamps, an active destination account, and an existing active
+role that still belongs to that account. Acceptance repeats these checks while
+holding database locks on the invitation, account, and role.
 
 The signed link opens the public invitation form. The invited address is
 readonly; the recipient supplies their profile and password. Invalid,

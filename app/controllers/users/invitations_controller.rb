@@ -38,10 +38,9 @@ class Users::InvitationsController < Lesli::ApplicationDeviseController
         @invitation = invitation_service.invitation_from_token!(
             @invitation_token
         )
-
-        render_not_found unless @invitation.acceptance_available?
     rescue ActiveSupport::MessageVerifier::InvalidSignature,
         ActiveRecord::RecordNotFound,
+        ActiveRecord::RecordInvalid,
         ActionController::ParameterMissing
         render_not_found
     end

@@ -74,7 +74,10 @@ module LesliShield
 
         # Only allow a list of trusted parameters through.
         def invite_params
-            params.require(:invite).permit(:email, :full_name, :telephone, :notes, :status)
+            # Lifecycle changes are server-owned operations. A browser must not
+            # be able to accept, cancel, expire, or reactivate an invitation by
+            # submitting a status value through the generic update endpoint.
+            params.require(:invite).permit(:email, :full_name, :telephone, :notes)
         end
     end
 end

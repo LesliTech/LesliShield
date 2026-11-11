@@ -1,6 +1,14 @@
 ---
 :en:
   lesli_shield:
+    invites:
+      button_create_and_send: Create and send invitation
+      button_creating_and_sending: Creating and sending invitation…
+      email_member: This person is already a member of the account.
+      email_other_account: This email address belongs to another account.
+      email_deleted: A deleted user already uses this email address.
+      email_existing_without_account: This email address cannot be invited.
+      invalid_status_transition: This invitation status transition is not allowed.
     devise/sessions:
       message_not_valid_credentials: Not valid credentials
       message_too_many_attempts: Too many login attempts. Try again later.

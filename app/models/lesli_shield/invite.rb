@@ -1,24 +1,132 @@
 module LesliShield
     class Invite < ApplicationRecord
+        class InvalidStatusTransition < StandardError; end
+
+        DEFAULT_EXPIRATION = 7.days
+        STATUS_TRANSITIONS = {
+            "pending" => %w[accepted cancelled expired],
+            "expired" => %w[pending],
+            "accepted" => [],
+            "cancelled" => []
+        }.freeze
+
         belongs_to :account, class_name: "LesliShield::Account"
         belongs_to :user, class_name: "Lesli::User"
 
-        validates :email, presence: true, on: :create
+        # Keep phase one compatible with the current database. The schema
+        # migration will rename expired_at in the next phase.
+        alias_attribute :expires_at, :expired_at
 
-        before_create :before_create_invite
-
-        enum :status, { 
-            created: 0, 
-            accepted: 1, 
+        enum :status, {
+            pending: 0,
+            accepted: 1,
             cancelled: 2,
-            sent: 5, 
-            requested: 6
-        }
+            expired: 3
+        }, default: :pending, validate: true
 
-        private 
+        before_validation :normalize_email
+        before_validation :set_default_expiration, on: :create
 
-        def before_create_invite
-            self.status = :created
+        validates :email,
+            presence: true,
+            format: { with: URI::MailTo::EMAIL_REGEXP }
+        validate :email_can_be_invited, on: :create
+        validate :status_transition_is_allowed, on: :update
+
+        class << self
+            def expiration_period
+                configured_expiration = Lesli.config.shield&.dig(
+                    :invitation_expiration
+                )
+
+                configured_expiration.presence || DEFAULT_EXPIRATION
+            end
+
+            def allowed_status_transition?(from:, to:)
+                STATUS_TRANSITIONS.fetch(from.to_s, []).include?(to.to_s)
+            end
+        end
+
+        # Accepting an invitation is intentionally a terminal operation. The
+        # acceptance service will call this only after creating the user,
+        # assigning its account and role, and confirming its email atomically.
+        def accept!
+            transition_to!(:accepted)
+        end
+
+        def cancel!
+            transition_to!(:cancelled)
+        end
+
+        def expire!
+            transition_to!(:expired)
+        end
+
+        # Resending is the only operation that can reactivate an expired
+        # invitation. No user record is created or modified here.
+        def resend!
+            transition_to!(
+                :pending,
+                expires_at: Time.current + self.class.expiration_period
+            )
+        end
+
+        def acceptance_available?
+            pending? && expires_at.present? && expires_at.future?
+        end
+
+        private
+
+        def normalize_email
+            self.email = email.to_s.strip.downcase.presence
+        end
+
+        def set_default_expiration
+            self.expires_at ||= Time.current + self.class.expiration_period
+        end
+
+        def email_can_be_invited
+            destination_account = account&.account
+            return if destination_account.blank? || email.blank?
+
+            decision = InvitationEmailPolicy.new(
+                account: destination_account,
+                email: email
+            ).evaluate
+            return if decision.allowed?
+
+            errors.add(
+                :email,
+                I18n.t("lesli_shield.invites.email_#{decision.status}")
+            )
+        end
+
+        def transition_to!(target_status, attributes = {})
+            unless self.class.allowed_status_transition?(
+                from: status,
+                to: target_status
+            )
+                raise InvalidStatusTransition,
+                    "cannot transition invitation from #{status} to #{target_status}"
+            end
+
+            update!(attributes.merge(status: target_status))
+        end
+
+        def status_transition_is_allowed
+            previous_status, next_status = status_change_to_be_saved
+            return if previous_status.nil?
+            return if self.class.allowed_status_transition?(
+                from: previous_status,
+                to: next_status
+            )
+
+            errors.add(
+                :status,
+                I18n.t("lesli_shield.invites.invalid_status_transition"),
+                from: previous_status,
+                to: next_status
+            )
         end
     end
 end

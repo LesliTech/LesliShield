@@ -155,6 +155,37 @@ module LesliShield
             )
         end
 
+        test "uses a native 303 redirect after Turbo creates an invitation" do
+            context = insert_account_context("turbo-create-redirect")
+            owner_role = insert_role(
+                context,
+                name: "turbo-create-owner",
+                permission_level: 100
+            )
+            target_role = insert_role(
+                context,
+                name: "turbo-create-member",
+                permission_level: 50
+            )
+            assign_role(context.fetch(:user), owner_role)
+
+            with_authenticated_request(context.fetch(:user)) do
+                post :create, params: {
+                    invite: {
+                        email: "turbo-create@example.com",
+                        role_id: target_role.id
+                    }
+                }, format: :turbo_stream
+            end
+
+            invitation = LesliShield::Invite.find_by!(
+                email: "turbo-create@example.com"
+            )
+            assert_response :see_other
+            assert_redirected_to invite_path(invitation)
+            refute_includes response.body, "Turbo.visit"
+        end
+
         test "renders status filters contextual actions and an empty state" do
             context = insert_account_context("index-ux")
             invite = insert_invite(

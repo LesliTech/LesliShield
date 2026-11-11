@@ -24,10 +24,7 @@ module LesliShield
             @invite = invitation_service.create_and_send!(invite_params)
 
             success(I18n.t("lesli_shield.invites.created_successfully"))
-            respond_with_lesli(
-                turbo: stream_redirection(invite_path(@invite)),
-                redirect: invite_path(@invite)
-            )
+            respond_with_invitation_redirect(@invite)
         rescue ActiveRecord::RecordInvalid => exception
             @invite = exception.record
             respond_with_lesli(
@@ -45,10 +42,7 @@ module LesliShield
             @invite = invitation_service.resend!(@invite)
 
             success(I18n.t("lesli_shield.invites.resent_successfully"))
-            respond_with_lesli(
-                turbo: stream_redirection(invite_path(@invite)),
-                redirect: invite_path(@invite)
-            )
+            respond_with_invitation_redirect(@invite)
         rescue Invite::InvalidStatusTransition,
             ActiveRecord::RecordInvalid => exception
             respond_with_lesli(
@@ -62,10 +56,7 @@ module LesliShield
             @invite = invitation_service.cancel!(@invite)
 
             success(I18n.t("lesli_shield.invites.cancelled_successfully"))
-            respond_with_lesli(
-                turbo: stream_redirection(invite_path(@invite)),
-                redirect: invite_path(@invite)
-            )
+            respond_with_invitation_redirect(@invite)
         rescue Invite::InvalidStatusTransition,
             ActiveRecord::RecordInvalid => exception
             respond_with_lesli(
@@ -102,6 +93,30 @@ module LesliShield
                 exception.respond_to?(:record)
 
             exception.message
+        end
+
+        def respond_with_invitation_redirect(invitation)
+            destination = invite_path(invitation)
+
+            if Lesli::ResponderInterface.const_defined?(
+                :NATIVE_TURBO_REDIRECTS,
+                false
+            )
+                return respond_with_lesli(redirect: destination)
+            end
+
+            # Compatibility with Lesli versions released before native Turbo
+            # redirects were part of ResponderInterface. This branch can be
+            # removed when Shield's minimum Lesli version includes that API.
+            respond_to do |format|
+                format.html do
+                    redirect_to destination, status: :see_other
+                end
+                format.turbo_stream do
+                    redirect_to destination, status: :see_other
+                end
+                format.json { head :ok }
+            end
         end
 
         def invite_params

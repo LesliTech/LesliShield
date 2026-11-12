@@ -30,26 +30,23 @@ module LesliShield
             cleanup_records
         end
 
-        test "concurrent saves leave one complete selection instead of a mixture" do
+        test "concurrent changes do not replace permissions from other requests" do
             ready = Queue.new
             start = Queue.new
-            requested_selections = [
-                [@first_action.id],
-                [@second_action.id]
-            ]
+            requested_action_ids = [@first_action.id, @second_action.id]
 
-            attempts = requested_selections.map do |action_ids|
+            attempts = requested_action_ids.map do |action_id|
                 Thread.new do
                     ActiveRecord::Base.connection_pool.with_connection do
                         actor = Lesli::User.find(@context.fetch(:user).id)
-                        actor.define_singleton_method(:log) { |**| true }
                         ready << true
                         start.pop
 
                         begin
-                            RolePermissionService.new(actor).apply!(
+                            RolePermissionService.new(actor).set!(
                                 role: @role.id,
-                                action_ids: action_ids
+                                action_id: action_id,
+                                enabled: true
                             )
                         rescue StandardError => exception
                             exception
@@ -69,7 +66,10 @@ module LesliShield
             end
 
             active_ids = @role.actions.order(:action_id).pluck(:action_id)
-            assert_includes requested_selections, active_ids
+            successful_action_ids = requested_action_ids.zip(results).filter_map do |action_id, result|
+                action_id if result.is_a?(Lesli::Role)
+            end
+            assert_equal successful_action_ids.sort, active_ids
             assert_not_nil @role.reload.modified_at
         end
 

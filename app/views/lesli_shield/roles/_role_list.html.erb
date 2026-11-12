@@ -2,8 +2,8 @@
     <table class="min-w-full divide-y divide-slate-200">
         <thead class="bg-slate-50">
             <tr>
-                <% %w[role status users permissions modified_at actions].each do |column| %>
-                    <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 <%= 'text-center' if %w[users permissions actions].include?(column) %>">
+                <% %w[role status users permissions modified_at deployment actions].each do |column| %>
+                    <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 <%= 'text-center' if %w[users permissions deployment actions].include?(column) %>">
                         <%= t("lesli_shield.roles.columns.#{column}") %>
                     </th>
                 <% end %>
@@ -39,6 +39,17 @@
                             <%= l(modified_at, format: :short) %>
                         </time>
                     </td>
+                    <td class="whitespace-nowrap px-5 py-4 text-center">
+                        <%= render "deployment_badge", role: role %>
+                        <% if role.deployed_at.present? %>
+                            <time
+                                datetime="<%= role.deployed_at.iso8601 %>"
+                                class="mt-1 block text-xs text-slate-500"
+                            >
+                                <%= l(role.deployed_at, format: :short) %>
+                            </time>
+                        <% end %>
+                    </td>
                     <td class="relative whitespace-nowrap px-5 py-4 text-center">
                         <%= render "management_menu", role: role %>
                     </td>
@@ -71,6 +82,7 @@
                     <span class="material-symbols text-base" aria-hidden="true">key</span>
                     <%= t("lesli_shield.roles.mobile.permissions", count: role[:actions].to_i) %>
                 </span>
+                <%= render "deployment_badge", role: role %>
             </div>
 
             <% modified_at = role.modified_at || role.updated_at %>
@@ -80,6 +92,14 @@
                     date: l(modified_at, format: :short)
                 ) %>
             </p>
+            <% if role.deployed_at.present? %>
+                <p class="mt-1 text-xs text-slate-500">
+                    <%= t(
+                        "lesli_shield.roles.mobile.deployed_at",
+                        date: l(role.deployed_at, format: :short)
+                    ) %>
+                </p>
+            <% end %>
 
             <%= link_to role.protected_role? ? t("lesli_shield.roles.action_view") : t("lesli_shield.roles.action_manage"),
                 role_path(role),

@@ -38,6 +38,22 @@ module LesliShield
             manageable_by?(actor) && !system_role? && !assigned?
         end
 
+        # Permission changes and privilege compilation intentionally happen at
+        # different times. These methods expose that state without using
+        # updated_at, which also changes when ordinary role fields are edited.
+        def permissions_pending_deployment?
+            modified_at.present? && (
+                deployed_at.blank? || modified_at > deployed_at
+            )
+        end
+
+        def permissions_deployment_status
+            return :pending if permissions_pending_deployment?
+            return :never_deployed if deployed_at.blank?
+
+            :deployed
+        end
+
         private
 
         # Account initialization creates stable codes such as owner1, admin2,

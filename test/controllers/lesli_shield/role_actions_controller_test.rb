@@ -55,7 +55,13 @@ module LesliShield
                 get :index, params: { role_id: role.id }
                 assert_response :forbidden
 
-                patch :update, params: { role_id: role.id, action_ids: [] }
+                post :create, params: {
+                    role_id: role.id,
+                    action_id: 1
+                }
+                assert_response :forbidden
+
+                delete :destroy, params: { role_id: role.id, id: 1 }
                 assert_response :forbidden
             end
 
@@ -69,12 +75,18 @@ module LesliShield
                 get :index, params: { role_id: role.id }
                 assert_response :success
 
-                patch :update, params: { role_id: role.id, action_ids: [] }
+                post :create, params: {
+                    role_id: role.id,
+                    action_id: 1
+                }
+                assert_response :forbidden
+
+                delete :destroy, params: { role_id: role.id, id: 1 }
                 assert_response :forbidden
             end
         end
 
-        test "saves the complete selection without deploying the role" do
+        test "updates one permission per request without deploying the role" do
             context = insert_account_context("action-selection")
             role = insert_role(
                 context,
@@ -94,24 +106,46 @@ module LesliShield
             )
 
             with_authorized_request(context.fetch(:user)) do
-                patch :update,
+                post :create,
                     params: {
                         role_id: role.id,
-                        action_ids: [next_selection.action_id]
+                        action_id: next_selection.action_id
                     },
                     format: :turbo_stream
 
-                assert_response :see_other
+                assert_response :success
+                assert_select "turbo-stream[action='replace']" \
+                    "[target='shield-role-actions-form']",
+                    count: 1
+                assert_select "turbo-stream[action='replace']" \
+                    "[target='role-permission-deployment-status']",
+                    count: 1
+                assert_includes response.body,
+                    I18n.t("lesli_shield.roles.deployment_statuses.pending")
             end
 
-            assert_not_nil previous_selection.reload.deleted_at
+            assert_nil previous_selection.reload.deleted_at
             assert_nil next_selection.reload.deleted_at
             assert_not_nil role.reload.modified_at
             assert_equal deployed_at.to_i, role.deployed_at.to_i
             assert_equal cached_privilege, role.privileges.find(cached_privilege.id)
+
+            with_authorized_request(context.fetch(:user)) do
+                delete :destroy,
+                    params: {
+                        role_id: role.id,
+                        id: previous_selection.action_id
+                    },
+                    format: :json
+
+                assert_response :success
+            end
+
+            assert_not_nil previous_selection.reload.deleted_at
+            assert_nil next_selection.reload.deleted_at
         end
 
-        test "renders one bulk form and keeps the explicit deploy action" do
+        test "renders the permission workspace and keeps deploy separate" do
             context = insert_account_context("action-form")
             role = insert_role(
                 context,
@@ -119,22 +153,39 @@ module LesliShield
                 permission_level: 50
             )
             selected = insert_role_action(role, label: "Selected permission")
+            custom_action = selected.action.parent.children.create!(
+                action: "resend",
+                identifier: "resend",
+                label: "Resend invitation"
+            )
+            role.update_columns(
+                modified_at: Time.current,
+                deployed_at: 1.day.ago
+            )
 
             with_authorized_request(context.fetch(:user)) do
                 get :index, params: { role_id: role.id }
 
                 assert_response :success
+                assert_select "[data-role-deployment-status='pending']",
+                    text: I18n.t("lesli_shield.roles.deployment_statuses.pending"),
+                    count: 1
                 assert_select "nav a[href='#{role_path(role, anchor: "general")}']", count: 0
-                assert_select "form[action='#{role_actions_path(role)}']" do
-                    assert_select "input[name='action_ids[]'][value='#{selected.action_id}'][checked]",
-                        count: 1
-                    assert_select "button[type='submit']",
-                        text: "Save permissions",
-                        count: 1
+                assert_select "form[action='#{role_actions_path(role)}'][method='get']" do
+                    assert_select "input[type='search'][name='search']", count: 1
                 end
+                assert_select "form[action='#{role_action_path(role, selected.action_id)}']" do
+                    assert_select "input[name='_method'][value='delete']", count: 1
+                    assert_select "button[role='switch'][aria-checked='true']", count: 1
+                end
+                assert_select "form[action='#{role_actions_path(role)}'][method='post'] " \
+                    "input[name='action_id'][value='#{custom_action.id}']",
+                    count: 1
+                assert_select "button[role='switch'][aria-checked='false']", minimum: 1
                 assert_select "form[action='#{deploy_role_path(role)}']",
                     text: /Apply permissions \(deploy\)/,
                     count: 1
+                assert_select "script[src*='lesli_shield/role_permissions']", count: 0
                 assert_select ".mini-toggle", count: 0
             end
         end
@@ -149,10 +200,10 @@ module LesliShield
             selection = insert_role_action(role, label: "Unchanged")
 
             with_authorized_request(context.fetch(:user)) do
-                patch :update,
+                post :create,
                     params: {
                         role_id: role.id,
-                        action_ids: [selection.action.parent_id, "invalid"]
+                        action_id: selection.action.parent_id
                     },
                     format: :turbo_stream
 
@@ -163,7 +214,7 @@ module LesliShield
             assert_nil role.reload.modified_at
         end
 
-        test "exposes one bulk update route and no individual mutation routes" do
+        test "exposes create and destroy routes for permission toggles" do
             action_routes = LesliShield::Engine.routes.routes.select do |route|
                 route.defaults[:controller] == "lesli_shield/role/actions"
             end
@@ -171,16 +222,20 @@ module LesliShield
                 [route.defaults[:action], route.verb, route.path.spec.to_s]
             end
 
-            assert_equal 2, action_routes.length
+            assert_equal 3, action_routes.length
             assert route_contract.any? do |action, verb, path|
                 action == "index" && verb.match?("GET") &&
                     !path.include?(":id")
             end
             assert route_contract.any? do |action, verb, path|
-                action == "update" && verb.match?("PATCH") &&
+                action == "create" && verb.match?("POST") &&
                     !path.include?(":id")
             end
-            refute route_contract.any? { |action, _verb, _path| action == "destroy" }
+            assert route_contract.any? do |action, verb, path|
+                action == "destroy" && verb.match?("DELETE") &&
+                    path.include?(":id")
+            end
+            refute route_contract.any? { |action, _verb, _path| action == "update" }
         end
 
         test "does not expose routes for the unimplemented privileges controller" do

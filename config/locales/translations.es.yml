@@ -82,7 +82,12 @@
         users: Usuarios
         permissions: Permisos activos
         modified_at: Última modificación
+        deployment: Último deploy
         actions: Acciones
+      deployment_statuses:
+        pending: Cambios pendientes
+        deployed: Aplicado
+        never_deployed: Nunca desplegado
       mobile:
         users:
           one: 1 usuario
@@ -91,6 +96,7 @@
           one: 1 permiso
           other: "%{count} permisos"
         modified_at: "Modificado: %{date}"
+        deployed_at: "Último deploy: %{date}"
       pagination:
         label: Paginación de roles
         summary: "Mostrando %{count} de %{total} roles"
@@ -103,13 +109,40 @@
       permissions:
         navigation: Permisos
         title: Permisos de %{role}
-        description: Guarda la selección completa antes de ejecutar el deploy. El deploy reconstruye el caché efectivo de autorización bajo demanda.
-        save: Guardar permisos
-        saving: Guardando permisos…
-        saved: Permisos guardados correctamente. Ejecuta el deploy para aplicarlos.
+        tools: Herramientas de permisos
+        search_label: Buscar permisos
+        search_placeholder: Buscar módulo, recurso o acción
+        search: Buscar
+        clear_search: Limpiar
+        toggle: "%{action}: %{state}"
+        engines: Módulos
+        engine_navigation: Navegación por módulos
+        resource: Recurso
+        standard_description: Operaciones convencionales de los controladores Rails.
+        custom_description: Operaciones específicas de cada controlador fuera del ciclo CRUD convencional.
+        module_summary: "%{selected} de %{total} permisos habilitados"
+        not_available: No disponible
+        no_matches: No encontramos permisos con esta búsqueda
+        no_matches_hint: Prueba con otro módulo, recurso o acción.
+        update_success: Permiso actualizado correctamente.
+        update_error: No fue posible actualizar el permiso. El cambio fue revertido.
         deploy: Aplicar permisos (deploy)
         deployed: Los permisos fueron aplicados correctamente.
         empty: No hay permisos disponibles en el catálogo.
+        groups:
+          standard: Operaciones CRUD
+          custom: Acciones personalizadas
+        states:
+          enabled: Habilitado
+          disabled: Deshabilitado
+        standard_actions:
+          index: Listar
+          show: Ver
+          new: Nuevo
+          edit: Editar
+          create: Crear
+          update: Actualizar
+          destroy: Eliminar
       errors:
         duplicate_name: ya está siendo utilizado por otro rol de esta cuenta
         permission_level: El nivel de permiso debe estar entre 0 y %{maximum}.

@@ -69,10 +69,15 @@ module LesliShield
                 action[:action] == "show"
             end
             assert_equal "Listar invitaciones", index_permission[:label]
+            assert_equal I18n.t(
+                "lesli_shield.roles.permissions.standard_actions.index"
+            ), index_permission[:display_label]
             assert_equal "index", index_permission[:identifier]
+            assert index_permission[:standard]
             assert index_permission[:assigned]
             assert_equal assigned.id, index_permission[:role_action_id]
             refute show_permission[:assigned]
+            assert show_permission[:standard]
             assert_equal removed.id, show_permission[:role_action_id]
             refute(
                 engine[:resources].any? do |entry|
@@ -81,8 +86,8 @@ module LesliShield
             )
         end
 
-        test "applies selections in bulk without compiling effective privileges" do
-            context = insert_account_context("permission-apply")
+        test "updates one permission without compiling effective privileges" do
+            context = insert_account_context("permission-update")
             role = insert_role(
                 context,
                 name: "Applied role",
@@ -109,73 +114,81 @@ module LesliShield
                 active: true
             )
             service = RolePermissionService.new(context.fetch(:user))
-            audit_events = capture_audit_events(context.fetch(:user))
 
-            service.apply!(
+            service.set!(
                 role: role,
-                action_ids: [selected_action.id.to_s]
+                action_id: selected_action.id.to_s,
+                enabled: true
             )
 
-            assert_not_nil previous_selection.reload.deleted_at
+            assert_nil previous_selection.reload.deleted_at
             assert role.actions.exists?(action_id: selected_action.id)
             assert_not_nil role.reload.modified_at
             assert_equal deployed_at.to_i, role.deployed_at.to_i
             assert_equal privilege, role.privileges.find(privilege.id)
-            assert_equal 1, audit_events.length
-            assert_equal "role_permissions_saved",
-                audit_events.first.fetch(:operation)
 
             modified_at = role.modified_at
-            service.apply!(role: role, action_ids: [selected_action.id])
+            service.set!(
+                role: role,
+                action_id: selected_action.id,
+                enabled: true
+            )
             assert_equal modified_at, role.reload.modified_at
-            assert_equal 1, audit_events.length
+
+            service.set!(
+                role: role,
+                action_id: previous_action.id,
+                enabled: false
+            )
+            assert_not_nil previous_selection.reload.deleted_at
+            assert role.actions.exists?(action_id: selected_action.id)
 
             unknown_error = assert_raises(
                 RolePermissionService::UnknownActionsError
             ) do
-                service.apply!(
+                service.set!(
                     role: role,
-                    action_ids: [resource.id, "invalid"]
+                    action_id: resource.id,
+                    enabled: true
                 )
             end
             assert_includes unknown_error.action_ids, resource.id
-            assert_includes unknown_error.action_ids, "invalid"
+
+            malformed_error = assert_raises(
+                RolePermissionService::UnknownActionsError
+            ) do
+                service.set!(role: role, action_id: "invalid", enabled: true)
+            end
+            assert_includes malformed_error.action_ids, "invalid"
         end
 
-        test "rolls permission selections back when audit persistence fails" do
-            context = insert_account_context("permission-rollback")
+        test "does not audit changes to the permission selection" do
+            context = insert_account_context("permission-without-audit")
             role = insert_role(
                 context,
-                name: "Permission rollback role",
+                name: "Permission without audit role",
                 permission_level: 50
             )
             resource = create_resource(
                 engine: "lesli_shield",
-                identifier: "Rollback",
-                label: "Rollback",
-                route: "lesli_shield/rollback"
+                identifier: "WithoutAudit",
+                label: "Without audit",
+                route: "lesli_shield/without_audit"
             )
-            previous_action = create_action(resource, action: "index", label: "Index")
-            next_action = create_action(resource, action: "show", label: "Show")
-            previous_selection = Role::Action.create!(
-                role: role,
-                action: previous_action
-            )
+            action = create_action(resource, action: "index", label: "Index")
             actor = context.fetch(:user)
             actor.define_singleton_method(:log) do |**|
-                raise ActiveRecord::RecordInvalid
+                raise "permission selection must not emit audit events"
             end
 
-            assert_raises(ActiveRecord::RecordInvalid) do
-                RolePermissionService.new(actor).apply!(
-                    role: role,
-                    action_ids: [next_action.id]
-                )
-            end
+            RolePermissionService.new(actor).set!(
+                role: role,
+                action_id: action.id,
+                enabled: true
+            )
 
-            assert_nil previous_selection.reload.deleted_at
-            refute role.actions.exists?(action_id: next_action.id)
-            assert_nil role.reload.modified_at
+            assert role.actions.exists?(action_id: action.id)
+            assert_not_nil role.reload.modified_at
         end
 
         test "duplicates only active catalog selections" do
@@ -277,7 +290,11 @@ module LesliShield
 
             assert_raises(ActiveRecord::RecordNotFound) { service.matrix(owner) }
             assert_raises(ActiveRecord::RecordNotFound) do
-                service.apply!(role: foreign_role, action_ids: [])
+                service.set!(
+                    role: foreign_role,
+                    action_id: 1,
+                    enabled: true
+                )
             end
         end
 
@@ -300,12 +317,5 @@ module LesliShield
             )
         end
 
-        def capture_audit_events(actor)
-            events = []
-            actor.define_singleton_method(:log) do |**attributes|
-                events << attributes
-            end
-            events
-        end
     end
 end

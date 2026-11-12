@@ -4,7 +4,6 @@ module LesliShield
     # Defines the durable audit vocabulary for role administration.
     class RoleAudit
         EVENT_DESCRIPTIONS = {
-            "role_permissions_saved" => "Role permissions saved",
             "role_privileges_deployed" => "Role privileges deployed"
         }.freeze
 

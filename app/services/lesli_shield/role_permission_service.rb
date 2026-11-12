@@ -43,7 +43,9 @@ module LesliShield
             build_matrix(records)
         end
 
-        def apply!(role:, action_ids:)
+        # Persists one checkbox change. The role lock keeps simultaneous
+        # requests from losing changes made to other permissions.
+        def set!(role:, action_id:, enabled:)
             role = manageable_role!(role)
 
             role.with_lock do
@@ -51,22 +53,20 @@ module LesliShield
                 # while this request waited for the lock.
                 manageable_role!(role.id)
 
-                selected_ids = validate_action_ids!(action_ids)
+                action_id = validate_action_id!(action_id)
                 timestamp = Time.current
-                changed = synchronize_actions!(role, selected_ids, timestamp)
-
-                if changed
-                    role.update_columns(
-                        modified_at: timestamp,
-                        updated_at: timestamp
-                    )
-                    RoleAudit.record!(
-                        :role_permissions_saved,
-                        role: role,
-                        actor: actor,
-                        source: self.class
-                    )
+                changed = if enabled
+                    enable_action!(role, action_id, timestamp)
+                else
+                    disable_action!(role, action_id, timestamp)
                 end
+
+                next unless changed
+
+                role.update_columns(
+                    modified_at: timestamp,
+                    updated_at: timestamp
+                )
             end
 
             role
@@ -197,19 +197,33 @@ module LesliShield
         def build_action(record)
             assigned = record[:role_action_id].present? &&
                 record[:role_action_deleted_at].nil?
+            action_name = record[:action_name].to_s
+            standard = STANDARD_ACTION_ORDER.include?(action_name)
+            label = readable_label(
+                record[:action_label],
+                record[:action_identifier],
+                action_name
+            )
 
             {
                 id: record[:action_id],
                 identifier: record[:action_identifier],
-                label: readable_label(
-                    record[:action_label],
-                    record[:action_identifier],
-                    record[:action_name]
-                ),
-                action: record[:action_name],
+                label: label,
+                display_label: standard_action_label(action_name, label),
+                action: action_name,
+                standard: standard,
                 assigned: assigned,
                 role_action_id: record[:role_action_id]
             }
+        end
+
+        def standard_action_label(action_name, fallback)
+            return fallback unless STANDARD_ACTION_ORDER.include?(action_name)
+
+            I18n.t(
+                "lesli_shield.roles.permissions.standard_actions.#{action_name}",
+                default: fallback
+            )
         end
 
         def action_sort_key(action_name)
@@ -234,21 +248,13 @@ module LesliShield
             metadata&.dig(:name).presence || engine_name.to_s.camelize
         end
 
-        def validate_action_ids!(action_ids)
-            requested_ids = Array(action_ids).compact
-            parsed_ids = requested_ids.map do |action_id|
-                Integer(action_id, exception: false)
-            end
-            malformed_ids = requested_ids.zip(parsed_ids).filter_map do |raw_id, parsed_id|
-                raw_id if parsed_id.nil?
-            end
-            normalized_ids = parsed_ids.compact.uniq.sort
-            existing_ids = active_catalog.where(id: normalized_ids).pluck(:id).sort
-            invalid_ids = malformed_ids + (normalized_ids - existing_ids)
+        def validate_action_id!(action_id)
+            normalized_id = Integer(action_id, exception: false)
+            valid = normalized_id && active_catalog.exists?(id: normalized_id)
 
-            raise UnknownActionsError, invalid_ids if invalid_ids.any?
+            raise UnknownActionsError, [action_id] unless valid
 
-            normalized_ids
+            normalized_id
         end
 
         def synchronize_actions!(role, selected_ids, timestamp)
@@ -263,6 +269,39 @@ module LesliShield
             insert_actions!(role, selected_ids - existing_ids, timestamp)
             activate_selected_actions!(existing_actions, selected_ids, timestamp)
             deactivate_unselected_actions!(existing_actions, selected_ids, timestamp)
+            true
+        end
+
+        def enable_action!(role, action_id, timestamp)
+            actions = role.actions.with_deleted
+            action = actions.find_by(action_id: action_id)
+            return false if action && action.deleted_at.nil?
+
+            if action
+                actions.where(id: action.id).update_all(
+                    deleted_at: nil,
+                    updated_at: timestamp
+                )
+            else
+                Role::Action.create!(
+                    role: role,
+                    action_id: action_id,
+                    created_at: timestamp,
+                    updated_at: timestamp
+                )
+            end
+
+            true
+        end
+
+        def disable_action!(role, action_id, timestamp)
+            action = role.actions.find_by(action_id: action_id)
+            return false unless action
+
+            action.update_columns(
+                deleted_at: timestamp,
+                updated_at: timestamp
+            )
             true
         end
 

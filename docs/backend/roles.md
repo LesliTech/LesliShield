@@ -45,7 +45,7 @@ non-deleted role actions.
 ## Permission service
 
 `LesliShield::RolePermissionService` owns permission selection through
-`matrix`, `apply!`, `duplicate_from!`, and `effective_permissions`.
+`matrix`, `set!`, `duplicate_from!`, and `effective_permissions`.
 
 The matrix begins with every non-deleted action whose parent resource is also
 non-deleted. It left-joins the selected role actions so unassigned permissions
@@ -53,12 +53,13 @@ remain visible, groups resources by engine, and exposes readable labels
 separately from technical engine, route, identifier, and action names. Standard
 CRUD actions use a fixed order; custom actions follow alphabetically.
 
-`apply!(role:, action_ids:)` is the only permission-selection mutation. It
-locks the role, revalidates the actor's account and permission boundary,
-validates every submitted catalog ID, and activates or deactivates the complete
-selection in one transaction. A real change updates `modified_at` and records
-one `role_permissions_saved` audit event. A repeated identical request is a
-no-op, so it does not create duplicate rows, timestamps, or audit events.
+`set!(role:, action_id:, enabled:)` changes one permission selection. It locks
+the role, revalidates the actor's account and permission boundary, validates
+the submitted catalog ID, and activates or deactivates only that selection. A
+real change updates `modified_at`; repeating the same state is a no-op, so it
+does not create duplicate rows or update timestamps. Editing the selection is
+not audited. The later deploy operation is audited because it changes the
+permissions that authorize requests.
 
 Saving selections does not rebuild the effective privilege cache.
 `duplicate_from!` follows the same separation. Cache compilation remains an
@@ -83,10 +84,11 @@ independent privileges:
 | Delete a role | `lesli_shield/roles#destroy` |
 | Deploy effective privileges | `lesli_shield/roles#deploy` |
 | View permissions | `lesli_shield/role/actions#index` |
-| Save the complete permission selection | `lesli_shield/role/actions#update` |
+| Enable one permission | `lesli_shield/role/actions#create` |
+| Disable one permission | `lesli_shield/role/actions#destroy` |
 
 Having one of these privileges never implies another. The nested permission
-controller scopes the role to the current account and validates every submitted
+controller scopes the role to the current account and validates the submitted
 ID against the active permission catalog before changing the selection.
 
 ## Deactivation
@@ -103,13 +105,29 @@ are selections from that catalog and must never be used as the catalog itself.
 This guarantees that a newly created role can display every available action,
 including actions it has never been granted.
 
-The permissions form submits every selected action in one collection-level
-PATCH request. There are no per-action PATCH or DELETE routes, no request per
-toggle, and no dependency on a computed `active == 1` value.
+Every visual checkbox is its own Rails `button_to` form. Enabling it sends
+`POST /roles/:role_id/actions`; disabling it sends
+`DELETE /roles/:role_id/actions/:id`. The server changes only that action, so a
+request cannot replace changes made by another control. Turbo replaces the
+permission matrix with the persisted server state and reports the result; this
+feature has no page-specific JavaScript.
 
 Editing a role's selected actions does not rebuild the effective privilege
 cache automatically. Compilation is intentionally performed on demand through
 the explicit `deploy` operation because rebuilding the cache can be expensive.
+
+The role exposes its deployment state by comparing permission-specific
+timestamps. `modified_at` records the last real selection change and
+`deployed_at` records the last successful cache compilation. A role has pending
+changes when `modified_at` is present and newer than `deployed_at`; `updated_at`
+is deliberately ignored because ordinary role edits also change it.
+
+The administrative interface presents conventional Rails controller actions
+in a compact table per engine. Controller-specific actions are kept in a
+separate, expandable section grouped by resource. Search is a regular `GET`
+form, and each permission toggle is persisted immediately. On smaller screens
+each table row becomes a stacked resource card, so horizontal scrolling is not
+required.
 
 Deployment locks and revalidates the selected role, deletes the previous cache,
 and rebuilds it completely from the active selection. Obsolete cache rows are

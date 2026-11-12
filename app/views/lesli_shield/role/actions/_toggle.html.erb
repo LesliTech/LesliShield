@@ -1,0 +1,32 @@
+<%
+enabled = action[:assigned]
+path = if enabled
+    role_action_path(@role, action[:id], search: @search.presence)
+else
+    role_actions_path(@role, search: @search.presence)
+end
+method = enabled ? :delete : :post
+request_params = enabled ? {} : { action_id: action[:id] }
+label = t(
+    "lesli_shield.roles.permissions.toggle",
+    action: action[:display_label],
+    state: t("lesli_shield.roles.permissions.states.#{enabled ? 'enabled' : 'disabled'}")
+)
+%>
+
+<%= button_to(
+    path,
+    method: method,
+    params: request_params,
+    form: { class: "shrink-0" },
+    class: class_names(
+        "inline-flex size-6 items-center justify-center rounded-md border transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-500/20",
+        "border-sky-600 bg-sky-600 text-white hover:bg-sky-700" => enabled,
+        "border-slate-300 bg-white text-transparent hover:border-sky-500" => !enabled
+    ),
+    role: "switch",
+    aria: { checked: enabled, label: label },
+    data: { turbo_submits_with: "…" }
+) do %>
+    <span class="material-symbols text-lg" aria-hidden="true">check</span>
+<% end %>

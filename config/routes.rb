@@ -77,9 +77,7 @@ LesliShield::Engine.routes.draw do
             post :duplicate
         end
         scope module: :role do 
-            resources :actions, only: :index do
-                patch :update, on: :collection, path: ""
-            end
+            resources :actions, only: [:index, :create, :destroy]
         end
     end
 

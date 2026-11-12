@@ -65,6 +65,26 @@ module LesliShield
             refute system_role.deletable_by?(actor)
         end
 
+        test "reports permission deployment state from permission timestamps" do
+            role = build_role
+
+            assert_equal :never_deployed, role.permissions_deployment_status
+            refute_predicate role, :permissions_pending_deployment?
+
+            role.modified_at = 2.minutes.ago
+            assert_equal :pending, role.permissions_deployment_status
+            assert_predicate role, :permissions_pending_deployment?
+
+            role.deployed_at = 1.minute.ago
+            role.updated_at = Time.current
+            assert_equal :deployed, role.permissions_deployment_status
+            refute_predicate role, :permissions_pending_deployment?
+
+            role.modified_at = Time.current
+            assert_equal :pending, role.permissions_deployment_status
+            assert_predicate role, :permissions_pending_deployment?
+        end
+
         test "inactive roles preserve assignments and permissions without authorizing" do
             context = insert_authorization_context
             user = context.fetch(:user)

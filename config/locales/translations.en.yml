@@ -82,7 +82,12 @@
         users: Users
         permissions: Active permissions
         modified_at: Last modified
+        deployment: Last deploy
         actions: Actions
+      deployment_statuses:
+        pending: Changes pending
+        deployed: Applied
+        never_deployed: Never deployed
       mobile:
         users:
           one: 1 user
@@ -91,6 +96,7 @@
           one: 1 permission
           other: "%{count} permissions"
         modified_at: "Modified: %{date}"
+        deployed_at: "Last deploy: %{date}"
       pagination:
         label: Roles pagination
         summary: "Showing %{count} of %{total} roles"
@@ -103,13 +109,40 @@
       permissions:
         navigation: Permissions
         title: "%{role} permissions"
-        description: Save the complete selection before deploying. Deploy rebuilds the effective authorization cache on demand.
-        save: Save permissions
-        saving: Saving permissions…
-        saved: Permissions saved successfully. Deploy them when you are ready.
+        tools: Permission tools
+        search_label: Search permissions
+        search_placeholder: Search module, resource, or action
+        search: Search
+        clear_search: Clear
+        toggle: "%{action}: %{state}"
+        engines: Modules
+        engine_navigation: Module navigation
+        resource: Resource
+        standard_description: Conventional Rails controller operations.
+        custom_description: Controller-specific operations outside the conventional CRUD lifecycle.
+        module_summary: "%{selected} of %{total} permissions enabled"
+        not_available: Not available
+        no_matches: No permissions match this search
+        no_matches_hint: Try another module, resource, or action.
+        update_success: Permission updated successfully.
+        update_error: The permission could not be updated. The change was reverted.
         deploy: Apply permissions (deploy)
         deployed: Permissions were applied successfully.
         empty: There are no permissions available in the catalog.
+        groups:
+          standard: CRUD operations
+          custom: Custom actions
+        states:
+          enabled: Enabled
+          disabled: Disabled
+        standard_actions:
+          index: List
+          show: View
+          new: New
+          edit: Edit
+          create: Create
+          update: Update
+          destroy: Delete
       errors:
         duplicate_name: is already used by another role in this account
         permission_level: The permission level must be between 0 and %{maximum}.

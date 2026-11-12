@@ -347,6 +347,10 @@ module LesliShield
                 permission_level: 90,
                 system_name: "admin"
             )
+            system_role.update_columns(
+                modified_at: 2.minutes.ago,
+                deployed_at: 1.minute.ago
+            )
             insert_role(
                 context,
                 name: "Support team",
@@ -370,6 +374,9 @@ module LesliShield
                 assert_select "tbody tr", count: 1
                 assert_select "tbody tr a[data-turbo-frame='_top']",
                     text: system_role.name
+                assert_select "tbody tr [data-role-deployment-status='deployed']",
+                    text: I18n.t("lesli_shield.roles.deployment_statuses.deployed"),
+                    count: 1
                 assert_select ".md\\:hidden article", count: 1
                 assert_select "[data-turbo-submits-with]"
             end

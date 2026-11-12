@@ -307,9 +307,6 @@
   .justify-center {
     justify-content: center;
   }
-  .justify-end {
-    justify-content: flex-end;
-  }
   .gap-1 {
     gap: var(--spacing);
   }
@@ -1098,6 +1095,9 @@
     }
     .xl\:table-row-group {
       display: table-row-group;
+    }
+    .xl\:grid-cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
     .xl\:flex-col {
       flex-direction: column;

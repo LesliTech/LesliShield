@@ -58,6 +58,10 @@ module LesliShield
                 Lesli::User.include(LesliShield::UserSecurity)
             end
 
+            unless Lesli::Role < LesliShield::RoleManagement
+                Lesli::Role.include(LesliShield::RoleManagement)
+            end
+
             # Compatibility for core versions whose Devise base controller did
             # not explicitly expose Lesli helpers to isolated engines.
             devise_controller = Lesli::ApplicationDeviseController

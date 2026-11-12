@@ -18,6 +18,10 @@ module LesliShield
             assert Lesli::User < LesliShield::UserSecurity
         end
 
+        test "engine extends Lesli roles with the management contract" do
+            assert Lesli::Role < LesliShield::RoleManagement
+        end
+
         test "engine installs its Devise authentication implementation" do
             assert Lesli::User < LesliShield::UserAuthentication
 

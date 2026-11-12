@@ -174,8 +174,6 @@ module LesliShield
                 :active,
                 :description,
                 :path_default,
-                :path_limited,
-                :isolated,
                 :permission_level
             )
         end

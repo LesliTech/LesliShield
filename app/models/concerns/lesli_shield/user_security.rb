@@ -51,7 +51,10 @@ module LesliShield
         # to perform a specific action in a specific controller
         def has_privileges_for?(controller, action)
             begin
-                return self.privileges.where(
+                active_role_ids = roles.where(active: true).select(:id)
+
+                return Role::Privilege.where(
+                    role_id: active_role_ids,
                     controller: controller,
                     action: action,
                     active: true

@@ -27,6 +27,7 @@ module RoleSecurityTestHelpers
             account: Lesli::Account.find(account_id),
             user: Lesli::User.find(user_id)
         }
+        create_engine_accounts(context.fetch(:account))
         manager_role = insert_role(
             context,
             name: "Manager #{identifier}",
@@ -34,6 +35,14 @@ module RoleSecurityTestHelpers
         )
         assign_role(context.fetch(:user), manager_role)
         context.merge(manager_role: manager_role)
+    end
+
+    # Controller views and audited mutations depend on the account extensions
+    # provided by the mounted engines. Build those extensions explicitly here
+    # because insert_all! intentionally skips the production callbacks.
+    def create_engine_accounts(account)
+        LesliAudit::Account.create!(account: account)
+        LesliBell::Account.create!(account: account)
     end
 
     def insert_role(context, name:, permission_level:, system_name: nil)

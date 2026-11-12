@@ -83,10 +83,11 @@ module LesliShield
         def deploy
             RolePrivilegeDeploymentService.new(current_user).deploy!(@role)
             success(I18n.t("lesli_shield.roles.permissions.deployed"))
+            destination = permission_index_path
             respond_with_lesli(
-                turbo: stream_redirection(role_actions_path(@role)),
+                turbo: stream_redirection(destination),
                 json: { role_id: @role.id },
-                redirect: role_actions_path(@role),
+                redirect: destination,
                 status: :see_other
             )
         end
@@ -95,6 +96,15 @@ module LesliShield
 
         def role_service
             @role_service ||= RoleService.new(current_user, query)
+        end
+
+        def permission_index_path
+            options = { search: params[:search].presence }
+            if params[:engine_slug].present?
+                engine_role_actions_path(@role, engine_slug: params[:engine_slug], **options)
+            else
+                role_actions_path(@role, **options)
+            end
         end
 
         def set_visible_role

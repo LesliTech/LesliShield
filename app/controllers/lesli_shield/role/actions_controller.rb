@@ -3,9 +3,9 @@
 module LesliShield
     class Role::ActionsController < ApplicationController
         before_action :set_role
+        before_action :load_permission_matrix
 
         def index
-            load_permission_matrix
         end
 
         def create
@@ -48,13 +48,13 @@ module LesliShield
                     action_id: action_id.to_i,
                     enabled: enabled
                 },
-                redirect: role_actions_path(@role, search: search_term.presence)
+                redirect: permission_index_path
             )
         rescue RolePermissionService::Error => exception
             respond_with_lesli(
                 turbo: stream_notification_danger(exception.message),
                 json: { message: exception.message },
-                redirect: role_actions_path(@role, search: search_term.presence),
+                redirect: permission_index_path,
                 status: :unprocessable_content
             )
         end
@@ -73,10 +73,28 @@ module LesliShield
 
         def load_permission_matrix
             @permission_matrix = role_permission_service.matrix(@role)
-            @search = search_term
-            return if @search.blank?
+            @permission_engines = @permission_matrix.map do |engine|
+                {
+                    slug: engine[:engine].tr("_", "-"),
+                    label: engine[:label],
+                    count: engine[:resources].sum { |resource| resource[:actions].size }
+                }
+            end
+            @engine_slug = params[:engine_slug].presence
+            if @engine_slug
+                @permission_matrix = @permission_matrix.select do |engine|
+                    engine[:engine].tr("_", "-") == @engine_slug
+                end
+                raise ActiveRecord::RecordNotFound if @permission_matrix.empty?
+            end
 
-            @permission_matrix = filter_permission_matrix(@permission_matrix, @search)
+            @search = search_term
+            if @search.present?
+                @permission_matrix = filter_permission_matrix(
+                    @permission_matrix,
+                    @search
+                )
+            end
         end
 
         def filter_permission_matrix(matrix, search)
@@ -110,6 +128,15 @@ module LesliShield
 
         def search_term
             params[:search].to_s.strip
+        end
+
+        def permission_index_path
+            options = { search: search_term.presence }
+            if @engine_slug
+                return engine_role_actions_path(@role, engine_slug: @engine_slug, **options)
+            end
+
+            role_actions_path(@role, **options)
         end
     end
 end

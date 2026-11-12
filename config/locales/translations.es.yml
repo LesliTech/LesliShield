@@ -109,6 +109,8 @@
       permissions:
         navigation: Permisos
         title: Permisos de %{role}
+        all_engines: Todos los módulos
+        custom_actions: Acciones personalizadas
         tools: Herramientas de permisos
         search_label: Buscar permisos
         search_placeholder: Buscar módulo, recurso o acción
@@ -118,8 +120,6 @@
         engines: Módulos
         engine_navigation: Navegación por módulos
         resource: Recurso
-        standard_description: Operaciones convencionales de los controladores Rails.
-        custom_description: Operaciones específicas de cada controlador fuera del ciclo CRUD convencional.
         module_summary: "%{selected} de %{total} permisos habilitados"
         not_available: No disponible
         no_matches: No encontramos permisos con esta búsqueda
@@ -129,9 +129,6 @@
         deploy: Aplicar permisos (deploy)
         deployed: Los permisos fueron aplicados correctamente.
         empty: No hay permisos disponibles en el catálogo.
-        groups:
-          standard: Operaciones CRUD
-          custom: Acciones personalizadas
         states:
           enabled: Habilitado
           disabled: Deshabilitado

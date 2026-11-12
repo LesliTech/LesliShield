@@ -109,6 +109,8 @@
       permissions:
         navigation: Permissions
         title: "%{role} permissions"
+        all_engines: All modules
+        custom_actions: Custom actions
         tools: Permission tools
         search_label: Search permissions
         search_placeholder: Search module, resource, or action
@@ -118,8 +120,6 @@
         engines: Modules
         engine_navigation: Module navigation
         resource: Resource
-        standard_description: Conventional Rails controller operations.
-        custom_description: Controller-specific operations outside the conventional CRUD lifecycle.
         module_summary: "%{selected} of %{total} permissions enabled"
         not_available: Not available
         no_matches: No permissions match this search
@@ -129,9 +129,6 @@
         deploy: Apply permissions (deploy)
         deployed: Permissions were applied successfully.
         empty: There are no permissions available in the catalog.
-        groups:
-          standard: CRUD operations
-          custom: Custom actions
         states:
           enabled: Enabled
           disabled: Disabled

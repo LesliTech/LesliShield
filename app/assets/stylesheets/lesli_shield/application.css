@@ -252,9 +252,6 @@
   .min-w-0 {
     min-width: 0px;
   }
-  .min-w-20 {
-    min-width: calc(var(--spacing) * 20);
-  }
   .min-w-full {
     min-width: 100%;
   }
@@ -309,6 +306,9 @@
   }
   .justify-center {
     justify-content: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
   }
   .gap-1 {
     gap: var(--spacing);
@@ -477,12 +477,6 @@
   }
   .bg-slate-50 {
     background-color: var(--color-slate-50);
-  }
-  .bg-slate-50\/40 {
-    background-color: color-mix(in srgb, oklch(98.4% 0.003 247.858) 40%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-slate-50) 40%, transparent);
-    }
   }
   .bg-slate-100 {
     background-color: var(--color-slate-100);
@@ -795,24 +789,6 @@
   .ring-inset {
     --tw-ring-inset: inset;
   }
-  .group-open\:rotate-180:is(:where(.group):is([open], :popover-open, :open) *) {
-    rotate: 180deg;
-  }
-  .group-open\/resource\:rotate-180:is(:where(.group\/resource):is([open], :popover-open, :open) *) {
-    rotate: 180deg;
-  }
-  .marker\:hidden ::marker {
-    display: none;
-  }
-  .marker\:hidden::marker {
-    display: none;
-  }
-  .marker\:hidden ::-webkit-details-marker {
-    display: none;
-  }
-  .marker\:hidden::-webkit-details-marker {
-    display: none;
-  }
   .placeholder\:text-slate-400::placeholder {
     color: var(--color-slate-400);
   }
@@ -986,9 +962,6 @@
     --tw-outline-style: none;
     outline-style: none;
   }
-  .focus-visible\:ring-inset:focus-visible {
-    --tw-ring-inset: inset;
-  }
   .disabled\:cursor-not-allowed:disabled {
     cursor: not-allowed;
   }
@@ -1083,9 +1056,6 @@
     .lg\:top-4 {
       top: calc(var(--spacing) * 4);
     }
-    .lg\:block {
-      display: block;
-    }
     .lg\:grid-cols-\[15rem_minmax\(0\,1fr\)\] {
       grid-template-columns: 15rem minmax(0,1fr);
     }
@@ -1128,9 +1098,6 @@
     }
     .xl\:table-row-group {
       display: table-row-group;
-    }
-    .xl\:grid-cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
     .xl\:flex-col {
       flex-direction: column;

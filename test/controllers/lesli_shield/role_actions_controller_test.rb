@@ -145,49 +145,120 @@ module LesliShield
             assert_nil next_selection.reload.deleted_at
         end
 
-        test "renders the permission workspace and keeps deploy separate" do
-            context = insert_account_context("action-form")
-            role = insert_role(
-                context,
-                name: "Permission form role",
-                permission_level: 50
+        test "shows CRUD and custom actions together for every engine" do
+            context = insert_account_context("all-permissions")
+            role = insert_role(context, name: "All permissions", permission_level: 50)
+            standard = insert_role_action(role, label: "Invitations")
+            custom = standard.action.parent.children.create!(
+                action: "resend", identifier: "resend", label: "Resend invitation"
             )
-            selected = insert_role_action(role, label: "Selected permission")
-            custom_action = selected.action.parent.children.create!(
-                action: "resend",
-                identifier: "resend",
-                label: "Resend invitation"
-            )
-            role.update_columns(
-                modified_at: Time.current,
-                deployed_at: 1.day.ago
-            )
+            other = insert_role_action(role, label: "Other engine")
+            other.action.parent.update!(engine: "lesli_audit")
 
             with_authorized_request(context.fetch(:user)) do
                 get :index, params: { role_id: role.id }
 
                 assert_response :success
-                assert_select "[data-role-deployment-status='pending']",
-                    text: I18n.t("lesli_shield.roles.deployment_statuses.pending"),
-                    count: 1
-                assert_select "nav a[href='#{role_path(role, anchor: "general")}']", count: 0
-                assert_select "form[action='#{role_actions_path(role)}'][method='get']" do
-                    assert_select "input[type='search'][name='search']", count: 1
+                assert_select "section[id^='permission-engine-']", count: 2
+                assert_select "#permission-engine-shield table", count: 1
+                assert_select "#permission-engine-shield table + [data-custom-actions]" do
+                    assert_select "input[name='action_id'][value='#{custom.id}']", count: 1
                 end
-                assert_select "form[action='#{role_action_path(role, selected.action_id)}']" do
+                assert_select "form[action='#{role_action_path(role, standard.action_id)}']" do
                     assert_select "input[name='_method'][value='delete']", count: 1
-                    assert_select "button[role='switch'][aria-checked='true']", count: 1
                 end
-                assert_select "form[action='#{role_actions_path(role)}'][method='post'] " \
-                    "input[name='action_id'][value='#{custom_action.id}']",
-                    count: 1
-                assert_select "button[role='switch'][aria-checked='false']", minimum: 1
-                assert_select "form[action='#{deploy_role_path(role)}']",
-                    text: /Apply permissions \(deploy\)/,
-                    count: 1
-                assert_select "script[src*='lesli_shield/role_permissions']", count: 0
-                assert_select ".mini-toggle", count: 0
+                assert_select "a[href='#{role_actions_path(role)}'][aria-current='page']", count: 1
+                assert_select "form[action='#{deploy_role_path(role)}']", count: 1
             end
+        end
+
+        test "filters by engine and keeps the complete navigation during search" do
+            context = insert_account_context("engine-permissions")
+            role = insert_role(context, name: "Engine permissions", permission_level: 50)
+            standard = insert_role_action(role, label: "Invitations")
+            standard.action.parent.update!(engine: "lesli_shield")
+            custom = standard.action.parent.children.create!(
+                action: "resend", identifier: "resend", label: "Resend invitation"
+            )
+            other = insert_role_action(role, label: "Other engine")
+            other.action.parent.update!(engine: "lesli_audit")
+
+            with_authorized_request(context.fetch(:user)) do
+                get :index, params: { role_id: role.id, engine_slug: "lesli-shield" }
+
+                assert_response :success
+                assert_select "section[id^='permission-engine-']", count: 1
+                assert_select "#permission-engine-lesli_shield table", count: 1
+                assert_select "input[name='action_id'][value='#{custom.id}']", count: 1
+                assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-shield")}'][aria-current='page'][data-turbo-frame='_top']", count: 1
+                assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-audit")}']", count: 1
+                assert_select "form[action='#{engine_role_actions_path(role, engine_slug: "lesli-shield")}'][method='get'][data-turbo-frame='_top']", count: 1
+
+                get :index, params: {
+                    role_id: role.id, engine_slug: "lesli-shield", search: "resend"
+                }
+                assert_response :success
+                assert_select "table", count: 0
+                assert_select "[data-custom-actions]", count: 1
+
+                get :index, params: {
+                    role_id: role.id, engine_slug: "lesli-shield", search: "no-match"
+                }
+                assert_response :success
+                assert_select "section[id^='permission-engine-']", count: 0
+                assert_select "a[aria-current='page']", text: /LesliShield/
+                assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-audit", search: "no-match")}']", count: 1
+                assert_includes response.body, I18n.t("lesli_shield.roles.permissions.no_matches")
+            end
+        end
+
+        test "preserves engine and search through POST and DELETE with HTML and Turbo" do
+            context = insert_account_context("engine-toggle")
+            role = insert_role(context, name: "Engine toggle", permission_level: 50)
+            standard = insert_role_action(role, label: "Invitations")
+            custom = standard.action.parent.children.create!(
+                action: "resend", identifier: "resend", label: "Resend invitation"
+            )
+
+            with_authorized_request(context.fetch(:user)) do
+                post :create, params: {
+                    role_id: role.id, action_id: custom.id,
+                    engine_slug: "shield", search: "resend"
+                }
+                assert_redirected_to engine_role_actions_path(role, engine_slug: "shield", search: "resend")
+                assert role.actions.exists?(action_id: custom.id)
+
+                delete :destroy, params: {
+                    role_id: role.id, id: custom.id,
+                    engine_slug: "shield", search: "resend"
+                }, format: :turbo_stream
+
+                assert_response :success
+                refute role.actions.exists?(action_id: custom.id)
+                assert_select "turbo-stream[target='shield-role-actions-form']", count: 1
+                assert_includes response.body, "engine_slug=shield"
+                assert_includes response.body, "search=resend"
+                assert_includes response.body, "Resend invitation"
+            end
+        end
+
+        test "rejects unknown engine slugs before changing a permission" do
+            context = insert_account_context("unknown-engine")
+            role = insert_role(context, name: "Unknown engine", permission_level: 50)
+            selected = insert_role_action(role, label: "Selection")
+
+            with_authorized_request(context.fetch(:user)) do
+                assert_raises(ActiveRecord::RecordNotFound) do
+                    get :index, params: { role_id: role.id, engine_slug: "unknown" }
+                end
+                assert_raises(ActiveRecord::RecordNotFound) do
+                    delete :destroy, params: {
+                        role_id: role.id, id: selected.action_id, engine_slug: "unknown"
+                    }
+                end
+            end
+
+            assert_nil selected.reload.deleted_at
         end
 
         test "rejects manipulated permission identifiers atomically" do
@@ -215,27 +286,25 @@ module LesliShield
         end
 
         test "exposes create and destroy routes for permission toggles" do
+            @routes = LesliShield::Engine.routes
             action_routes = LesliShield::Engine.routes.routes.select do |route|
                 route.defaults[:controller] == "lesli_shield/role/actions"
             end
-            route_contract = action_routes.map do |route|
-                [route.defaults[:action], route.verb, route.path.spec.to_s]
-            end
-
-            assert_equal 3, action_routes.length
-            assert route_contract.any? do |action, verb, path|
-                action == "index" && verb.match?("GET") &&
-                    !path.include?(":id")
-            end
-            assert route_contract.any? do |action, verb, path|
-                action == "create" && verb.match?("POST") &&
-                    !path.include?(":id")
-            end
-            assert route_contract.any? do |action, verb, path|
-                action == "destroy" && verb.match?("DELETE") &&
-                    path.include?(":id")
-            end
-            refute route_contract.any? { |action, _verb, _path| action == "update" }
+            assert_equal 4, action_routes.length
+            assert_recognizes(
+                { controller: "lesli_shield/role/actions", action: "index",
+                  role_id: "2", engine_slug: "lesli-shield" },
+                { path: "/roles/2/actions/lesli-shield", method: :get }
+            )
+            assert_recognizes(
+                { controller: "lesli_shield/role/actions", action: "create", role_id: "2" },
+                { path: "/roles/2/actions", method: :post }
+            )
+            assert_recognizes(
+                { controller: "lesli_shield/role/actions", action: "destroy",
+                  role_id: "2", id: "42" },
+                { path: "/roles/2/actions/42", method: :delete }
+            )
         end
 
         test "does not expose routes for the unimplemented privileges controller" do

@@ -1,9 +1,11 @@
 <%
 enabled = action[:assigned]
+route_options = { search: @search.presence }
+route_options[:engine_slug] = @engine_slug if @engine_slug
 path = if enabled
-    role_action_path(@role, action[:id], search: @search.presence)
+    role_action_path(@role, action[:id], **route_options)
 else
-    role_actions_path(@role, search: @search.presence)
+    role_actions_path(@role, **route_options)
 end
 method = enabled ? :delete : :post
 request_params = enabled ? {} : { action_id: action[:id] }

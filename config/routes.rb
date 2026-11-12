@@ -77,7 +77,9 @@ LesliShield::Engine.routes.draw do
             post :duplicate
         end
         scope module: :role do 
-            resources :actions, only: [:index, :create, :destroy]
+            resources :actions, only: [:index, :create, :destroy] do
+                get ":engine_slug", on: :collection, action: :index, as: :engine
+            end
         end
     end
 

@@ -1,0 +1,69 @@
+<%
+standard_action_names = LesliShield::RolePermissionService::STANDARD_ACTION_ORDER
+%>
+
+<% @permission_matrix.each do |engine| %>
+    <%
+    engine_actions = engine[:resources].flat_map { |resource| resource[:actions] }
+    standard_resources = engine[:resources].select { |resource| resource[:actions].any? { |action| action[:standard] } }
+    custom_resources = engine[:resources].select { |resource| resource[:actions].any? { |action| !action[:standard] } }
+    %>
+    <section
+        id="permission-engine-<%= engine[:engine].parameterize %>"
+        class="scroll-mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+    >
+        <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-slate-50 px-4 py-4 sm:px-5">
+            <h2 class="font-semibold text-slate-900"><%= engine[:label] %></h2>
+            <p class="text-right text-xs text-slate-600">
+                <%= t(
+                    "lesli_shield.roles.permissions.module_summary",
+                    selected: engine_actions.count { |action| action[:assigned] },
+                    total: engine_actions.size
+                ) %>
+            </p>
+        </header>
+
+        <% if standard_resources.any? %>
+            <table class="block w-full xl:table">
+                <thead class="hidden bg-slate-50 xl:table-header-group">
+                    <tr>
+                        <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 sm:px-5">
+                            <%= t("lesli_shield.roles.permissions.resource") %>
+                        </th>
+                        <% standard_action_names.each do |action_name| %>
+                            <th scope="col" class="px-2 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                <%= t("lesli_shield.roles.permissions.standard_actions.#{action_name}") %>
+                            </th>
+                        <% end %>
+                    </tr>
+                </thead>
+                <tbody class="block divide-y divide-slate-200 xl:table-row-group">
+                    <% standard_resources.each do |resource| %>
+                        <tr class="block p-4 xl:table-row xl:p-0">
+                            <th scope="row" class="block pb-3 text-left xl:table-cell xl:px-5 xl:py-4 xl:align-middle">
+                                <span class="block text-sm font-semibold text-slate-900"><%= resource[:label] %></span>
+                                <span class="mt-0.5 block break-all font-mono text-xs font-normal text-slate-500"><%= resource[:route] %></span>
+                            </th>
+                            <% standard_action_names.each do |action_name| %>
+                                <% action = resource[:actions].find { |candidate| candidate[:action] == action_name } %>
+                                <td class="block py-1 xl:table-cell xl:px-2 xl:py-4 xl:text-center xl:align-middle">
+                                    <% if action %>
+                                        <div class="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2 py-2 transition hover:bg-sky-50 xl:flex-col xl:justify-center">
+                                            <span class="text-sm font-medium text-slate-700 xl:sr-only"><%= action[:display_label] %></span>
+                                            <%= render "toggle", action: action %>
+                                        </div>
+                                    <% else %>
+                                        <span class="hidden text-slate-300 xl:inline" aria-label="<%= t("lesli_shield.roles.permissions.not_available") %>">—</span>
+                                    <% end %>
+                                </td>
+                            <% end %>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        <% end %>
+        <% if custom_resources.any? %>
+            <%= render "custom_actions", resources: custom_resources %>
+        <% end %>
+    </section>
+<% end %>

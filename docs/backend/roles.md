@@ -122,12 +122,19 @@ timestamps. `modified_at` records the last real selection change and
 changes when `modified_at` is present and newer than `deployed_at`; `updated_at`
 is deliberately ignored because ordinary role edits also change it.
 
-The administrative interface presents conventional Rails controller actions
-in a compact table per engine. Controller-specific actions are kept in a
-separate, expandable section grouped by resource. Search is a regular `GET`
-form, and each permission toggle is persisted immediately. On smaller screens
-each table row becomes a stacked resource card, so horizontal scrolling is not
-required.
+The administrative interface at `/roles/:role_id/actions` shows all engines.
+Each engine has a CRUD table followed by its custom actions, grouped by
+resource. The module navigation filters this same view through URLs such as
+`/roles/:role_id/actions/lesli-shield`. Engine slugs use the catalog's engine
+name with underscores replaced by hyphens. Unknown engines return 404.
+Both URLs use the same controller and `index` privilege. Search, permission
+toggles, and deploy preserve the selected engine; deploy still compiles the
+entire role.
+
+Search is a regular `GET` form, and each permission toggle is persisted
+immediately. On smaller screens each CRUD table row becomes a stacked resource
+card, so horizontal scrolling is not required. Custom actions use responsive
+cards and do not require nested accordions.
 
 Deployment locks and revalidates the selected role, deletes the previous cache,
 and rebuilds it completely from the active selection. Obsolete cache rows are

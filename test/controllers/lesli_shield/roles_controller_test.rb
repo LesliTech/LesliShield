@@ -154,6 +154,27 @@ module LesliShield
             assert_not_nil role.reload.deployed_at
         end
 
+        test "preserves the engine and search after deploying" do
+            context = insert_account_context("role-custom-deploy")
+            role = insert_role(
+                context,
+                name: "Custom deployment role",
+                permission_level: 50
+            )
+            insert_role_action(role, label: "Deployable custom action")
+
+            with_authorized_request(context.fetch(:user)) do
+                post :deploy, params: {
+                    id: role.id,
+                    engine_slug: "shield",
+                    search: "Deployable"
+                }
+
+                assert_response :see_other
+                assert_redirected_to engine_role_actions_path(role, engine_slug: "shield", search: "Deployable")
+            end
+        end
+
         test "requires a distinct administrative privilege for each role action" do
             context = insert_account_context("role-privileges")
             role = insert_role(

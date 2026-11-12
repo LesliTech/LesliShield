@@ -7,3 +7,4 @@
 @source "../../app/views/lesli_shield/users/_information-card.html.erb";
 @source "../../app/views/lesli_shield/invites/*.html.erb";
 @source "../../app/views/lesli_shield/roles/*.html.erb";
+@source "../../app/views/lesli_shield/role/actions/*.html.erb";

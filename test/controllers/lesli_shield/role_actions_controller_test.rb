@@ -124,6 +124,7 @@ module LesliShield
                 get :index, params: { role_id: role.id }
 
                 assert_response :success
+                assert_select "nav a[href='#{role_path(role, anchor: "general")}']", count: 0
                 assert_select "form[action='#{role_actions_path(role)}']" do
                     assert_select "input[name='action_ids[]'][value='#{selected.action_id}'][checked]",
                         count: 1

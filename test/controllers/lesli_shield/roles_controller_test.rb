@@ -212,6 +212,130 @@ module LesliShield
             with_authenticated_request(context.fetch(:user)) do
                 get :show, params: { id: role.id }
                 assert_response :success
+
+                post :duplicate, params: { id: role.id }
+                assert_response :forbidden
+            end
+        end
+
+        test "renders every creation field directly with a required numeric level" do
+            context = insert_account_context("role-new-form")
+
+            with_authorized_request(context.fetch(:user)) do
+                get :new
+
+                assert_response :success
+                assert_select "form[action='#{roles_path}']" do
+                    assert_select "h2", count: 0
+                    assert_select "input[name='role[name]']"
+                    assert_select "textarea[name='role[description]']"
+                    assert_select "input[name='role[active]'][type='radio']", count: 2
+                    assert_select "input[name='role[permission_level]'][type='number'][required]"
+                    assert_select "input[name='role[path_default]']"
+                    assert_select "details", count: 0
+                    assert_select "input[name='role[authorization_level]']", count: 0
+                    assert_select "input[name='role[exact_permission_level]']", count: 0
+                    assert_select "input[name='role[isolated]']", count: 0
+                    assert_select "input[name='role[path_limited]']", count: 0
+                    assert_select "input[type='submit'][data-turbo-submits-with]",
+                        value: I18n.t("lesli_shield.roles.action_create")
+                end
+            end
+        end
+
+        test "renders validation errors inline and preserves the numeric level" do
+            context = insert_account_context("role-inline-errors")
+
+            with_authorized_request(context.fetch(:user)) do
+                post :create, params: {
+                    role: {
+                        name: "",
+                        permission_level: 101
+                    }
+                }
+
+                assert_response :unprocessable_content
+                assert_select "#role-form [role='alert']"
+                assert_select "input[name='role[permission_level]'][value='101']"
+                assert_select "p.text-red-600", minimum: 1
+            end
+        end
+
+        test "rejects role creation when the authorization level is missing" do
+            context = insert_account_context("role-missing-level")
+
+            with_authorized_request(context.fetch(:user)) do
+                post :create, params: {
+                    role: {
+                        name: "Role without level",
+                        permission_level: ""
+                    }
+                }
+
+                assert_response :unprocessable_content
+                assert_select "input[name='role[permission_level]'][value='']"
+                assert_select "#role-form [role='alert']"
+            end
+
+            refute context.fetch(:account).roles.exists?(name: "Role without level")
+        end
+
+        test "renders role detail summaries navigation and safe status controls" do
+            context = insert_account_context("role-detail-interface")
+            role = insert_role(
+                context,
+                name: "Operations role",
+                permission_level: 50
+            )
+            assign_role(context.fetch(:user), role)
+            insert_role_action(role, label: "Detail permission")
+
+            with_authorized_request(context.fetch(:user)) do
+                get :show, params: { id: role.id }
+
+                assert_response :success
+                assert_select "#role-detail-content"
+                assert_select "nav a[href='#{role_path(role, anchor: "general")}']", count: 0
+                assert_select "#members", text: /1/
+                assert_select "#members #role-status-title", count: 1
+                assert_select "section[aria-labelledby='role-status-title']", count: 0
+                assert_select "#activity", count: 0
+                assert_select "a[href='#{role_actions_path(role)}']"
+                assert_select "a[href='#{users_path}']"
+                assert_select "form[action='#{duplicate_role_path(role)}']"
+                assert_select "#role-form-fields button[name='role[active]'][value='false']"
+                assert_select "#role-detail-content.w-full"
+                assert_select "#general input[name='role[permission_level]'][type='number']"
+                assert_select "#general input[name='role[path_default]']"
+                assert_select "#general details", count: 0
+                assert_select "#general input[type='submit'][data-turbo-submits-with]",
+                    value: I18n.t("lesli_shield.roles.action_update")
+                assert_select "button[type='submit'][form='role-form-fields']", count: 0
+                assert_select "[data-turbo-confirm]"
+                assert_select "input[name='role[isolated]']", count: 0
+                assert_select "input[name='role[path_limited]']", count: 0
+            end
+        end
+
+        test "duplicates a role as an inactive copy and redirects to its detail" do
+            context = insert_account_context("role-controller-duplicate")
+            role = insert_role(
+                context,
+                name: "Source role",
+                permission_level: 40
+            )
+            insert_role_action(role, label: "Copied permission")
+
+            with_authorized_request(context.fetch(:user)) do
+                post :duplicate, params: { id: role.id }
+
+                duplicate = context.fetch(:account).roles.find_by!(
+                    name: "Source role copy"
+                )
+                assert_response :see_other
+                assert_redirected_to role_path(duplicate)
+                refute_predicate duplicate, :active?
+                assert_equal 1, duplicate.actions.count
             end
         end
 
@@ -244,7 +368,8 @@ module LesliShield
                 assert_select "select[name='status'] option[value='active'][selected]"
                 assert_select "select[name='type'] option[value='system'][selected]"
                 assert_select "tbody tr", count: 1
-                assert_select "tbody tr a", text: system_role.name
+                assert_select "tbody tr a[data-turbo-frame='_top']",
+                    text: system_role.name
                 assert_select ".md\\:hidden article", count: 1
                 assert_select "[data-turbo-submits-with]"
             end

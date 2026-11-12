@@ -32,13 +32,19 @@ module LesliShield
             assert_raises(ActiveRecord::RecordNotFound) { service.find!(foreign.id) }
         end
 
-        test "creates normalized roles with safe defaults and unique names" do
+        test "creates normalized roles with an explicit level and unique names" do
             context = insert_account_context("service-create")
             service = RoleService.new(context.fetch(:user))
 
+            draft = service.build
+            assert_predicate draft, :new_record?
+            assert_predicate draft, :active?
+            assert_nil draft.permission_level
+
             role = service.create!(
                 name: "  Support   manager  ",
-                description: "  Handles   customer requests  "
+                description: "  Handles   customer requests  ",
+                permission_level: 10
             )
 
             assert_equal "Support manager", role.name
@@ -49,13 +55,37 @@ module LesliShield
             refute role.path_limited?
 
             duplicate_error = assert_raises(RoleService::DuplicateNameError) do
-                service.create!(name: " support MANAGER ")
+                service.create!(
+                    name: " support MANAGER ",
+                    permission_level: 10
+                )
             end
             assert_equal "support MANAGER", duplicate_error.record.name
+
+            missing_level = assert_raises(RoleService::ValidationError) do
+                service.create!(name: "Missing level")
+            end
+            assert missing_level.record.errors[:permission_level].any?
 
             assert_raises(RoleService::PermissionLevelError) do
                 service.create!(name: "Elevated", permission_level: 101)
             end
+        end
+
+        test "summarizes assigned members and selected permissions" do
+            context = insert_account_context("service-summary")
+            role = insert_role(
+                context,
+                name: "Summary role",
+                permission_level: 40
+            )
+            assign_role(context.fetch(:user), role)
+            insert_role_action(role, label: "Summary permission")
+
+            summary = RoleService.new(context.fetch(:user)).summary(role)
+
+            assert_equal 1, summary.fetch(:members)
+            assert_equal 1, summary.fetch(:permissions)
         end
 
         test "updates and deactivates manageable roles but protects owner" do

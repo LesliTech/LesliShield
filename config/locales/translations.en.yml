@@ -9,6 +9,8 @@
       action_create: Create role
       action_update: Save changes
       action_saving: Saving…
+      action_duplicate: Duplicate role
+      action_duplicating: Duplicating…
       action_manage: Manage role
       action_view: View role
       action_permissions: Manage permissions
@@ -17,12 +19,42 @@
       action_menu: Actions for %{role}
       confirm_delete: "Delete the %{role} role? This action cannot be undone."
       description_missing: No description
+      duplicated_successfully: The %{role} role was created as an inactive copy.
       fields:
         name: Name
         description: Description
         status: Status
         path_default: Default path
-        permission_level: Permission level
+        permission_level: Authorization level
+      form:
+        description_hint: A short description helps administrators assign the correct role.
+        status_active_hint: The role can authorize its members after its permissions are deployed.
+        status_inactive_hint: Keeps its configuration but does not authorize any member.
+        permission_level_hint: Enter an integer between 0 and %{maximum}. A role cannot have a level above your own.
+        path_default_hint: Route where users are sent after signing in.
+        protected_notice: This role is protected. You can inspect its configuration but cannot change it.
+        cancel: Cancel
+        errors_title: Review the highlighted fields
+      detail:
+        summary_title: Role summary
+        members: Members
+        permissions: Active permissions
+        view_members: View users
+        manage_permissions: Manage permissions
+        status_title: Status and access
+        active_impact:
+          one: This role currently authorizes 1 member. Deactivating it removes the access granted by this role from that person.
+          other: This role currently authorizes %{count} members. Deactivating it removes the access granted by this role from those people.
+        inactive_impact:
+          one: This role is inactive. Its member keeps the assignment, but the role does not grant access.
+          other: This role is inactive. Its %{count} members keep their assignments, but the role does not grant access.
+        confirm_deactivate:
+          one: "Deactivate %{role}? 1 member will immediately lose the access granted by this role."
+          other: "Deactivate %{role}? %{count} members will immediately lose the access granted by this role."
+        deactivate: Deactivate role
+        deactivating: Deactivating…
+        activate: Activate role
+        activating: Activating…
       empty_title: No roles available yet
       empty_description: Create the first role to organize this account's users and permissions.
       empty_filtered_title: No roles match these filters

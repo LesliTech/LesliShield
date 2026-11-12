@@ -9,6 +9,8 @@
       action_create: Crear rol
       action_update: Guardar cambios
       action_saving: Guardando…
+      action_duplicate: Duplicar rol
+      action_duplicating: Duplicando…
       action_manage: Administrar rol
       action_view: Ver rol
       action_permissions: Administrar permisos
@@ -17,12 +19,42 @@
       action_menu: Acciones para %{role}
       confirm_delete: "¿Eliminar el rol %{role}? Esta acción no se puede deshacer."
       description_missing: Sin descripción
+      duplicated_successfully: Se creó el rol %{role} como una copia inactiva.
       fields:
         name: Nombre
         description: Descripción
         status: Estado
         path_default: Ruta inicial
-        permission_level: Nivel de permisos
+        permission_level: Nivel de autorización
+      form:
+        description_hint: Una descripción breve ayuda a los administradores a asignar el rol correcto.
+        status_active_hint: El rol podrá autorizar a sus miembros después de aplicar sus permisos.
+        status_inactive_hint: Conserva su configuración, pero no autoriza a ningún miembro.
+        permission_level_hint: Ingresa un número entero entre 0 y %{maximum}. El rol no puede tener un nivel superior al tuyo.
+        path_default_hint: Ruta a la que se enviará al usuario después de iniciar sesión.
+        protected_notice: Este rol está protegido. Puedes consultar su configuración, pero no modificarla.
+        cancel: Cancelar
+        errors_title: Revisa los campos señalados
+      detail:
+        summary_title: Resumen del rol
+        members: Miembros
+        permissions: Permisos activos
+        view_members: Ver usuarios
+        manage_permissions: Administrar permisos
+        status_title: Estado y acceso
+        active_impact:
+          one: Este rol está autorizando actualmente a 1 miembro. Al desactivarlo, esa persona perderá los accesos concedidos por este rol.
+          other: Este rol está autorizando actualmente a %{count} miembros. Al desactivarlo, esas personas perderán los accesos concedidos por este rol.
+        inactive_impact:
+          one: Este rol está inactivo. Su miembro conserva la asignación, pero el rol no concede acceso.
+          other: Este rol está inactivo. Sus %{count} miembros conservan la asignación, pero el rol no concede acceso.
+        confirm_deactivate:
+          one: "¿Desactivar %{role}? 1 miembro perderá inmediatamente los accesos concedidos por este rol."
+          other: "¿Desactivar %{role}? %{count} miembros perderán inmediatamente los accesos concedidos por este rol."
+        deactivate: Desactivar rol
+        deactivating: Desactivando…
+        activate: Activar rol
+        activating: Activando…
       empty_title: Aún no hay roles disponibles
       empty_description: Crea el primer rol para organizar usuarios y permisos de esta cuenta.
       empty_filtered_title: Ningún rol coincide con los filtros

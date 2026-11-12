@@ -2,7 +2,8 @@
     method: :get,
     local: true,
     class: "mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm",
-    role: "search" do %>
+    role: "search",
+    data: { turbo_frame: "_top" } do %>
 
     <% %w[perPage orderBy order].each do |parameter| %>
         <%= hidden_field_tag parameter, params[parameter] if params[parameter].present? %>
@@ -23,6 +24,7 @@
                 <% if filters[:search].present? %>
                     <%= link_to roles_path(request.query_parameters.except("search", "page")),
                         class: "absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700",
+                        data: { turbo_frame: "_top" },
                         aria: { label: t("lesli_shield.roles.filters.clear_search") } do %>
                         <span class="material-symbols text-lg" aria-hidden="true">close</span>
                     <% end %>

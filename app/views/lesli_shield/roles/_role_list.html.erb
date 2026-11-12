@@ -16,7 +16,8 @@
                         <div class="flex flex-wrap items-center gap-2">
                             <%= link_to role.name,
                                 role_path(role),
-                                class: "font-semibold text-slate-900 transition hover:text-sky-700" %>
+                                class: "font-semibold text-slate-900 transition hover:text-sky-700",
+                                data: { turbo_frame: "_top" } %>
                             <%= render "type_badge", role: role %>
                         </div>
                         <p class="mt-1 line-clamp-2 text-sm leading-5 text-slate-500">
@@ -82,7 +83,8 @@
 
             <%= link_to role.protected_role? ? t("lesli_shield.roles.action_view") : t("lesli_shield.roles.action_manage"),
                 role_path(role),
-                class: "mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20" %>
+                class: "mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20",
+                data: { turbo_frame: "_top" } %>
         </article>
     <% end %>
 </div>

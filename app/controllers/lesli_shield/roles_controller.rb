@@ -2,7 +2,7 @@
 
 module LesliShield
     class RolesController < ApplicationController
-        before_action :set_visible_role, only: %i[show]
+        before_action :set_visible_role, only: %i[show duplicate]
         before_action :set_manageable_role, only: %i[edit update destroy deploy]
 
         def index
@@ -16,16 +16,21 @@ module LesliShield
             )
         end
 
-        def show; end
-
-        def new
-            @role = current_user.account.roles.new(active: true)
+        def show
+            prepare_role_page
         end
 
-        def edit; end
+        def new
+            @role = role_service.build
+        end
+
+        def edit
+            prepare_role_page
+            render :show
+        end
 
         def create
-            @role = role_service.create!(role_params)
+            @role = role_service.create!(role_attributes)
             success(I18n.t("lesli_shield.roles.created_successfully"))
             respond_with_lesli(
                 json: @role,
@@ -36,11 +41,9 @@ module LesliShield
         end
 
         def update
-            @role = role_service.update!(@role, role_params)
+            @role = role_service.update!(@role, role_attributes)
+            success(I18n.t("lesli_shield.roles.updated_successfully"))
             respond_with_lesli(
-                turbo: stream_notification_success(
-                    I18n.t("lesli_shield.roles.updated_successfully")
-                ),
                 json: @role,
                 redirect: role_path(@role)
             )
@@ -54,6 +57,27 @@ module LesliShield
             respond_with_lesli(redirect: roles_path)
         rescue RoleService::Error => exception
             respond_with_role_error(exception, template: "show")
+        end
+
+        def duplicate
+            duplicate = role_service.duplicate!(@role)
+            success(
+                I18n.t(
+                    "lesli_shield.roles.duplicated_successfully",
+                    role: duplicate.name
+                )
+            )
+            respond_with_lesli(
+                json: duplicate,
+                redirect: role_path(duplicate)
+            )
+        rescue RoleService::Error => exception
+            danger(exception.message)
+            respond_with_lesli(
+                json: { message: exception.message },
+                redirect: role_path(@role),
+                status: :unprocessable_content
+            )
         end
 
         def deploy
@@ -81,24 +105,35 @@ module LesliShield
             @role = role_service.find!(params[:id], manageable: true)
         end
 
-        def role_params
+        def role_attributes
             params.require(:role).permit(
                 :name,
                 :active,
                 :description,
                 :path_default,
                 :permission_level
-            )
+            ).to_h.symbolize_keys
         end
 
         def allowed_filter(value, options)
             value if options.include?(value)
         end
 
+        def prepare_role_page
+            @role_summary = role_service.summary(@role)
+        end
+
         def respond_with_role_error(exception, template:)
             @role = exception.record || @role
+            prepare_role_page if @role.persisted?
             respond_with_lesli(
-                turbo: stream_notification_danger(exception.message),
+                turbo: [
+                    turbo_stream.replace(
+                        "role-form",
+                        partial: "lesli_shield/roles/form"
+                    ),
+                    stream_notification_danger(exception.message)
+                ],
                 json: {
                     message: exception.message,
                     errors: @role&.errors&.to_hash

@@ -4,13 +4,11 @@ module LesliShield
     # Owns role administration rules. Every lookup starts from the actor's
     # account and is restricted by the actor's active permission level.
     class RoleService
-        DEFAULT_PERMISSION_LEVEL = 10
         DEFAULT_PER_PAGE = 12
         MAX_PER_PAGE = 100
 
         STATUS_FILTERS = %w[active inactive].freeze
         TYPE_FILTERS = %w[system custom].freeze
-
         WRITABLE_ATTRIBUTES = %i[
             name
             description
@@ -111,10 +109,26 @@ module LesliShield
             role
         end
 
-        def create!(attributes)
-            role = actor.account.roles.new(
+        def build(attributes = {})
+            actor.account.roles.new(
                 initial_attributes.merge(normalize_attributes(attributes))
             )
+        end
+
+        def summary(role_or_id)
+            role = find!(record_id(role_or_id))
+
+            {
+                members: User::Role
+                    .where(role_id: role.id)
+                    .distinct
+                    .count(:user_id),
+                permissions: role.actions.distinct.count(:action_id)
+            }
+        end
+
+        def create!(attributes)
+            role = build(attributes)
 
             validate_permission_level!(role)
             validate_unique_name!(role)
@@ -225,10 +239,10 @@ module LesliShield
                 isolated: false,
                 path_limited: false,
                 path_default: nil,
-                permission_level: [
-                    DEFAULT_PERMISSION_LEVEL,
-                    actor.max_level_permission
-                ].min
+                # Creating a role requires an explicit authorization level.
+                # Assigning nil also overrides the database column default,
+                # preventing callers from accidentally creating a level-10 role.
+                permission_level: nil
             }
         end
 
@@ -253,11 +267,14 @@ module LesliShield
             return if role.permission_level.blank?
             return if role.permission_level.between?(0, actor.max_level_permission)
 
+            message = I18n.t(
+                "lesli_shield.roles.errors.permission_level",
+                maximum: actor.max_level_permission
+            )
+            role.errors.add(:permission_level, message)
+
             raise PermissionLevelError.new(
-                I18n.t(
-                    "lesli_shield.roles.errors.permission_level",
-                    maximum: actor.max_level_permission
-                ),
+                message,
                 record: role
             )
         end

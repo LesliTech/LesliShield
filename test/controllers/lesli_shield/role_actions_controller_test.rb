@@ -140,6 +140,38 @@ module LesliShield
             end
         end
 
+        test "updates the selected permissions without deploying the role" do
+            context = insert_account_context("action-selection")
+            role = insert_role(
+                context,
+                name: "Permission selection role",
+                permission_level: 50
+            )
+            role_action = insert_role_action(role, label: "Selectable action")
+            role_action.delete
+            deployed_at = 1.day.ago
+            role.update_columns(modified_at: nil, deployed_at: deployed_at)
+
+            with_authorized_request(context.fetch(:user)) do
+                patch :update,
+                    params: { role_id: role.id, id: role_action.id },
+                    format: :turbo_stream
+
+                assert_response :success
+                assert_nil role_action.reload.deleted_at
+                assert_not_nil role.reload.modified_at
+                assert_equal deployed_at.to_i, role.deployed_at.to_i
+
+                delete :destroy,
+                    params: { role_id: role.id, id: role_action.id },
+                    format: :turbo_stream
+
+                assert_response :success
+                assert_not_nil role_action.reload.deleted_at
+                assert_equal deployed_at.to_i, role.reload.deployed_at.to_i
+            end
+        end
+
         test "does not expose routes for the unimplemented privileges controller" do
             privilege_routes = LesliShield::Engine.routes.routes.select do |route|
                 route.defaults[:controller] == "lesli_shield/role/privileges"

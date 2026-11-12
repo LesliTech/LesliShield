@@ -1,40 +1,52 @@
+# frozen_string_literal: true
+
 module LesliShield
     class Role::ActionsController < ApplicationController
-        before_action :set_role, only: %i[index update destroy]
+        before_action :set_role
         before_action :set_role_action, only: %i[update destroy]
 
-        def index 
-            @role_actions = RoleActionService.new(current_user, query).index(@role.id)
+        def index
+            load_role_actions
         end
 
         def update
-            if @role_action.result.recover
-                @role_actions = RoleActionService.new(current_user, query).index(@role.id)
+            if @role_action.recover
+                load_role_actions
                 respond_with_lesli(
-                    :turbo => [
-                        stream_notification_success("Role privileges added successfully!"),
-                        turbo_stream.replace('shield-role-actions-form', partial: 'lesli_shield/role/actions/form')
+                    turbo: [
+                        stream_notification_success("Role privilege added successfully!"),
+                        turbo_stream.replace(
+                            "shield-role-actions-form",
+                            partial: "lesli_shield/role/actions/form"
+                        )
                     ]
                 )
-            else 
+            else
                 respond_with_lesli(
-                    :turbo => stream_notification_danger(@role_action.errors_as_sentence)
+                    turbo: stream_notification_danger(
+                        @role_action.errors.full_messages.to_sentence
+                    )
                 )
             end
         end
 
         def destroy
-            if @role_action.result.delete
-                @role_actions = RoleActionService.new(current_user, query).index(@role.id)
+            if @role_action.delete
+                load_role_actions
                 respond_with_lesli(
-                    :turbo => [
-                        stream_notification_warning("Role privileges removed successfully!"),
-                        turbo_stream.replace('shield-role-actions-form', partial: 'lesli_shield/role/actions/form')
+                    turbo: [
+                        stream_notification_warning("Role privilege removed successfully!"),
+                        turbo_stream.replace(
+                            "shield-role-actions-form",
+                            partial: "lesli_shield/role/actions/form"
+                        )
                     ]
                 )
-            else 
+            else
                 respond_with_lesli(
-                    :turbo => stream_notification_danger(@role_action.errors_as_sentence)
+                    turbo: stream_notification_danger(
+                        @role_action.errors.full_messages.to_sentence
+                    )
                 )
             end
         end
@@ -42,17 +54,19 @@ module LesliShield
         private
 
         def set_role
-            @role = current_user.account.roles.find(params[:role_id])
-        end 
+            @role = current_user.account.roles
+                .where(permission_level: ..current_user.max_level_permission)
+                .find(params[:role_id])
 
-        def set_role_action
-            @role_action = RoleActionService.new(current_user).find(params[:id])
+            raise ActiveRecord::RecordNotFound unless @role.manageable_by?(current_user)
         end
 
-        def role_action_params
-            params.require(:role_action).permit(
-                :role_id
-            )
+        def set_role_action
+            @role_action = @role.actions.with_deleted.find(params[:id])
+        end
+
+        def load_role_actions
+            @role_actions = RoleActionService.new(current_user, query).index(@role.id)
         end
     end
 end

@@ -76,7 +76,6 @@ LesliShield::Engine.routes.draw do
             post :deploy
         end
         scope module: :role do 
-            resources :privileges
             resources :actions, only: [:index, :update, :destroy]
         end
     end

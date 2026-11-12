@@ -8,6 +8,9 @@ module LesliShield
         DEFAULT_PER_PAGE = 12
         MAX_PER_PAGE = 100
 
+        STATUS_FILTERS = %w[active inactive].freeze
+        TYPE_FILTERS = %w[system custom].freeze
+
         WRITABLE_ATTRIBUTES = %i[
             name
             description
@@ -22,9 +25,15 @@ module LesliShield
             "description" => "LOWER(lesli_roles.description)",
             "active" => "lesli_roles.active",
             "permission_level" => "lesli_roles.permission_level",
+            "modified_at" => "COALESCE(lesli_roles.modified_at, lesli_roles.updated_at)",
             "users" => "users",
             "actions" => "actions"
         }.freeze
+
+        SYSTEM_ROLE_SQL = RoleManagement::SYSTEM_ROLE_NAMES.map do |name|
+            "LOWER(COALESCE(lesli_roles.code, '')) = " \
+                "'#{name}' || CAST(lesli_roles.id AS VARCHAR)"
+        end.join(" OR ").freeze
 
         ACTIVE_USERS_SQL = <<~SQL.squish.freeze
             (
@@ -78,6 +87,7 @@ module LesliShield
             roles = visible_roles
             roles = apply_search(roles, filters)
             roles = apply_status(roles, filters)
+            roles = apply_type(roles, filters)
 
             roles
                 .select(
@@ -295,7 +305,8 @@ module LesliShield
         end
 
         def apply_search(roles, filters)
-            search = query[:search].presence || filter_value(filters, :search).presence
+            search = filter_value(filters, :search) || query[:search]
+            search = search.to_s.strip.presence
             return roles unless search
 
             pattern = "%#{ActiveRecord::Base.sanitize_sql_like(search.downcase)}%"
@@ -312,6 +323,17 @@ module LesliShield
                 roles.where(active: true)
             when "inactive"
                 roles.where(active: false)
+            else
+                roles
+            end
+        end
+
+        def apply_type(roles, filters)
+            case filter_value(filters, :type).to_s
+            when "system"
+                roles.where(SYSTEM_ROLE_SQL)
+            when "custom"
+                roles.where("NOT (#{SYSTEM_ROLE_SQL})")
             else
                 roles
             end

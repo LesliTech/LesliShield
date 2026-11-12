@@ -1,0 +1,9 @@
+<%= render LesliView::Layout::Container.new("shield-roles-new") do %>
+    <%= render LesliView::Components::Header.new(
+        t("lesli_shield.roles.new_title"),
+        t("lesli_shield.roles.new_description"),
+        back: roles_path
+    ) %>
+
+    <%= render "form" %>
+<% end %>

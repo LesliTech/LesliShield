@@ -214,5 +214,40 @@ module LesliShield
                 assert_response :success
             end
         end
+
+        test "renders the responsive role administration interface with filters" do
+            context = insert_account_context("roles-index-interface")
+            system_role = insert_role(
+                context,
+                name: "Admin",
+                permission_level: 90,
+                system_name: "admin"
+            )
+            insert_role(
+                context,
+                name: "Support team",
+                permission_level: 30
+            )
+
+            with_authorized_request(context.fetch(:user)) do
+                get :index, params: {
+                    search: "admin",
+                    status: "active",
+                    type: "system"
+                }
+
+                assert_response :success
+                assert_select "h1", text: I18n.t("lesli_shield.roles.title")
+                assert_select "a[href='#{new_role_path}']",
+                    text: /#{Regexp.escape(I18n.t("lesli_shield.roles.action_create"))}/
+                assert_select "input[name='search'][value='admin']"
+                assert_select "select[name='status'] option[value='active'][selected]"
+                assert_select "select[name='type'] option[value='system'][selected]"
+                assert_select "tbody tr", count: 1
+                assert_select "tbody tr a", text: system_role.name
+                assert_select ".md\\:hidden article", count: 1
+                assert_select "[data-turbo-submits-with]"
+            end
+        end
     end
 end

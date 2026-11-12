@@ -2,6 +2,69 @@
 :en:
   lesli_shield:
     roles:
+      title: Roles and permissions
+      subtitle: Manage your organization's roles and define each team's access.
+      new_title: Create role
+      new_description: Define a new role to group users and configure their permissions.
+      action_create: Create role
+      action_update: Save changes
+      action_saving: Saving…
+      action_manage: Manage role
+      action_view: View role
+      action_permissions: Manage permissions
+      action_delete: Delete role
+      action_deleting: Deleting…
+      action_menu: Actions for %{role}
+      confirm_delete: "Delete the %{role} role? This action cannot be undone."
+      description_missing: No description
+      fields:
+        name: Name
+        description: Description
+        status: Status
+        path_default: Default path
+        permission_level: Permission level
+      empty_title: No roles available yet
+      empty_description: Create the first role to organize this account's users and permissions.
+      empty_filtered_title: No roles match these filters
+      empty_filtered_description: Try another search or clear the active filters.
+      empty_filtered_action: Clear filters
+      statuses:
+        active: Active
+        inactive: Inactive
+      types:
+        system: System
+        custom: Custom
+      filters:
+        search_label: Search roles
+        search_placeholder: Search by name or description
+        clear_search: Clear search
+        status_label: Status
+        status_all: All statuses
+        type_label: Type
+        type_all: All types
+        submit: Filter
+        loading: Filtering…
+      columns:
+        role: Role and description
+        status: Status
+        users: Users
+        permissions: Active permissions
+        modified_at: Last modified
+        actions: Actions
+      mobile:
+        users:
+          one: 1 user
+          other: "%{count} users"
+        permissions:
+          one: 1 permission
+          other: "%{count} permissions"
+        modified_at: "Modified: %{date}"
+      pagination:
+        label: Roles pagination
+        summary: "Showing %{count} of %{total} roles"
+        page: Page %{page} of %{pages}
+        previous: Previous
+        next: Next
       created_successfully: Role created successfully.
       updated_successfully: Role updated successfully.
       destroyed_successfully: Role deleted successfully.

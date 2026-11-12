@@ -231,6 +231,34 @@ module LesliShield
             assert_equal [inactive.id], inactive_roles.map(&:id)
         end
 
+        test "filters system and custom roles using the role domain contract" do
+            context = insert_account_context("service-role-types")
+            system_role = insert_role(
+                context,
+                name: "Admin",
+                permission_level: 90,
+                system_name: "admin"
+            )
+            custom_role = insert_role(
+                context,
+                name: "Support team",
+                permission_level: 30
+            )
+            service = RoleService.new(
+                context.fetch(:user),
+                pagination: { page: 1, perPage: 20 },
+                order: { by: "name", dir: "asc" }
+            )
+
+            system_roles = service.list(type: "system")
+            custom_roles = service.list(type: "custom")
+
+            assert_equal [system_role.id], system_roles.map(&:id)
+            assert_includes custom_roles.map(&:id), custom_role.id
+            assert_includes custom_roles.map(&:id), context.fetch(:manager_role).id
+            refute_includes custom_roles.map(&:id), system_role.id
+        end
+
         private
 
         def insert_user(context, active:)

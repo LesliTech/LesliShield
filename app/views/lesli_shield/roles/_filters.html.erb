@@ -1,0 +1,67 @@
+<%= form_with url: roles_path,
+    method: :get,
+    local: true,
+    class: "mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm",
+    role: "search" do %>
+
+    <% %w[perPage orderBy order].each do |parameter| %>
+        <%= hidden_field_tag parameter, params[parameter] if params[parameter].present? %>
+    <% end %>
+
+    <div class="grid gap-3 lg:grid-cols-[minmax(16rem,1fr)_13rem_13rem_auto] lg:items-end">
+        <div>
+            <%= label_tag :search,
+                t("lesli_shield.roles.filters.search_label"),
+                class: "mb-1.5 block text-sm font-medium text-slate-700" %>
+            <div class="relative">
+                <span class="material-symbols pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xl text-slate-400" aria-hidden="true">search</span>
+                <%= search_field_tag :search,
+                    filters[:search],
+                    placeholder: t("lesli_shield.roles.filters.search_placeholder"),
+                    autocomplete: "off",
+                    class: "h-11 w-full rounded-xl border border-slate-300 bg-white py-2 pl-10 pr-10 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10" %>
+                <% if filters[:search].present? %>
+                    <%= link_to roles_path(request.query_parameters.except("search", "page")),
+                        class: "absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700",
+                        aria: { label: t("lesli_shield.roles.filters.clear_search") } do %>
+                        <span class="material-symbols text-lg" aria-hidden="true">close</span>
+                    <% end %>
+                <% end %>
+            </div>
+        </div>
+
+        <div>
+            <%= label_tag :status,
+                t("lesli_shield.roles.filters.status_label"),
+                class: "mb-1.5 block text-sm font-medium text-slate-700" %>
+            <%= select_tag :status,
+                options_for_select([
+                    [t("lesli_shield.roles.filters.status_all"), ""],
+                    [t("lesli_shield.roles.statuses.active"), "active"],
+                    [t("lesli_shield.roles.statuses.inactive"), "inactive"]
+                ], filters[:status]),
+                class: "h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 outline-none transition hover:border-slate-400 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10" %>
+        </div>
+
+        <div>
+            <%= label_tag :type,
+                t("lesli_shield.roles.filters.type_label"),
+                class: "mb-1.5 block text-sm font-medium text-slate-700" %>
+            <%= select_tag :type,
+                options_for_select([
+                    [t("lesli_shield.roles.filters.type_all"), ""],
+                    [t("lesli_shield.roles.types.system"), "system"],
+                    [t("lesli_shield.roles.types.custom"), "custom"]
+                ], filters[:type]),
+                class: "h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-700 outline-none transition hover:border-slate-400 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10" %>
+        </div>
+
+        <button
+            type="submit"
+            class="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/10 disabled:cursor-wait disabled:opacity-70"
+            data-turbo-submits-with="<%= t("lesli_shield.roles.filters.loading") %>">
+            <span class="material-symbols text-xl" aria-hidden="true">filter_alt</span>
+            <span><%= t("lesli_shield.roles.filters.submit") %></span>
+        </button>
+    </div>
+<% end %>

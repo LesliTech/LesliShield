@@ -6,8 +6,13 @@ module LesliShield
         before_action :set_manageable_role, only: %i[edit update destroy deploy]
 
         def index
+            @filters = {
+                search: params[:search].to_s.strip,
+                status: allowed_filter(params[:status], RoleService::STATUS_FILTERS),
+                type: allowed_filter(params[:type], RoleService::TYPE_FILTERS)
+            }
             @roles = respond_with_pagination(
-                role_service.list(params)
+                role_service.list(@filters)
             )
         end
 
@@ -84,6 +89,10 @@ module LesliShield
                 :path_default,
                 :permission_level
             )
+        end
+
+        def allowed_filter(value, options)
+            value if options.include?(value)
         end
 
         def respond_with_role_error(exception, template:)

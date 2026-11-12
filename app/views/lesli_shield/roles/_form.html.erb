@@ -1,11 +1,40 @@
 <%= form_with(model: @role, builder: LesliView::Forms::Builder) do |form| %>
     <%= form.fieldset do %>
-        <%= form.field_control(:name) %>
-        <%= form.field_control(:description) %>
-        <%= form.field_control_select(:active, [["Activo", true], ["Desactivado", false]], label: "Status") %>
-        <%= form.field_control(:path_default) %>
-        <%= form.field_control(:permission_level) %>
+        <%= form.field_control(
+            :name,
+            label: t("lesli_shield.roles.fields.name")
+        ) %>
+        <%= form.field_control(
+            :description,
+            label: t("lesli_shield.roles.fields.description")
+        ) %>
+        <%= form.field_control_select(
+            :active,
+            [
+                [t("lesli_shield.roles.statuses.active"), true],
+                [t("lesli_shield.roles.statuses.inactive"), false]
+            ],
+            label: t("lesli_shield.roles.fields.status"),
+            humanize: false
+        ) %>
+        <%= form.field_control(
+            :path_default,
+            label: t("lesli_shield.roles.fields.path_default")
+        ) %>
+        <%= form.field_control(
+            :permission_level,
+            label: t("lesli_shield.roles.fields.permission_level")
+        ) %>
         <hr/>
-        <%= form.field_control_submit %>
+        <%= form.field_control_submit(
+            @role.persisted? ?
+                t("lesli_shield.roles.action_update") :
+                t("lesli_shield.roles.action_create"),
+            {
+                data: {
+                    turbo_submits_with: t("lesli_shield.roles.action_saving")
+                }
+            }
+        ) %>
     <% end %>        
 <% end %>

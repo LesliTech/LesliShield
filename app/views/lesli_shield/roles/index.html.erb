@@ -1,41 +1,22 @@
 
-<%
-columns = [{
-    field: "id",
-    label: "ID"
-},{
-    field: "name",
-    label: "Name",
-    sort: true
-}, {
-    field: "users",
-    label: "Users",
-    align: "center",
-    sort: true
-}, {
-    field: "actions",
-    label: "Actions",
-    align: "center",
-    sort: true
-}, {
-    field: "isolated",
-    label: "Isolated",
-    sort: true
-}, {
-    field: "active",
-    label: "Active",
-    sort: true
-}]
-%>
 <%= render LesliView::Layout::Container.new("shield-roles") do %>
-    <%= render LesliView::Components::Header.new("Roles") do %>
-        <%= render(LesliView::Elements::Button.new('Add new', icon: "add", solid:true)) %>
-        <%= render(LesliView::Elements::Button.new('Reload', icon: "refresh")) %>
+    <%= render LesliView::Components::Header.new(
+        t("lesli_shield.roles.title"),
+        t("lesli_shield.roles.subtitle")
+    ) do %>
+        <%= link_to new_role_path,
+            class: "inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20" do %>
+            <span class="material-symbols" aria-hidden="true">add</span>
+            <span><%= t("lesli_shield.roles.action_create") %></span>
+        <% end %>
     <% end %>
-    <%= render LesliView::Components::Toolbar.new() %>
-    <%= render(LesliView::Elements::Table.new(
-        columns: columns,
-        records: @roles[:records],
-        link: lambda {|role| role_path(role.id) }
-    )) %>
-<% end %> 
+
+    <%= render "filters", filters: @filters %>
+
+    <% if @roles.fetch(:records).any? %>
+        <%= render "role_list", roles: @roles.fetch(:records) %>
+        <%= render "pagination", pagination: @roles.fetch(:pagination) %>
+    <% else %>
+        <%= render "empty_state", filters: @filters %>
+    <% end %>
+<% end %>

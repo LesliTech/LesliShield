@@ -2,6 +2,69 @@
 :es:
   lesli_shield:
     roles:
+      title: Roles y permisos
+      subtitle: Administra los roles de tu organización y define el acceso de cada equipo.
+      new_title: Crear rol
+      new_description: Define un nuevo rol para agrupar usuarios y configurar sus permisos.
+      action_create: Crear rol
+      action_update: Guardar cambios
+      action_saving: Guardando…
+      action_manage: Administrar rol
+      action_view: Ver rol
+      action_permissions: Administrar permisos
+      action_delete: Eliminar rol
+      action_deleting: Eliminando…
+      action_menu: Acciones para %{role}
+      confirm_delete: "¿Eliminar el rol %{role}? Esta acción no se puede deshacer."
+      description_missing: Sin descripción
+      fields:
+        name: Nombre
+        description: Descripción
+        status: Estado
+        path_default: Ruta inicial
+        permission_level: Nivel de permisos
+      empty_title: Aún no hay roles disponibles
+      empty_description: Crea el primer rol para organizar usuarios y permisos de esta cuenta.
+      empty_filtered_title: Ningún rol coincide con los filtros
+      empty_filtered_description: Prueba otra búsqueda o elimina los filtros activos.
+      empty_filtered_action: Limpiar filtros
+      statuses:
+        active: Activo
+        inactive: Inactivo
+      types:
+        system: Sistema
+        custom: Personalizado
+      filters:
+        search_label: Buscar roles
+        search_placeholder: Buscar por nombre o descripción
+        clear_search: Limpiar búsqueda
+        status_label: Estado
+        status_all: Todos los estados
+        type_label: Tipo
+        type_all: Todos los tipos
+        submit: Filtrar
+        loading: Filtrando…
+      columns:
+        role: Rol y descripción
+        status: Estado
+        users: Usuarios
+        permissions: Permisos activos
+        modified_at: Última modificación
+        actions: Acciones
+      mobile:
+        users:
+          one: 1 usuario
+          other: "%{count} usuarios"
+        permissions:
+          one: 1 permiso
+          other: "%{count} permisos"
+        modified_at: "Modificado: %{date}"
+      pagination:
+        label: Paginación de roles
+        summary: "Mostrando %{count} de %{total} roles"
+        page: Página %{page} de %{pages}
+        previous: Anterior
+        next: Siguiente
       created_successfully: Rol creado correctamente.
       updated_successfully: Rol actualizado correctamente.
       destroyed_successfully: Rol eliminado correctamente.

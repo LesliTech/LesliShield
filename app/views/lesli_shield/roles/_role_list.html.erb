@@ -1,0 +1,88 @@
+<div class="hidden overflow-visible rounded-2xl border border-slate-200 bg-white shadow-sm md:block">
+    <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+            <tr>
+                <% %w[role status users permissions modified_at actions].each do |column| %>
+                    <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 <%= 'text-center' if %w[users permissions actions].include?(column) %>">
+                        <%= t("lesli_shield.roles.columns.#{column}") %>
+                    </th>
+                <% end %>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            <% roles.each do |role| %>
+                <tr class="transition hover:bg-slate-50/80">
+                    <td class="max-w-md px-5 py-4">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <%= link_to role.name,
+                                role_path(role),
+                                class: "font-semibold text-slate-900 transition hover:text-sky-700" %>
+                            <%= render "type_badge", role: role %>
+                        </div>
+                        <p class="mt-1 line-clamp-2 text-sm leading-5 text-slate-500">
+                            <%= role.description.presence || t("lesli_shield.roles.description_missing") %>
+                        </p>
+                    </td>
+                    <td class="whitespace-nowrap px-5 py-4">
+                        <%= render "status_badge", role: role %>
+                    </td>
+                    <td class="whitespace-nowrap px-5 py-4 text-center text-sm font-medium text-slate-700">
+                        <%= role[:users].to_i %>
+                    </td>
+                    <td class="whitespace-nowrap px-5 py-4 text-center text-sm font-medium text-slate-700">
+                        <%= role[:actions].to_i %>
+                    </td>
+                    <td class="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+                        <% modified_at = role.modified_at || role.updated_at %>
+                        <time datetime="<%= modified_at.iso8601 %>">
+                            <%= l(modified_at, format: :short) %>
+                        </time>
+                    </td>
+                    <td class="relative whitespace-nowrap px-5 py-4 text-center">
+                        <%= render "management_menu", role: role %>
+                    </td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>
+
+<div class="grid gap-4 md:hidden">
+    <% roles.each do |role| %>
+        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                    <h2 class="truncate text-base font-semibold text-slate-900"><%= role.name %></h2>
+                    <p class="mt-1 line-clamp-2 text-sm leading-5 text-slate-500">
+                        <%= role.description.presence || t("lesli_shield.roles.description_missing") %>
+                    </p>
+                </div>
+                <%= render "status_badge", role: role %>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+                <%= render "type_badge", role: role %>
+                <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                    <span class="material-symbols text-base" aria-hidden="true">group</span>
+                    <%= t("lesli_shield.roles.mobile.users", count: role[:users].to_i) %>
+                </span>
+                <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                    <span class="material-symbols text-base" aria-hidden="true">key</span>
+                    <%= t("lesli_shield.roles.mobile.permissions", count: role[:actions].to_i) %>
+                </span>
+            </div>
+
+            <% modified_at = role.modified_at || role.updated_at %>
+            <p class="mt-4 text-xs text-slate-500">
+                <%= t(
+                    "lesli_shield.roles.mobile.modified_at",
+                    date: l(modified_at, format: :short)
+                ) %>
+            </p>
+
+            <%= link_to role.protected_role? ? t("lesli_shield.roles.action_view") : t("lesli_shield.roles.action_manage"),
+                role_path(role),
+                class: "mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20" %>
+        </article>
+    <% end %>
+</div>

@@ -6,7 +6,7 @@ else
 end
 %>
 
-<div id="shield-role-actions-form">
+<div id="shield-role-permissions">
     <div class="space-y-6">
         <section class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="permission-tools-title">
             <h2 id="permission-tools-title" class="sr-only">
@@ -24,7 +24,9 @@ end
                         t("lesli_shield.roles.permissions.search_label"),
                         class: "block text-sm font-medium text-slate-700" %>
                     <div class="relative mt-1.5">
-                        <span class="material-symbols pointer-events-none absolute inset-y-0 left-3 flex items-center text-xl text-slate-400" aria-hidden="true">search</span>
+                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400" aria-hidden="true">
+                            <span class="material-symbols">search</span>
+                        </span>
                         <%= form.search_field :search,
                             value: @search,
                             autocomplete: "off",

@@ -83,12 +83,9 @@ module LesliShield
         def deploy
             RolePrivilegeDeploymentService.new(current_user).deploy!(@role)
             success(I18n.t("lesli_shield.roles.permissions.deployed"))
-            destination = permission_index_path
             respond_with_lesli(
-                turbo: stream_redirection(destination),
                 json: { role_id: @role.id },
-                redirect: destination,
-                status: :see_other
+                redirect: permission_index_path
             )
         end
 
@@ -109,10 +106,14 @@ module LesliShield
 
         def set_visible_role
             @role = role_service.find!(params[:id])
+            @role_editable = @role.manageable_by?(current_user)
         end
 
         def set_manageable_role
             @role = role_service.find!(params[:id], manageable: true)
+            # Keep the form editable after validation fails. Submitted values
+            # must not redefine whether the persisted role can be administered.
+            @role_editable = true
         end
 
         def role_attributes

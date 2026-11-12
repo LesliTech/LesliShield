@@ -32,7 +32,6 @@ module LesliShield
         end
 
         def initialize(actor)
-            @actor = actor
             @role_service = RoleService.new(actor)
         end
 
@@ -41,6 +40,15 @@ module LesliShield
             records = permission_catalog_for(role)
 
             build_matrix(records)
+        end
+
+        # Validate navigation without building the complete permission matrix.
+        # Slugs are the catalog engine names with underscores replaced by hyphens.
+        def engine_available?(slug)
+            active_catalog.where(
+                "REPLACE(parents_lesli_resources.engine, '_', '-') = ?",
+                slug
+            ).exists?
         end
 
         # Persists one checkbox change. The role lock keeps simultaneous
@@ -112,7 +120,7 @@ module LesliShield
 
         private
 
-        attr_reader :actor, :role_service
+        attr_reader :role_service
 
         def visible_role!(role_or_id)
             role_service.find!(record_id(role_or_id))

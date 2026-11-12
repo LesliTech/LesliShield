@@ -107,7 +107,6 @@
       updated_successfully: Rol actualizado correctamente.
       destroyed_successfully: Rol eliminado correctamente.
       permissions:
-        navigation: Permisos
         title: Permisos de %{role}
         all_engines: Todos los módulos
         custom_actions: Acciones personalizadas
@@ -125,7 +124,6 @@
         no_matches: No encontramos permisos con esta búsqueda
         no_matches_hint: Prueba con otro módulo, recurso o acción.
         update_success: Permiso actualizado correctamente.
-        update_error: No fue posible actualizar el permiso. El cambio fue revertido.
         deploy: Aplicar permisos (deploy)
         deployed: Los permisos fueron aplicados correctamente.
         empty: No hay permisos disponibles en el catálogo.

@@ -46,9 +46,12 @@ module LesliShield
             create_action(deleted_resource, action: "index", label: "Deleted index")
             deleted_resource.delete
 
-            matrix = RolePermissionService
-                .new(context.fetch(:user))
-                .matrix(role)
+            service = RolePermissionService.new(context.fetch(:user))
+            assert service.engine_available?("lesli-shield")
+            refute service.engine_available?("lesli_shield")
+            refute service.engine_available?("unknown-engine")
+
+            matrix = service.matrix(role)
             engine = matrix.find { |entry| entry[:engine] == "lesli_shield" }
             matrix_resource = engine[:resources].find do |entry|
                 entry[:route] == "lesli_shield/invites"

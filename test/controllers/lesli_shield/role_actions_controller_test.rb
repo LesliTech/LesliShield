@@ -115,7 +115,7 @@ module LesliShield
 
                 assert_response :success
                 assert_select "turbo-stream[action='replace']" \
-                    "[target='shield-role-actions-form']",
+                    "[target='shield-role-permissions']",
                     count: 1
                 assert_select "turbo-stream[action='replace']" \
                     "[target='role-permission-deployment-status']",
@@ -235,7 +235,7 @@ module LesliShield
 
                 assert_response :success
                 refute role.actions.exists?(action_id: custom.id)
-                assert_select "turbo-stream[target='shield-role-actions-form']", count: 1
+                assert_select "turbo-stream[target='shield-role-permissions']", count: 1
                 assert_includes response.body, "engine_slug=shield"
                 assert_includes response.body, "search=resend"
                 assert_includes response.body, "Resend invitation"
@@ -259,6 +259,32 @@ module LesliShield
             end
 
             assert_nil selected.reload.deleted_at
+        end
+
+        test "loads the complete catalog only when a mutation renders Turbo HTML" do
+            context = insert_account_context("permission-catalog-queries")
+            role = insert_role(context, name: "Catalog queries", permission_level: 50)
+            selection = insert_role_action(role, label: "Selection")
+            catalog_queries = []
+            track_catalog = lambda do |event|
+                sql = event.payload[:sql]
+                catalog_queries << sql if sql.include?("LEFT JOIN lesli_shield_role_actions selected_actions")
+            end
+
+            ActiveSupport::Notifications.subscribed(track_catalog, "sql.active_record") do
+                with_authorized_request(context.fetch(:user)) do
+                    [:html, :json, :turbo_stream].each do |format|
+                        post :create, params: {
+                            role_id: role.id,
+                            action_id: selection.action_id,
+                            engine_slug: "shield"
+                        }, format: format
+
+                        assert_response(format == :html ? :see_other : :success)
+                        assert_equal(format == :turbo_stream ? 1 : 0, catalog_queries.size)
+                    end
+                end
+            end
         end
 
         test "rejects manipulated permission identifiers atomically" do

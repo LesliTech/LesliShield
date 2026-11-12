@@ -131,6 +131,17 @@ Both URLs use the same controller and `index` privilege. Search, permission
 toggles, and deploy preserve the selected engine; deploy still compiles the
 entire role.
 
+The permissions page is defined directly in `role/actions/index.html.erb`.
+The `_permissions` partial contains the search, module navigation, and matrix;
+it is also the block replaced after a Turbo checkbox request. The matrix,
+custom actions, toggle, and deployment status keep their own partials because
+they represent repeated UI elements or independent Turbo update targets.
+
+Checkbox mutations validate the engine with a catalog existence query.
+The complete matrix is loaded once for the index or a successful Turbo update,
+and is not loaded for HTML redirects or JSON mutation responses.
+Deploy uses a native HTTP 303 redirect for both HTML and Turbo.
+
 Search is a regular `GET` form, and each permission toggle is persisted
 immediately. On smaller screens each CRUD table row becomes a stacked resource
 card, so horizontal scrolling is not required. Custom actions use responsive

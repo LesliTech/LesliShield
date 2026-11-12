@@ -3,9 +3,10 @@
 module LesliShield
     class Role::ActionsController < ApplicationController
         before_action :set_role
-        before_action :load_permission_matrix
+        before_action :set_permission_filters
 
         def index
+            load_permission_matrix
         end
 
         def create
@@ -27,22 +28,8 @@ module LesliShield
                 action_id: action_id,
                 enabled: enabled
             )
-            @role.reload
-            load_permission_matrix
             respond_with_lesli(
-                turbo: [
-                    stream_notification_success(
-                        I18n.t("lesli_shield.roles.permissions.update_success")
-                    ),
-                    turbo_stream.replace(
-                        "shield-role-actions-form",
-                        partial: "lesli_shield/role/actions/form"
-                    ),
-                    turbo_stream.replace(
-                        "role-permission-deployment-status",
-                        partial: "lesli_shield/role/actions/deployment_status"
-                    )
-                ],
+                turbo: permission_update_streams,
                 json: {
                     role_id: @role.id,
                     action_id: action_id.to_i,
@@ -63,6 +50,38 @@ module LesliShield
             @role = role_service.find!(params[:role_id], manageable: true)
         end
 
+        def set_permission_filters
+            @engine_slug = params[:engine_slug].presence
+            @search = params[:search].to_s.strip
+
+            if @engine_slug && !role_permission_service.engine_available?(@engine_slug)
+                raise ActiveRecord::RecordNotFound
+            end
+        end
+
+        # Only Turbo needs refreshed HTML. Redirects and JSON responses do not
+        # need to load the permission catalog after saving a single checkbox.
+        def permission_update_streams
+            return unless request.format.turbo_stream?
+
+            @role.reload
+            load_permission_matrix
+
+            [
+                stream_notification_success(
+                    I18n.t("lesli_shield.roles.permissions.update_success")
+                ),
+                turbo_stream.replace(
+                    "shield-role-permissions",
+                    partial: "lesli_shield/role/actions/permissions"
+                ),
+                turbo_stream.replace(
+                    "role-permission-deployment-status",
+                    partial: "lesli_shield/role/actions/deployment_status"
+                )
+            ]
+        end
+
         def role_service
             @role_service ||= RoleService.new(current_user)
         end
@@ -80,15 +99,12 @@ module LesliShield
                     count: engine[:resources].sum { |resource| resource[:actions].size }
                 }
             end
-            @engine_slug = params[:engine_slug].presence
             if @engine_slug
                 @permission_matrix = @permission_matrix.select do |engine|
                     engine[:engine].tr("_", "-") == @engine_slug
                 end
-                raise ActiveRecord::RecordNotFound if @permission_matrix.empty?
             end
 
-            @search = search_term
             if @search.present?
                 @permission_matrix = filter_permission_matrix(
                     @permission_matrix,
@@ -126,12 +142,8 @@ module LesliShield
             ].any? { |value| value.to_s.downcase.include?(query) }
         end
 
-        def search_term
-            params[:search].to_s.strip
-        end
-
         def permission_index_path
-            options = { search: search_term.presence }
+            options = { search: @search.presence }
             if @engine_slug
                 return engine_role_actions_path(@role, engine_slug: @engine_slug, **options)
             end

@@ -52,6 +52,11 @@ module LesliShield
             )
 
             with_authorized_request(context.fetch(:user)) do
+                get :show, params: { id: owner.id }
+                assert_response :success
+                assert_select "input[name='role[permission_level]'][disabled]", count: 1
+                assert_select "#role-form input[type='submit']", count: 0
+
                 assert_raises(ActiveRecord::RecordNotFound) do
                     get :edit, params: { id: owner.id }
                 end
@@ -143,6 +148,7 @@ module LesliShield
                     format: :turbo_stream
 
                 assert_response :see_other
+                assert_redirected_to role_actions_path(role)
             end
 
             assert Role::Privilege.exists?(
@@ -152,6 +158,30 @@ module LesliShield
                 active: true
             )
             assert_not_nil role.reload.deployed_at
+        end
+
+        test "keeps invalid edits correctable in HTML and Turbo" do
+            context = insert_account_context("correctable-role")
+            role = insert_role(context, name: "Correctable role", permission_level: 50)
+
+            with_authorized_request(context.fetch(:user)) do
+                [:html, :turbo_stream].each do |format|
+                    patch :update, params: {
+                        id: role.id, role: { permission_level: 101 }
+                    }, format: format
+
+                    assert_response :unprocessable_content
+                    assert_select "input[name='role[permission_level]'][value='101']:not([disabled])", count: 1
+                    assert_select "#role-form input[type='submit']", count: 1
+                    assert_equal 50, role.reload.permission_level
+                end
+
+                patch :update, params: {
+                    id: role.id, role: { permission_level: 40 }
+                }, format: :html
+                assert_redirected_to role_path(role)
+                assert_equal 40, role.reload.permission_level
+            end
         end
 
         test "preserves the engine and search after deploying" do

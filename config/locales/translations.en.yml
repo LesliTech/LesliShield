@@ -107,7 +107,6 @@
       updated_successfully: Role updated successfully.
       destroyed_successfully: Role deleted successfully.
       permissions:
-        navigation: Permissions
         title: "%{role} permissions"
         all_engines: All modules
         custom_actions: Custom actions
@@ -125,7 +124,6 @@
         no_matches: No permissions match this search
         no_matches_hint: Try another module, resource, or action.
         update_success: Permission updated successfully.
-        update_error: The permission could not be updated. The change was reverted.
         deploy: Apply permissions (deploy)
         deployed: Permissions were applied successfully.
         empty: There are no permissions available in the catalog.

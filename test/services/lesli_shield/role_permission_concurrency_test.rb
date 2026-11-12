@@ -101,6 +101,14 @@ module LesliShield
             Lesli::Resource.unscoped.where(id: resource_ids).delete_all!
             Lesli::Role.unscoped.where(id: role_ids).delete_all!
             Lesli::User.unscoped.where(id: user_ids).delete_all!
+            # The shared context creates these account extensions explicitly.
+            # Remove them before their core account to respect the foreign keys.
+            LesliAudit::Account.unscoped
+                .where(account_id: @context&.dig(:account)&.id)
+                .delete_all!
+            LesliBell::Account.unscoped
+                .where(account_id: @context&.dig(:account)&.id)
+                .delete_all!
             Lesli::Account.unscoped
                 .where(id: @context&.dig(:account)&.id)
                 .delete_all!

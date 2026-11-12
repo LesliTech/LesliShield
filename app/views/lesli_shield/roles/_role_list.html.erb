@@ -101,10 +101,10 @@
                 </p>
             <% end %>
 
-            <%= link_to role.protected_role? ? t("lesli_shield.roles.action_view") : t("lesli_shield.roles.action_manage"),
-                role_path(role),
-                class: "mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20",
-                data: { turbo_frame: "_top" } %>
+            <%= render LesliView::Elements::Button.new(
+                role.protected_role? ? t("lesli_shield.roles.action_view") : t("lesli_shield.roles.action_manage"),
+                url: role_path(role), css_class: "mt-4 w-full"
+            ) %>
         </article>
     <% end %>
 </div>

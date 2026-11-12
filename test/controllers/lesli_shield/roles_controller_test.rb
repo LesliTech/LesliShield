@@ -55,7 +55,7 @@ module LesliShield
                 get :show, params: { id: owner.id }
                 assert_response :success
                 assert_select "input[name='role[permission_level]'][disabled]", count: 1
-                assert_select "#role-form input[type='submit']", count: 0
+                assert_select "#role-form button[type='submit']:not([name])", count: 0
 
                 assert_raises(ActiveRecord::RecordNotFound) do
                     get :edit, params: { id: owner.id }
@@ -172,7 +172,7 @@ module LesliShield
 
                     assert_response :unprocessable_content
                     assert_select "input[name='role[permission_level]'][value='101']:not([disabled])", count: 1
-                    assert_select "#role-form input[type='submit']", count: 1
+                    assert_select "#role-form button[type='submit']:not([name])", count: 1
                     assert_equal 50, role.reload.permission_level
                 end
 
@@ -288,7 +288,7 @@ module LesliShield
                     assert_select "input[name='role[exact_permission_level]']", count: 0
                     assert_select "input[name='role[isolated]']", count: 0
                     assert_select "input[name='role[path_limited]']", count: 0
-                    assert_select "input[type='submit'][data-turbo-submits-with]",
+                    assert_select "button[type='submit']:not([name])[data-turbo-submits-with]",
                         value: I18n.t("lesli_shield.roles.action_create")
                 end
             end
@@ -359,7 +359,7 @@ module LesliShield
                 assert_select "#general input[name='role[permission_level]'][type='number']"
                 assert_select "#general input[name='role[path_default]']"
                 assert_select "#general details", count: 0
-                assert_select "#general input[type='submit'][data-turbo-submits-with]",
+                assert_select "#general button[type='submit']:not([name])[data-turbo-submits-with]",
                     value: I18n.t("lesli_shield.roles.action_update")
                 assert_select "button[type='submit'][form='role-form-fields']", count: 0
                 assert_select "[data-turbo-confirm]"

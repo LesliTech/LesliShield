@@ -14,8 +14,7 @@ action_path = filtered ? roles_path : new_role_path
     <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
         <%= t("lesli_shield.roles.#{description_key}") %>
     </p>
-    <%= link_to t("lesli_shield.roles.#{action_key}"),
-        action_path,
-        class: "mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20",
-        data: { turbo_frame: "_top" } %>
+    <%= render LesliView::Elements::Button.new(t("lesli_shield.roles.#{action_key}"),
+        url: action_path,
+        solid: false, data: { turbo_frame: "_top" }) %>
 </section>

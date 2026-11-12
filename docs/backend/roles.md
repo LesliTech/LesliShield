@@ -69,8 +69,9 @@ explicit deploy operation because it is intentionally performed on demand.
 
 Every role lookup is scoped to `current_user.account.roles`. Direct access is
 also limited to roles whose `permission_level` is no higher than the actor's
-highest active level. A role outside either boundary returns `404`, including
-when the submitted update attempts to raise a role above the boundary.
+highest active level. A role outside either boundary returns `404`. An update
+that requests a higher permission level returns a validation error without
+changing the persisted role, and the form remains editable for correction.
 
 LesliShield's request authorization uses the following controller actions as
 independent privileges:
@@ -154,6 +155,49 @@ physically removed, including when the new selection is empty. Cache rebuild,
 transaction; a failed audit write restores the previous cache and timestamp.
 Deployment has its own independent administrative privilege and remains
 available through the dedicated deploy button.
+
+## Audit events
+
+RoleService records one event for each successful administrative operation:
+
+| Operation | Event |
+| --- | --- |
+| Create | `role_created` |
+| Edit configuration | `role_updated` |
+| Deactivate | `role_deactivated` |
+| Activate | `role_activated` |
+| Duplicate | `role_duplicated` |
+| Delete | `role_deleted` |
+
+An update that changes the active state records the corresponding transition
+event, including any other edited fields, rather than a second `role_updated`
+event. Normalized updates that change nothing, repeated deactivation, and
+rejected operations do not create events. Duplication records only
+`role_duplicated`, with the source role's ID and name.
+
+Each event stores the role as its subject, the actor's user ID and UID, and
+the audit account. Its JSON `details` preserve the role ID, name, active state,
+and core account ID. Updates also record before/after values for changed
+administrative fields. These snapshots remain useful after renaming or
+deleting the role.
+
+Permission selections still produce no individual audit events. Each explicit
+deploy records one `role_privileges_deployed` event. Its `permissions_added`
+and `permissions_removed` compare the previous active cache with the rebuilt
+cache, using stable controller/action pairs instead of temporary cache row
+IDs. Repeating a deployment produces an event with empty differences.
+
+`affected_users_count` is the number of distinct active, non-deleted users
+in the role's account with a current assignment. Inactive roles report zero.
+This is potential impact: the count does not try to subtract users who also
+receive the same permissions through another role.
+
+Role mutations and their events share one transaction. Deployment also includes
+the cache rebuild and timestamp in that transaction. Audit errors propagate
+and roll everything back. This follows LesliAudit's existing `enable_logs`
+configuration; disabling that setting disables event persistence globally.
+Business services construct details explicitly; request parameters and secrets
+must never be passed to the audit API.
 
 ## Administrative fields
 

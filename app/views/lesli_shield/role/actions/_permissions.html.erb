@@ -35,8 +35,7 @@ end
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <%= form.submit t("lesli_shield.roles.permissions.search"),
-                        class: "inline-flex min-h-11 items-center justify-center rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-500/20" %>
+                    <%= render LesliView::Elements::Button.new(t("lesli_shield.roles.permissions.search"), type: :submit, icon: "search") %>
                     <% if @search.present? %>
                         <%= link_to t("lesli_shield.roles.permissions.clear_search"),
                             index_path,

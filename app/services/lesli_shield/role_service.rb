@@ -128,46 +128,62 @@ module LesliShield
         end
 
         def create!(attributes)
-            role = build(attributes)
-
-            validate_permission_level!(role)
-            validate_unique_name!(role)
-            save!(role)
+            Lesli::Role.transaction do
+                role = persist_new_role!(attributes)
+                audit!(:role_created, role)
+                role
+            end
         end
 
         def update!(role_or_id, attributes)
             role = manageable_role!(role_or_id)
-            role.assign_attributes(normalize_attributes(attributes))
 
-            validate_permission_level!(role)
-            validate_unique_name!(role)
-            save!(role)
+            role.with_lock do
+                manageable_role!(role.id)
+                role.assign_attributes(normalize_attributes(attributes))
+
+                validate_permission_level!(role)
+                validate_unique_name!(role)
+                changes = role.changes.slice(*WRITABLE_ATTRIBUTES.map(&:to_s))
+                next if changes.empty?
+
+                # Capture changes before saving: model callbacks may perform
+                # another save and replace Active Record's saved_changes.
+                operation = update_operation(role, changes)
+                save!(role)
+                audit!(operation, role, changes: changes)
+            end
+
+            role
         end
 
         def deactivate!(role_or_id)
-            role = manageable_role!(role_or_id)
-            role.active = false
-            save!(role)
+            update!(role_or_id, active: false)
         end
 
         def destroy!(role_or_id)
             role = manageable_role!(role_or_id)
 
-            if role.system_role?
-                raise SystemRoleError.new(
-                    I18n.t("lesli_shield.roles.errors.system_role"),
-                    record: role
-                )
-            end
+            role.with_lock do
+                manageable_role!(role.id)
 
-            if role.assigned?
-                raise AssignedUsersError.new(
-                    I18n.t("lesli_shield.roles.errors.assigned_users"),
-                    record: role
-                )
-            end
+                if role.system_role?
+                    raise SystemRoleError.new(
+                        I18n.t("lesli_shield.roles.errors.system_role"),
+                        record: role
+                    )
+                end
 
-            role.destroy!
+                if role.assigned?
+                    raise AssignedUsersError.new(
+                        I18n.t("lesli_shield.roles.errors.assigned_users"),
+                        record: role
+                    )
+                end
+
+                role.destroy!
+                audit!(:role_deleted, role)
+            end
             role
         end
 
@@ -179,7 +195,8 @@ module LesliShield
             overrides[:name] ||= available_copy_name(source.name)
 
             Lesli::Role.transaction do
-                duplicate = create!(
+                # Duplication is one operation, not a separate creation event.
+                duplicate = persist_new_role!(
                     {
                         name: overrides.delete(:name),
                         description: source.description,
@@ -192,6 +209,12 @@ module LesliShield
                 RolePermissionService
                     .new(actor)
                     .duplicate_from!(source, duplicate)
+                audit!(
+                    :role_duplicated,
+                    duplicate,
+                    source_role_id: source.id,
+                    source_role_name: source.name
+                )
                 duplicate.reload
             end
         end
@@ -199,6 +222,31 @@ module LesliShield
         private
 
         attr_reader :actor, :query
+
+        # Shared persistence without auditing. Public operations own their
+        # transaction and record exactly one event with the correct meaning.
+        def persist_new_role!(attributes)
+            role = build(attributes)
+            validate_permission_level!(role)
+            validate_unique_name!(role)
+            save!(role)
+        end
+
+        def update_operation(role, changes)
+            return :role_updated unless changes.key?("active")
+
+            role.active? ? :role_activated : :role_deactivated
+        end
+
+        def audit!(operation, role, **details)
+            RoleAudit.record!(
+                operation,
+                role: role,
+                actor: actor,
+                source: self.class,
+                details: details
+            )
+        end
 
         def visible_roles
             actor.account.roles.where(

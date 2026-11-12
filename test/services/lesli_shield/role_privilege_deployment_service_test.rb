@@ -7,6 +7,15 @@ module LesliShield
     class RolePrivilegeDeploymentServiceTest < ActiveSupport::TestCase
         include RoleSecurityTestHelpers
 
+        setup do
+            @original_audit_config = Lesli.config.audit.dup
+            Lesli.config.audit[:enable_logs] = true
+        end
+
+        teardown do
+            Lesli.config.audit.replace(@original_audit_config)
+        end
+
         test "compiles privileges and records exactly one audit event" do
             context = insert_account_context("privilege-deploy")
             role = insert_role(
@@ -69,6 +78,65 @@ module LesliShield
 
             assert_empty Role::Privilege.with_deleted.where(role_id: role.id)
             assert_not_nil role.reload.deployed_at
+            event = LesliAudit::UserLog.find_by!(subject_id: role.id, operation: "role_privileges_deployed")
+            assert_empty event.details.fetch("permissions_added")
+            assert_equal(
+                [{ "controller" => "obsolete/controller", "action" => "index" }],
+                event.details.fetch("permissions_removed")
+            )
+        end
+
+        test "persists the effective permission difference and active affected users" do
+            context = insert_account_context("deploy-audit-details")
+            actor = context.fetch(:user)
+            role = insert_role(context, name: "Audited permissions", permission_level: 40)
+            retained = insert_role_action(role, label: "Retained permission").action
+            added = insert_role_action(role, label: "Added permission").action
+            Role::Privilege.create!(role: role, controller: retained.parent.route, action: retained.action, active: true)
+            Role::Privilege.create!(role: role, controller: "removed/controller", action: "destroy", active: true)
+            Role::Privilege.create!(role: role, controller: "inactive/controller", action: "index", active: false)
+            deleted = Role::Privilege.create!(role: role, controller: "deleted/controller", action: "show", active: true)
+            deleted.destroy!
+
+            assign_role(actor, role)
+            assign_role(insert_member(context, active: false), role)
+            assign_role(insert_member(context, active: true, deleted_at: Time.current), role)
+            assignment = assign_role(insert_member(context, active: true), role)
+            assignment.destroy!
+
+            events = LesliAudit::UserLog.where(user_id: actor.id, operation: "role_privileges_deployed")
+            service = RolePrivilegeDeploymentService.new(actor)
+            assert_difference -> { events.count }, 1 do
+                service.deploy!(role)
+            end
+
+            event = events.last
+            assert_equal actor.uid, event.actor_uid
+            assert_equal context.fetch(:account).audit.id, event.account_id
+            assert_equal role.id, event.subject_id
+            assert_equal role.account_id, event.details.fetch("account_id")
+            assert_equal role.name, event.details.fetch("role_name")
+            assert_equal 1, event.details.fetch("affected_users_count")
+            assert_equal(
+                [{ "controller" => added.parent.route, "action" => added.action }],
+                event.details.fetch("permissions_added")
+            )
+            assert_equal(
+                [{ "controller" => "removed/controller", "action" => "destroy" }],
+                event.details.fetch("permissions_removed")
+            )
+
+            # A requested rebuild is still one audited operation, even when
+            # it produces the same permissions as the previous deployment.
+            assert_difference -> { events.count }, 1 do
+                service.deploy!(role)
+            end
+            assert_empty events.last.details.fetch("permissions_added")
+            assert_empty events.last.details.fetch("permissions_removed")
+
+            role.update!(active: false)
+            service.deploy!(role)
+            assert_equal 0, events.last.details.fetch("affected_users_count")
         end
 
         test "rolls privilege compilation back when audit persistence fails" do
@@ -87,12 +155,16 @@ module LesliShield
             )
             actor = context.fetch(:user)
 
-            actor.define_singleton_method(:log) do |**|
+            original_log = actor.method(:log)
+            actor.define_singleton_method(:log) do |**attributes|
+                original_log.call(**attributes)
                 raise ActiveRecord::RecordInvalid
             end
 
-            assert_raises(ActiveRecord::RecordInvalid) do
-                RolePrivilegeDeploymentService.new(actor).deploy!(role)
+            assert_no_difference -> { LesliAudit::UserLog.count } do
+                assert_raises(ActiveRecord::RecordInvalid) do
+                    RolePrivilegeDeploymentService.new(actor).deploy!(role)
+                end
             end
 
             refute Role::Privilege.exists?(
@@ -105,6 +177,22 @@ module LesliShield
         end
 
         private
+
+        def insert_member(context, active:, deleted_at: nil)
+            identifier = SecureRandom.hex(5)
+            timestamp = Time.current
+            user_id = Lesli::User.unscoped.insert_all!([{
+                account_id: context.fetch(:account).id,
+                uid: "AUDIT-MEMBER-#{identifier}",
+                email: "audit-member-#{identifier}@example.com",
+                encrypted_password: "",
+                active: active,
+                deleted_at: deleted_at,
+                created_at: timestamp,
+                updated_at: timestamp
+            }]).rows.first.first
+            Lesli::User.with_deleted.find(user_id)
+        end
 
         def capture_audit_events(actor)
             events = []

@@ -24,17 +24,14 @@
 
         <% if role.deletable_by?(current_user) %>
             <div class="my-1 border-t border-slate-100"></div>
-            <%= button_to role_path(role),
-                method: :delete,
-                form: { class: "block", data: { turbo_frame: "_top" } },
-                class: "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 transition hover:bg-red-50 hover:text-red-700",
+            <%= render LesliView::Elements::Button.new(
+                t("lesli_shield.roles.action_delete"), url: role_path(role),
+                method: :delete, icon: "delete", danger: true, solid: false,
                 data: {
                     turbo_confirm: t("lesli_shield.roles.confirm_delete", role: role.name),
                     turbo_submits_with: t("lesli_shield.roles.action_deleting")
-                } do %>
-                <span class="material-symbols text-lg" aria-hidden="true">delete</span>
-                <span><%= t("lesli_shield.roles.action_delete") %></span>
-            <% end %>
+                }
+            ) %>
         <% end %>
     </div>
 </details>

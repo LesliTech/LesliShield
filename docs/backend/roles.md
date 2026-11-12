@@ -42,6 +42,21 @@ allowlisted ordering, and bounded pagination. User totals include only active,
 non-deleted users with active assignments. Permission totals include only
 non-deleted role actions.
 
+## Permission service
+
+`LesliShield::RolePermissionService` owns permission selection through
+`matrix`, `apply!`, `duplicate_from!`, and `effective_permissions`.
+
+The matrix begins with every non-deleted action whose parent resource is also
+non-deleted. It left-joins the selected role actions so unassigned permissions
+remain visible, groups resources by engine, and exposes readable labels
+separately from technical engine, route, identifier, and action names. Standard
+CRUD actions use a fixed order; custom actions follow alphabetically.
+
+`apply!` synchronizes selections in bulk and updates `modified_at`, but it does
+not rebuild the effective privilege cache. `duplicate_from!` follows the same
+rule. Cache compilation remains an explicit deploy operation.
+
 ## Administrative authorization
 
 Every role lookup is scoped to `current_user.account.roles`. Direct access is

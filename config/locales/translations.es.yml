@@ -11,6 +11,7 @@
         protected_role: El rol owner está protegido y no puede modificarse.
         system_role: Los roles del sistema no pueden eliminarse.
         assigned_users: No se puede eliminar un rol asignado a usuarios.
+        unknown_actions: "Acciones de permiso desconocidas o no disponibles: %{action_ids}."
     invites:
       title: Invitaciones
       subtitle: Invita personas a tu organización y consulta el estado de cada invitación.

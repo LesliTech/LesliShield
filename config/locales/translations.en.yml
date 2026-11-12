@@ -11,6 +11,7 @@
         protected_role: The owner role is protected and cannot be modified.
         system_role: System roles cannot be deleted.
         assigned_users: Roles assigned to users cannot be deleted.
+        unknown_actions: "Unknown or unavailable permission actions: %{action_ids}."
     invites:
       title: Invitations
       subtitle: Invite people to join your organization and track each invitation.

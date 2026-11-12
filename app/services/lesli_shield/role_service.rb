@@ -165,9 +165,10 @@ module LesliShield
                     }.merge(overrides)
                 )
 
-                copy_active_actions!(source, duplicate)
-                duplicate.touch(:modified_at) if duplicate.actions.exists?
-                duplicate
+                RolePermissionService
+                    .new(actor)
+                    .duplicate_from!(source, duplicate)
+                duplicate.reload
             end
         end
 
@@ -274,20 +275,6 @@ module LesliShield
             role
         rescue ActiveRecord::RecordInvalid
             raise ValidationError, role
-        end
-
-        def copy_active_actions!(source, duplicate)
-            timestamp = Time.current
-            records = source.actions.pluck(:action_id).map do |action_id|
-                {
-                    role_id: duplicate.id,
-                    action_id: action_id,
-                    created_at: timestamp,
-                    updated_at: timestamp
-                }
-            end
-
-            Role::Action.insert_all!(records) if records.any?
         end
 
         def available_copy_name(source_name)

@@ -7,7 +7,7 @@ module LesliShield
 
         def index
             @roles = respond_with_pagination(
-                Lesli::RoleService.new(current_user, query).index
+                role_service.list(params)
             )
         end
 
@@ -20,51 +20,37 @@ module LesliShield
         def edit; end
 
         def create
-            @role = current_user.account.roles.new(role_params)
-            ensure_manageable!(@role)
-
-            if @role.save
-                respond_with_successful(@role)
-            else
-                respond_with_error(@role.errors.full_messages.to_sentence)
-            end
+            @role = role_service.create!(role_params)
+            success(I18n.t("lesli_shield.roles.created_successfully"))
+            respond_with_lesli(
+                json: @role,
+                redirect: role_path(@role)
+            )
+        rescue RoleService::Error => exception
+            respond_with_role_error(exception, template: "new")
         end
 
         def update
-            @role.assign_attributes(role_params)
-            ensure_manageable!(@role)
-
-            if @role.save
-                respond_with_lesli(
-                    turbo: stream_notification_success("Role updated successfully!")
-                )
-            else
-                respond_with_lesli(
-                    turbo: stream_notification_danger(
-                        @role.errors.full_messages.to_sentence
-                    )
-                )
-            end
+            @role = role_service.update!(@role, role_params)
+            respond_with_lesli(
+                turbo: stream_notification_success(
+                    I18n.t("lesli_shield.roles.updated_successfully")
+                ),
+                json: @role,
+                redirect: role_path(@role)
+            )
+        rescue RoleService::Error => exception
+            respond_with_role_error(exception, template: "show")
         end
 
         def destroy
-            if @role.assigned?
-                return respond_with_error(
-                    I18n.t("core.roles.messages_danger_users_assigned_validation")
-                )
-            end
-
-            raise ActiveRecord::RecordNotFound unless @role.deletable_by?(current_user)
-
-            if @role.destroy
-                respond_with_successful
-            else
-                respond_with_error(@role.errors.full_messages.to_sentence)
-            end
+            role_service.destroy!(@role)
+            success(I18n.t("lesli_shield.roles.destroyed_successfully"))
+            respond_with_lesli(redirect: roles_path)
+        rescue RoleService::Error => exception
+            respond_with_role_error(exception, template: "show")
         end
 
-        # This endpoint remains temporarily for the current permission UI. The
-        # bulk permission service will replace it with apply-on-save behavior.
         def deploy
             RolePrivilegeDeploymentService.new(current_user).deploy!(@role)
             respond_with_lesli(
@@ -74,25 +60,16 @@ module LesliShield
 
         private
 
-        def visible_roles
-            current_user.account.roles.where(
-                permission_level: ..current_user.max_level_permission
-            )
+        def role_service
+            @role_service ||= RoleService.new(current_user, query)
         end
 
         def set_visible_role
-            @role = visible_roles.find(params[:id])
+            @role = role_service.find!(params[:id])
         end
 
         def set_manageable_role
-            @role = visible_roles.find(params[:id])
-            ensure_manageable!(@role)
-        end
-
-        def ensure_manageable!(role)
-            return if role.manageable_by?(current_user)
-
-            raise ActiveRecord::RecordNotFound
+            @role = role_service.find!(params[:id], manageable: true)
         end
 
         def role_params
@@ -102,6 +79,19 @@ module LesliShield
                 :description,
                 :path_default,
                 :permission_level
+            )
+        end
+
+        def respond_with_role_error(exception, template:)
+            @role = exception.record || @role
+            respond_with_lesli(
+                turbo: stream_notification_danger(exception.message),
+                json: {
+                    message: exception.message,
+                    errors: @role&.errors&.to_hash
+                },
+                html: template,
+                status: :unprocessable_content
             )
         end
     end

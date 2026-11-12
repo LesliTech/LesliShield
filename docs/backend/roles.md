@@ -24,6 +24,24 @@ The policy is exposed by `LesliShield::RoleManagement` through:
 - `assigned?`
 - `deletable_by?(actor)`
 
+## Role service
+
+`LesliShield::RoleService` is the only role-administration entry point. It
+provides `list`, `find!`, `create!`, `update!`, `deactivate!`, `destroy!`, and
+`duplicate!`. Every operation applies account isolation and the actor's active
+permission boundary before reading or changing a role.
+
+Names and descriptions are normalized before persistence, and role names are
+case-insensitively unique inside an account. New roles start active with a safe
+permission level. A duplicated role starts inactive and copies only its active
+selected actions; it never copies users, effective privilege cache rows, or
+deployment state.
+
+The list query supports name/description search, active/inactive filtering,
+allowlisted ordering, and bounded pagination. User totals include only active,
+non-deleted users with active assignments. Permission totals include only
+non-deleted role actions.
+
 ## Administrative authorization
 
 Every role lookup is scoped to `current_user.account.roles`. Direct access is

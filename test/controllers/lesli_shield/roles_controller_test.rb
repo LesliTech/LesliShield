@@ -81,22 +81,51 @@ module LesliShield
             )
 
             with_authorized_request(context.fetch(:user)) do
-                assert_raises(ActiveRecord::RecordNotFound) do
-                    post :create, params: {
-                        role: { name: "Elevated role", permission_level: 101 }
-                    }
-                end
+                post :create, params: {
+                    role: { name: "Elevated role", permission_level: 101 }
+                }
+                assert_response :unprocessable_content
 
-                assert_raises(ActiveRecord::RecordNotFound) do
-                    patch :update, params: {
-                        id: role.id,
-                        role: { permission_level: 101 }
-                    }
-                end
+                patch :update, params: {
+                    id: role.id,
+                    role: { permission_level: 101 }
+                }
+                assert_response :unprocessable_content
             end
 
             refute context.fetch(:account).roles.exists?(name: "Elevated role")
             assert_equal 50, role.reload.permission_level
+        end
+
+        test "uses the role service for the successful mutation lifecycle" do
+            context = insert_account_context("role-mutation-lifecycle")
+
+            with_authorized_request(context.fetch(:user)) do
+                post :create, params: {
+                    role: {
+                        name: "  Lifecycle   role ",
+                        description: "  Initial   description ",
+                        permission_level: 20
+                    }
+                }
+                assert_response :see_other
+
+                role = context.fetch(:account).roles.find_by!(
+                    name: "Lifecycle role"
+                )
+                assert_equal "Initial description", role.description
+
+                patch :update, params: {
+                    id: role.id,
+                    role: { name: "Updated lifecycle role" }
+                }
+                assert_response :see_other
+                assert_equal "Updated lifecycle role", role.reload.name
+
+                delete :destroy, params: { id: role.id }
+                assert_response :see_other
+                refute context.fetch(:account).roles.exists?(role.id)
+            end
         end
 
         test "requires a distinct administrative privilege for each role action" do

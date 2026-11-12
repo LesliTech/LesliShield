@@ -1,6 +1,16 @@
 ---
 :es:
   lesli_shield:
+    roles:
+      created_successfully: Rol creado correctamente.
+      updated_successfully: Rol actualizado correctamente.
+      destroyed_successfully: Rol eliminado correctamente.
+      errors:
+        duplicate_name: ya está siendo utilizado por otro rol de esta cuenta
+        permission_level: El nivel de permiso debe estar entre 0 y %{maximum}.
+        protected_role: El rol owner está protegido y no puede modificarse.
+        system_role: Los roles del sistema no pueden eliminarse.
+        assigned_users: No se puede eliminar un rol asignado a usuarios.
     invites:
       title: Invitaciones
       subtitle: Invita personas a tu organización y consulta el estado de cada invitación.

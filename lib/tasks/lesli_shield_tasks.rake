@@ -40,7 +40,7 @@ namespace :lesli_shield do
     # Drop, build, migrate & seed database (development only)
     def lesli_shield_privileges
         Lesli::Role.all.each do |role|
-            LesliShield::RolePrivilegeService.new(nil).synchronize(role)
+            LesliShield::RolePrivilegeService.new.rebuild!(role)
             Termline.success("LesliShield: Syncing privileges for #{role.name} role.")
         end
     end

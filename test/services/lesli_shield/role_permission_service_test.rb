@@ -109,26 +109,73 @@ module LesliShield
                 active: true
             )
             service = RolePermissionService.new(context.fetch(:user))
+            audit_events = capture_audit_events(context.fetch(:user))
 
-            service.apply!(role, [selected_action.id.to_s])
+            service.apply!(
+                role: role,
+                action_ids: [selected_action.id.to_s]
+            )
 
             assert_not_nil previous_selection.reload.deleted_at
             assert role.actions.exists?(action_id: selected_action.id)
             assert_not_nil role.reload.modified_at
             assert_equal deployed_at.to_i, role.deployed_at.to_i
             assert_equal privilege, role.privileges.find(privilege.id)
+            assert_equal 1, audit_events.length
+            assert_equal "role_permissions_saved",
+                audit_events.first.fetch(:operation)
 
             modified_at = role.modified_at
-            service.apply!(role, [selected_action.id])
+            service.apply!(role: role, action_ids: [selected_action.id])
             assert_equal modified_at, role.reload.modified_at
+            assert_equal 1, audit_events.length
 
             unknown_error = assert_raises(
                 RolePermissionService::UnknownActionsError
             ) do
-                service.apply!(role, [resource.id, "invalid"])
+                service.apply!(
+                    role: role,
+                    action_ids: [resource.id, "invalid"]
+                )
             end
             assert_includes unknown_error.action_ids, resource.id
             assert_includes unknown_error.action_ids, "invalid"
+        end
+
+        test "rolls permission selections back when audit persistence fails" do
+            context = insert_account_context("permission-rollback")
+            role = insert_role(
+                context,
+                name: "Permission rollback role",
+                permission_level: 50
+            )
+            resource = create_resource(
+                engine: "lesli_shield",
+                identifier: "Rollback",
+                label: "Rollback",
+                route: "lesli_shield/rollback"
+            )
+            previous_action = create_action(resource, action: "index", label: "Index")
+            next_action = create_action(resource, action: "show", label: "Show")
+            previous_selection = Role::Action.create!(
+                role: role,
+                action: previous_action
+            )
+            actor = context.fetch(:user)
+            actor.define_singleton_method(:log) do |**|
+                raise ActiveRecord::RecordInvalid
+            end
+
+            assert_raises(ActiveRecord::RecordInvalid) do
+                RolePermissionService.new(actor).apply!(
+                    role: role,
+                    action_ids: [next_action.id]
+                )
+            end
+
+            assert_nil previous_selection.reload.deleted_at
+            refute role.actions.exists?(action_id: next_action.id)
+            assert_nil role.reload.modified_at
         end
 
         test "duplicates only active catalog selections" do
@@ -230,7 +277,7 @@ module LesliShield
 
             assert_raises(ActiveRecord::RecordNotFound) { service.matrix(owner) }
             assert_raises(ActiveRecord::RecordNotFound) do
-                service.apply!(foreign_role, [])
+                service.apply!(role: foreign_role, action_ids: [])
             end
         end
 
@@ -251,6 +298,14 @@ module LesliShield
                 identifier: action,
                 label: label
             )
+        end
+
+        def capture_audit_events(actor)
+            events = []
+            actor.define_singleton_method(:log) do |**attributes|
+                events << attributes
+            end
+            events
         end
     end
 end

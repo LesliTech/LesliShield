@@ -128,6 +128,32 @@ module LesliShield
             end
         end
 
+        test "deploys the saved selection through the explicit action" do
+            context = insert_account_context("role-explicit-deploy")
+            role = insert_role(
+                context,
+                name: "Explicit deployment role",
+                permission_level: 50
+            )
+            role_action = insert_role_action(role, label: "Deployable action")
+
+            with_authorized_request(context.fetch(:user)) do
+                post :deploy,
+                    params: { id: role.id },
+                    format: :turbo_stream
+
+                assert_response :see_other
+            end
+
+            assert Role::Privilege.exists?(
+                role: role,
+                controller: role_action.action.parent.route,
+                action: role_action.action.action,
+                active: true
+            )
+            assert_not_nil role.reload.deployed_at
+        end
+
         test "requires a distinct administrative privilege for each role action" do
             context = insert_account_context("role-privileges")
             role = insert_role(

@@ -53,8 +53,12 @@ module LesliShield
 
         def deploy
             RolePrivilegeDeploymentService.new(current_user).deploy!(@role)
+            success(I18n.t("lesli_shield.roles.permissions.deployed"))
             respond_with_lesli(
-                turbo: stream_notification_success("Role privileges applied successfully!")
+                turbo: stream_redirection(role_actions_path(@role)),
+                json: { role_id: @role.id },
+                redirect: role_actions_path(@role),
+                status: :see_other
             )
         end
 

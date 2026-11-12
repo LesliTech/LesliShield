@@ -6,14 +6,26 @@ module LesliShield
     class RolePrivilegeDeploymentService
         def initialize(actor)
             @actor = actor
+            @role_service = RoleService.new(actor)
         end
 
-        def deploy!(role)
-            raise ActiveRecord::RecordNotFound unless role&.manageable_by?(actor)
+        def deploy!(role_or_id)
+            role = manageable_role!(role_or_id)
 
             role.with_lock do
-                RolePrivilegeService.new(actor).synchronize(role)
-                role.touch(:deployed_at)
+                # Revalidate after waiting for the lock because the actor's
+                # account or permission boundary may have changed.
+                manageable_role!(role.id)
+                timestamp = Time.current
+
+                RolePrivilegeService.new.rebuild!(
+                    role,
+                    timestamp: timestamp
+                )
+                role.update_columns(
+                    deployed_at: timestamp,
+                    updated_at: timestamp
+                )
                 RoleAudit.record!(
                     :role_privileges_deployed,
                     role: role,
@@ -27,6 +39,11 @@ module LesliShield
 
         private
 
-        attr_reader :actor
+        attr_reader :actor, :role_service
+
+        def manageable_role!(role_or_id)
+            role_id = role_or_id.respond_to?(:id) ? role_or_id.id : role_or_id
+            role_service.find!(role_id, manageable: true)
+        end
     end
 end

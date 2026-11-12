@@ -53,9 +53,16 @@ remain visible, groups resources by engine, and exposes readable labels
 separately from technical engine, route, identifier, and action names. Standard
 CRUD actions use a fixed order; custom actions follow alphabetically.
 
-`apply!` synchronizes selections in bulk and updates `modified_at`, but it does
-not rebuild the effective privilege cache. `duplicate_from!` follows the same
-rule. Cache compilation remains an explicit deploy operation.
+`apply!(role:, action_ids:)` is the only permission-selection mutation. It
+locks the role, revalidates the actor's account and permission boundary,
+validates every submitted catalog ID, and activates or deactivates the complete
+selection in one transaction. A real change updates `modified_at` and records
+one `role_permissions_saved` audit event. A repeated identical request is a
+no-op, so it does not create duplicate rows, timestamps, or audit events.
+
+Saving selections does not rebuild the effective privilege cache.
+`duplicate_from!` follows the same separation. Cache compilation remains an
+explicit deploy operation because it is intentionally performed on demand.
 
 ## Administrative authorization
 
@@ -76,12 +83,11 @@ independent privileges:
 | Delete a role | `lesli_shield/roles#destroy` |
 | Deploy effective privileges | `lesli_shield/roles#deploy` |
 | View permissions | `lesli_shield/role/actions#index` |
-| Add a permission | `lesli_shield/role/actions#update` |
-| Remove a permission | `lesli_shield/role/actions#destroy` |
+| Save the complete permission selection | `lesli_shield/role/actions#update` |
 
 Having one of these privileges never implies another. The nested permission
-controller loads every action through the selected role, so an action from a
-different role or account is indistinguishable from a missing record.
+controller scopes the role to the current account and validates every submitted
+ID against the active permission catalog before changing the selection.
 
 ## Deactivation
 
@@ -97,14 +103,21 @@ are selections from that catalog and must never be used as the catalog itself.
 This guarantees that a newly created role can display every available action,
 including actions it has never been granted.
 
+The permissions form submits every selected action in one collection-level
+PATCH request. There are no per-action PATCH or DELETE routes, no request per
+toggle, and no dependency on a computed `active == 1` value.
+
 Editing a role's selected actions does not rebuild the effective privilege
 cache automatically. Compilation is intentionally performed on demand through
 the explicit `deploy` operation because rebuilding the cache can be expensive.
 
-Deployment locks the selected role and performs cache compilation together
-with its `role_privileges_deployed` audit event in one transaction. A failed
-audit write rolls the compilation and the role's `deployed_at` timestamp back.
-Deployment has its own independent administrative privilege.
+Deployment locks and revalidates the selected role, deletes the previous cache,
+and rebuilds it completely from the active selection. Obsolete cache rows are
+physically removed, including when the new selection is empty. Cache rebuild,
+`deployed_at`, and the `role_privileges_deployed` audit event share one
+transaction; a failed audit write restores the previous cache and timestamp.
+Deployment has its own independent administrative privilege and remains
+available through the dedicated deploy button.
 
 ## Administrative fields
 

@@ -334,6 +334,7 @@ module LesliShield
                 name: "privilege-manager",
                 permission_level: 100
             )
+            assign_role(context.fetch(:user), role)
             timestamp = Time.current
             controller_resource_id = Lesli::Resource.insert_all!([{
                 engine: "shield",
@@ -362,13 +363,20 @@ module LesliShield
                 }])
             end
 
-            privilege_matrix = RoleActionService
+            privilege_matrix = RolePermissionService
                 .new(context.fetch(:user))
-                .index(role.id)
-            invite_actions = privilege_matrix.fetch("lesli_shield/invites")
+                .matrix(role)
+            invite_resource = privilege_matrix
+                .flat_map { |engine| engine.fetch(:resources) }
+                .find do |resource|
+                    resource.fetch(:route) == "lesli_shield/invites"
+                end
+            invite_actions = invite_resource.fetch(:actions).index_by do |action|
+                action.fetch(:action)
+            end
 
-            assert invite_actions.fetch(:resend)
-            assert invite_actions.fetch(:cancel)
+            assert invite_actions.fetch("resend").fetch(:assigned)
+            assert invite_actions.fetch("cancel").fetch(:assigned)
         end
 
         private

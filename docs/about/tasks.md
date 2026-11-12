@@ -8,7 +8,9 @@ LesliShield exposes one supported maintenance task.
 bin/rails lesli_shield:privileges
 ```
 
-The task loads every core role and asks `LesliShield::RolePrivilegeService` to synchronize its privilege records with the currently available role actions and protected resources.
+The task loads every core role and asks `LesliShield::RolePrivilegeService#rebuild!`
+to reconstruct its effective privilege cache from the currently selected role
+actions.
 
 | Property | Value |
 | --- | --- |

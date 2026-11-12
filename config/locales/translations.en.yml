@@ -5,6 +5,16 @@
       created_successfully: Role created successfully.
       updated_successfully: Role updated successfully.
       destroyed_successfully: Role deleted successfully.
+      permissions:
+        navigation: Permissions
+        title: "%{role} permissions"
+        description: Save the complete selection before deploying. Deploy rebuilds the effective authorization cache on demand.
+        save: Save permissions
+        saving: Saving permissions…
+        saved: Permissions saved successfully. Deploy them when you are ready.
+        deploy: Apply permissions (deploy)
+        deployed: Permissions were applied successfully.
+        empty: There are no permissions available in the catalog.
       errors:
         duplicate_name: is already used by another role in this account
         permission_level: The permission level must be between 0 and %{maximum}.

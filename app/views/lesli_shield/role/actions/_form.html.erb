@@ -1,67 +1,77 @@
+<%= form_with(
+    url: role_actions_path(@role),
+    method: :patch,
+    class: "space-y-6"
+) do %>
+    <% @permission_matrix.each do |engine| %>
+        <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <header class="border-b border-gray-200 bg-gray-50 px-5 py-4">
+                <h2 class="text-base font-semibold text-gray-900">
+                    <%= engine[:label] %>
+                </h2>
+                <p class="mt-1 font-mono text-xs text-gray-500">
+                    <%= engine[:engine] %>
+                </p>
+            </header>
 
-<%
-action_names = @role_actions.values.first&.keys || []
-columns = [{ label: "Controller" }]
-columns.concat(action_names.map { |action_name| {
-    label: action_name.to_s.humanize
-} })
-%>
+            <div class="divide-y divide-gray-200">
+                <% engine[:resources].each do |resource| %>
+                    <fieldset class="px-5 py-5">
+                        <legend class="w-full">
+                            <span class="block text-sm font-semibold text-gray-900">
+                                <%= resource[:label] %>
+                            </span>
+                            <span class="mt-1 block font-mono text-xs text-gray-500">
+                                <%= resource[:route] %>
+                            </span>
+                        </legend>
 
-
-<style>
-.mini-toggle {
-    position: relative;
-    width: 40px;
-    height: 20px;
-    background: #ccc;
-    border-radius: 9999px;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    transition: background 0.25s ease;
-    display: inline-block;
-}
-
-.mini-toggle.active {
-    background: #22c55e; /* green */
-    background: var(--lesli-color-primary)
-}
-
-.mini-toggle-slider {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 16px;
-    height: 16px;
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.25s ease;
-}
-
-.mini-toggle.active .mini-toggle-slider {
-    transform: translateX(20px);
-}
-</style>
-
-<section id="shield-role-actions-form">
-<%= render(LesliView::Elements::Table.new(:columns => columns)) do |table| %>
-    <% @role_actions.each do |controller_name, actions| %>
-        <% table.with_row do |row| %>
-            <% row.with_cell do %>
-                <%= controller_name %>
-            <% end %>
-            <% actions.each do |action_name, action| %>
-                <% row.with_cell do %>
-                    <% if action %>
-                        <%= button_to role_action_path(action),
-                            class: "mini-toggle #{'active' if action[:active] == 1}",
-                            method: (action[:active] == 1 ? :delete : :patch) do %>
-                            <span class="mini-toggle-slider"></span>
-                        <% end %>
-                    <% end %>
+                        <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            <% resource[:actions].each do |action| %>
+                                <% field_id = "role-action-#{action[:id]}" %>
+                                <label
+                                    for="<%= field_id %>"
+                                    class="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 px-3 py-3 transition hover:border-gray-300 hover:bg-gray-50"
+                                >
+                                    <%= check_box_tag(
+                                        "action_ids[]",
+                                        action[:id],
+                                        action[:assigned],
+                                        id: field_id,
+                                        class: "mt-0.5 size-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    ) %>
+                                    <span class="min-w-0">
+                                        <span class="block text-sm font-medium text-gray-900">
+                                            <%= action[:label] %>
+                                        </span>
+                                        <span class="mt-0.5 block font-mono text-xs text-gray-500">
+                                            <%= action[:action] %>
+                                        </span>
+                                    </span>
+                                </label>
+                            <% end %>
+                        </div>
+                    </fieldset>
                 <% end %>
-            <% end %>
-        <% end %>
+            </div>
+        </section>
     <% end %>
+
+    <% if @permission_matrix.empty? %>
+        <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center">
+            <p class="text-sm font-medium text-gray-700">
+                <%= t("lesli_shield.roles.permissions.empty") %>
+            </p>
+        </div>
+    <% end %>
+
+    <div class="flex justify-end border-t border-gray-200 pt-5">
+        <button
+            type="submit"
+            class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            data-turbo-submits-with="<%= t("lesli_shield.roles.permissions.saving") %>"
+        >
+            <%= t("lesli_shield.roles.permissions.save") %>
+        </button>
+    </div>
 <% end %>
-</section>

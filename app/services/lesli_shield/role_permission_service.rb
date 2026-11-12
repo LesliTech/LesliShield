@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module LesliShield
-    # Manages a role's selected permission catalog independently from the
-    # effective privilege cache. RolePrivilegeDeploymentService remains the
-    # explicit, on-demand compiler for that cache.
+    # Manages a role's selected permission catalog. Saving selections stays
+    # intentionally separate from the heavier effective-cache compilation,
+    # which is performed on demand by RolePrivilegeDeploymentService.
     class RolePermissionService
         STANDARD_ACTION_ORDER = %w[
             index
@@ -43,12 +43,30 @@ module LesliShield
             build_matrix(records)
         end
 
-        def apply!(role_or_id, action_ids)
-            role = manageable_role!(role_or_id)
-            selected_ids = validate_action_ids!(action_ids)
+        def apply!(role:, action_ids:)
+            role = manageable_role!(role)
 
             role.with_lock do
-                synchronize_actions!(role, selected_ids)
+                # Account ownership and permission levels may have changed
+                # while this request waited for the lock.
+                manageable_role!(role.id)
+
+                selected_ids = validate_action_ids!(action_ids)
+                timestamp = Time.current
+                changed = synchronize_actions!(role, selected_ids, timestamp)
+
+                if changed
+                    role.update_columns(
+                        modified_at: timestamp,
+                        updated_at: timestamp
+                    )
+                    RoleAudit.record!(
+                        :role_permissions_saved,
+                        role: role,
+                        actor: actor,
+                        source: self.class
+                    )
+                end
             end
 
             role
@@ -62,7 +80,19 @@ module LesliShield
                 .order(:id)
                 .pluck(:id)
 
-            apply!(target, selected_ids)
+            target.with_lock do
+                manageable_role!(target.id)
+                timestamp = Time.current
+
+                if synchronize_actions!(target, selected_ids, timestamp)
+                    target.update_columns(
+                        modified_at: timestamp,
+                        updated_at: timestamp
+                    )
+                end
+            end
+
+            target
         end
 
         # Returns only permissions that currently authorize requests. An
@@ -221,20 +251,19 @@ module LesliShield
             normalized_ids
         end
 
-        def synchronize_actions!(role, selected_ids)
+        def synchronize_actions!(role, selected_ids, timestamp)
             existing_actions = role.actions.with_deleted
             current_ids = existing_actions
                 .where(deleted_at: nil)
                 .order(:action_id)
                 .pluck(:action_id)
-            return if current_ids == selected_ids
+            return false if current_ids == selected_ids
 
-            timestamp = Time.current
             existing_ids = existing_actions.pluck(:action_id)
             insert_actions!(role, selected_ids - existing_ids, timestamp)
             activate_selected_actions!(existing_actions, selected_ids, timestamp)
             deactivate_unselected_actions!(existing_actions, selected_ids, timestamp)
-            role.touch(:modified_at)
+            true
         end
 
         def insert_actions!(role, action_ids, timestamp)

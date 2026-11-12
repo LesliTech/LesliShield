@@ -82,7 +82,7 @@ module LesliShield
 
         def synchronize_role_privileges!
             resource.roles.find_each do |role|
-                LesliShield::RolePrivilegeService.new(nil).synchronize(role)
+                LesliShield::RolePrivilegeService.new.rebuild!(role)
             end
         end
 

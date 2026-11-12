@@ -5,6 +5,16 @@
       created_successfully: Rol creado correctamente.
       updated_successfully: Rol actualizado correctamente.
       destroyed_successfully: Rol eliminado correctamente.
+      permissions:
+        navigation: Permisos
+        title: Permisos de %{role}
+        description: Guarda la selección completa antes de ejecutar el deploy. El deploy reconstruye el caché efectivo de autorización bajo demanda.
+        save: Guardar permisos
+        saving: Guardando permisos…
+        saved: Permisos guardados correctamente. Ejecuta el deploy para aplicarlos.
+        deploy: Aplicar permisos (deploy)
+        deployed: Los permisos fueron aplicados correctamente.
+        empty: No hay permisos disponibles en el catálogo.
       errors:
         duplicate_name: ya está siendo utilizado por otro rol de esta cuenta
         permission_level: El nivel de permiso debe estar entre 0 y %{maximum}.

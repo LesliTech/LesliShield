@@ -162,6 +162,10 @@ es:
       subtitle: "Invita personas a tu organización y consulta el estado de cada invitación."
       title: "Invitaciones"
       value_not_available: "No disponible"
+    items/attachments: {}
+    items/discussions: {}
+    items/tasks: {}
+    profile/passwords: {}
     profiles:
       change_password: "Cambiar contraseña"
       changing_password: "Cambiando contraseña…"
@@ -174,6 +178,7 @@ es:
       password_too_many_attempts: "Demasiados intentos de cambio de contraseña. Inténtalo de nuevo más tarde."
       password_updated: "Tu contraseña fue cambiada correctamente."
       security: "Seguridad"
+    role/actions: {}
     roles:
       action_create: "Crear rol"
       action_delete: "Eliminar rol"
@@ -299,3 +304,10 @@ es:
       types_custom: "Personalizado"
       types_system: "Sistema"
       updated_successfully: "Rol actualizado correctamente."
+    sessions: {}
+    shared: {}
+    user/roles: {}
+    user/sessions: {}
+    user/settings: {}
+    user/shortcuts: {}
+    users: {}

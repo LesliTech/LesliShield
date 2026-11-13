@@ -162,6 +162,10 @@ en:
       subtitle: "Invite people to join your organization and track each invitation."
       title: "Invitations"
       value_not_available: "Not available"
+    items/attachments: {}
+    items/discussions: {}
+    items/tasks: {}
+    profile/passwords: {}
     profiles:
       change_password: "Change password"
       changing_password: "Changing password…"
@@ -174,6 +178,7 @@ en:
       password_too_many_attempts: "Too many password change attempts. Try again later."
       password_updated: "Your password was changed successfully."
       security: "Security"
+    role/actions: {}
     roles:
       action_create: "Create role"
       action_delete: "Delete role"
@@ -299,3 +304,10 @@ en:
       types_custom: "Custom"
       types_system: "System"
       updated_successfully: "Role updated successfully."
+    sessions: {}
+    shared: {}
+    user/roles: {}
+    user/sessions: {}
+    user/settings: {}
+    user/shortcuts: {}
+    users: {}

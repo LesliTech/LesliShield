@@ -23,7 +23,7 @@ module LesliShield
             assert_equal [Devise.mailer_sender], mail.from
             assert_equal [@user.email], mail.to
             assert_equal(
-                I18n.t("lesli_shield.devise/passwords.mailer_subject"),
+                I18n.t("lesli_shield.devise_passwords.mailer_subject"),
                 mail.subject
             )
             assert_includes body, "Hello Ada Lovelace"
@@ -46,7 +46,7 @@ module LesliShield
             assert_equal [@user.unconfirmed_email], mail.to
             assert_equal(
                 I18n.t(
-                    "lesli_shield.devise/confirmations.mailer_confirmation_subject"
+                    "lesli_shield.devise_confirmations.mailer_confirmation_subject"
                 ),
                 mail.subject
             )
@@ -66,7 +66,7 @@ module LesliShield
             assert_equal [@user.email], mail.to
             assert_equal(
                 I18n.t(
-                    "lesli_shield.devise/confirmations.mailer_welcome_subject"
+                    "lesli_shield.devise_confirmations.mailer_welcome_subject"
                 ),
                 mail.subject
             )

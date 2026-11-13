@@ -1,7 +1,7 @@
 
 <%= render(
     "devise/shared/application-devise-simple",
-    title: I18n.t("lesli_shield.devise/passwords.view_request_title")
+    title: I18n.t("lesli_shield.devise_passwords.view_request_title")
 ) do %>
 
     <%= form_for(
@@ -13,7 +13,7 @@
     ) do |form| %>
 
         <p class="mb-6 text-center text-sm leading-6 text-slate-600">
-            <%= I18n.t("lesli_shield.devise/passwords.view_request_description") %>
+            <%= I18n.t("lesli_shield.devise_passwords.view_request_description") %>
         </p>
 
         <%= render "devise/shared/error_messages", resource: resource %>
@@ -21,7 +21,7 @@
         <%= form.field_control_email(
             :email,
             icon: "mail",
-            label: I18n.t("lesli_shield.devise/passwords.field_email"),
+            label: I18n.t("lesli_shield.devise_passwords.field_email"),
             required: true,
             autofocus: true,
             autocomplete: "email",
@@ -30,12 +30,12 @@
         ) %>
 
         <%= form.field_control_button(
-            I18n.t("lesli_shield.devise/passwords.button_send_instructions"),
+            I18n.t("lesli_shield.devise_passwords.button_send_instructions"),
             {
                 class: "is-fullwidth",
                 data: {
                     turbo_submits_with: I18n.t(
-                        "lesli_shield.devise/passwords.button_sending"
+                        "lesli_shield.devise_passwords.button_sending"
                     )
                 }
             },
@@ -45,11 +45,11 @@
         <% if Lesli.config.security.dig(:allow_registration) %>
             <p class="mt-6 text-center text-sm text-slate-600">
                 <%= I18n.t(
-                    "lesli_shield.devise/sessions.view_still_not_registered"
+                    "lesli_shield.devise_sessions.view_still_not_registered"
                 ) %>
                 <%= link_to(
                     I18n.t(
-                        "lesli_shield.devise/registrations.button_create_account"
+                        "lesli_shield.devise_registrations.button_create_account"
                     ),
                     new_user_registration_path,
                     class: "font-semibold text-[var(--lesli-color-primary)] underline underline-offset-2 hover:opacity-80 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"

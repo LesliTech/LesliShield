@@ -61,7 +61,7 @@ module Users
             mail = ActionMailer::Base.deliveries.last
 
             assert_equal(
-                I18n.t("lesli_shield.devise/passwords.mailer_subject"),
+                I18n.t("lesli_shield.devise_passwords.mailer_subject"),
                 mail.subject
             )
             assert_includes mail.body.encoded, "/password/edit?reset_password_token="

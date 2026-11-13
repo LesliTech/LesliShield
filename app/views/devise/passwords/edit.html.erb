@@ -1,6 +1,6 @@
 <%= render(
     "devise/shared/application-devise-simple",
-    title: I18n.t("lesli_shield.devise/passwords.view_update_title")
+    title: I18n.t("lesli_shield.devise_passwords.view_update_title")
 ) do %>
 
     <%= form_for(
@@ -12,7 +12,7 @@
     ) do |form| %>
 
         <p class="mb-6 text-center text-sm leading-6 text-slate-600">
-            <%= I18n.t("lesli_shield.devise/passwords.view_update_description") %>
+            <%= I18n.t("lesli_shield.devise_passwords.view_update_description") %>
         </p>
 
         <%= render "devise/shared/error_messages", resource: resource %>
@@ -22,9 +22,9 @@
         <%= form.field_control_password(
             :password,
             icon: "key",
-            label: I18n.t("lesli_shield.devise/passwords.field_password"),
+            label: I18n.t("lesli_shield.devise_passwords.field_password"),
             message: I18n.t(
-                "lesli_shield.devise/passwords.field_password_hint",
+                "lesli_shield.devise_passwords.field_password_hint_#{@minimum_password_length == 1 ? 'one' : 'other'}",
                 count: @minimum_password_length
             ),
             required: true,
@@ -38,7 +38,7 @@
             :password_confirmation,
             icon: "key",
             label: I18n.t(
-                "lesli_shield.devise/passwords.field_password_confirmation"
+                "lesli_shield.devise_passwords.field_password_confirmation"
             ),
             required: true,
             autocomplete: "new-password",
@@ -47,12 +47,12 @@
         ) %>
 
         <%= form.field_control_button(
-            I18n.t("lesli_shield.devise/passwords.button_update_password"),
+            I18n.t("lesli_shield.devise_passwords.button_update_password"),
             {
                 class: "is-fullwidth",
                 data: {
                     turbo_submits_with: I18n.t(
-                        "lesli_shield.devise/passwords.button_updating"
+                        "lesli_shield.devise_passwords.button_updating"
                     )
                 }
             },

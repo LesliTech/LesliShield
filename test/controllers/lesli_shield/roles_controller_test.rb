@@ -426,7 +426,7 @@ module LesliShield
                 assert_select "tbody tr a[data-turbo-frame='_top']",
                     text: system_role.name
                 assert_select "tbody tr [data-role-deployment-status='deployed']",
-                    text: I18n.t("lesli_shield.roles.deployment_statuses.deployed"),
+                    text: I18n.t("lesli_shield.roles.deployment_statuses_deployed"),
                     count: 1
                 assert_select ".md\\:hidden article", count: 1
                 assert_select "[data-turbo-submits-with]"

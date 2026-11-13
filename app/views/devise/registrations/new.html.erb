@@ -31,8 +31,8 @@ Building a better future, one line of code at a time.
 %>
 
 <%
-title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
-        default: :"lesli_shield.devise/registrations.view_title")
+title = I18n.t("overrides.lesli_shield.devise_registrations.view_title",
+        default: :"lesli_shield.devise_registrations.view_title")
 %>
 
 <%= render("devise/shared/application-devise", title: title) do %>
@@ -46,14 +46,14 @@ title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
     ) do |form| %>
 
         <p class="mb-6 text-center text-sm leading-6 text-slate-600">
-            <%= I18n.t("lesli_shield.devise/registrations.view_description") %>
+            <%= I18n.t("lesli_shield.devise_registrations.view_description") %>
         </p>
 
         <%= render "devise/shared/error_messages", resource: resource %>
 
         <%= form.field_control_email(
             :email,
-            label: I18n.t("lesli_shield.devise/registrations.label_email"),
+            label: I18n.t("lesli_shield.devise_registrations.label_email"),
             message: resource.errors[:email].to_sentence.presence,
             category: resource.errors[:email].any? ? :danger : nil,
             icon: "person",
@@ -66,10 +66,10 @@ title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
 
         <%= form.field_control_password(
             :password,
-            label: I18n.t("lesli_shield.devise/registrations.label_password"),
+            label: I18n.t("lesli_shield.devise_registrations.label_password"),
             message: resource.errors[:password].to_sentence.presence ||
                 I18n.t(
-                    "lesli_shield.devise/registrations.view_password_length",
+                    "lesli_shield.devise_registrations.view_password_length",
                     minimum: @minimum_password_length,
                     maximum: Devise.password_length.max
                 ),
@@ -85,7 +85,7 @@ title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
         <%= form.field_control_password(
             :password_confirmation,
             label: I18n.t(
-                "lesli_shield.devise/registrations.label_password_confirmation"
+                "lesli_shield.devise_registrations.label_password_confirmation"
             ),
             message: resource.errors[:password_confirmation].to_sentence.presence,
             category: resource.errors[:password_confirmation].any? ? :danger : nil,
@@ -99,20 +99,20 @@ title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
 
         <div class="mb-4">
             <p class="text-left text-xs leading-5 text-slate-500">
-                <%= I18n.t("lesli_shield.devise/registrations.view_legal_notice") %>
+                <%= I18n.t("lesli_shield.devise_registrations.view_legal_notice") %>
             </p>
         </div>
 
         <%= form.field_control_button(
             I18n.t(
-                "overrides.lesli_shield.devise/registrations.button_create_account",
-                default: :"lesli_shield.devise/registrations.button_create_account"
+                "overrides.lesli_shield.devise_registrations.button_create_account",
+                default: :"lesli_shield.devise_registrations.button_create_account"
             ),
             {
                 class: "w-full",
                 data: {
                     turbo_submits_with: I18n.t(
-                        "lesli_shield.devise/registrations.button_creating_account"
+                        "lesli_shield.devise_registrations.button_creating_account"
                     )
                 }
             },
@@ -120,9 +120,9 @@ title = I18n.t("overrides.lesli_shield.devise/registrations.view_title",
         ) %>
 
         <p class="mt-1 text-center text-sm text-slate-600">
-            <%= I18n.t("lesli_shield.devise/registrations.view_already_have_an_account") %>
+            <%= I18n.t("lesli_shield.devise_registrations.view_already_have_an_account") %>
             <%= link_to(
-                I18n.t("lesli_shield.devise/registrations.button_login"),
+                I18n.t("lesli_shield.devise_registrations.button_login"),
                 new_user_session_path,
                 class: "font-semibold text-[var(--lesli-color-primary)] underline underline-offset-2 hover:opacity-80 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"
             ) %>

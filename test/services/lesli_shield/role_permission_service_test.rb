@@ -73,7 +73,7 @@ module LesliShield
             end
             assert_equal "Listar invitaciones", index_permission[:label]
             assert_equal I18n.t(
-                "lesli_shield.roles.permissions.standard_actions.index"
+                "lesli_shield.roles.permissions_standard_actions_index"
             ), index_permission[:display_label]
             assert_equal "index", index_permission[:identifier]
             assert index_permission[:standard]

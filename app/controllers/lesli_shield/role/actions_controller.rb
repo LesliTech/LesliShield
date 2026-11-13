@@ -69,7 +69,7 @@ module LesliShield
 
             [
                 stream_notification_success(
-                    I18n.t("lesli_shield.roles.permissions.update_success")
+                    I18n.t("lesli_shield.roles.permissions_update_success")
                 ),
                 turbo_stream.replace(
                     "shield-role-permissions",

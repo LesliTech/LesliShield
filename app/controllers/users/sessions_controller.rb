@@ -61,6 +61,8 @@ class Users::SessionsController < Devise::SessionsController
         super do |user|
             persist_application_session!(user)
             record_successful_login_analytics
+            # Devise sets the successful-login notice before yielding.
+            flash.delete(:notice)
         end
     end
 
@@ -153,7 +155,7 @@ class Users::SessionsController < Devise::SessionsController
     end
 
     def respond_to_login_rate_limit
-        message = I18n.t("lesli_shield.devise/sessions.message_too_many_attempts")
+        message = I18n.t("lesli_shield.devise_sessions.message_too_many_attempts")
         response.set_header("Retry-After", LOGIN_RATE_LIMIT_WINDOW.to_i.to_s)
 
         respond_to do |format|

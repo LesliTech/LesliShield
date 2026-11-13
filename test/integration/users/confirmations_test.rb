@@ -61,7 +61,7 @@ module Users
             assert_equal [user.email], welcome_email.to
             assert_equal(
                 I18n.t(
-                    "lesli_shield.devise/confirmations.mailer_welcome_subject"
+                    "lesli_shield.devise_confirmations.mailer_welcome_subject"
                 ),
                 welcome_email.subject
             )
@@ -142,7 +142,7 @@ module Users
             assert_includes(
                 response.body,
                 I18n.t(
-                    "lesli_shield.devise/confirmations.message_confirmation_failed"
+                    "lesli_shield.devise_confirmations.message_confirmation_failed"
                 )
             )
         end
@@ -188,7 +188,7 @@ module Users
 
             assert_equal(
                 I18n.t(
-                    "lesli_shield.devise/confirmations.mailer_confirmation_subject"
+                    "lesli_shield.devise_confirmations.mailer_confirmation_subject"
                 ),
                 confirmation_email.subject
             )

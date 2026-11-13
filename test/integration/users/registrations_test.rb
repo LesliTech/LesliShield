@@ -118,7 +118,7 @@ module Users
             assert_redirected_to new_user_session_path
             assert_equal(
                 I18n.t(
-                    "lesli_shield.devise/registrations.message_registration_not_allowed"
+                    "lesli_shield.devise_registrations.message_registration_not_allowed"
                 ),
                 flash[:alert]
             )

@@ -1,323 +1,301 @@
 ---
-:en:
+en:
   lesli_shield:
-    roles:
-      title: Roles and permissions
-      subtitle: Manage your organization's roles and define each team's access.
-      new_title: Create role
-      new_description: Define a new role to group users and configure their permissions.
-      action_create: Create role
-      action_update: Save changes
-      action_saving: Saving…
-      action_duplicate: Duplicate role
-      action_duplicating: Duplicating…
-      action_manage: Manage role
-      action_view: View role
-      action_permissions: Manage permissions
-      action_delete: Delete role
-      action_deleting: Deleting…
-      action_menu: Actions for %{role}
-      confirm_delete: "Delete the %{role} role? This action cannot be undone."
-      description_missing: No description
-      duplicated_successfully: The %{role} role was created as an inactive copy.
-      fields:
-        name: Name
-        description: Description
-        status: Status
-        path_default: Default path
-        permission_level: Authorization level
-      form:
-        description_hint: A short description helps administrators assign the correct role.
-        status_active_hint: The role can authorize its members after its permissions are deployed.
-        status_inactive_hint: Keeps its configuration but does not authorize any member.
-        permission_level_hint: Enter an integer between 0 and %{maximum}. A role cannot have a level above your own.
-        path_default_hint: Route where users are sent after signing in.
-        protected_notice: This role is protected. You can inspect its configuration but cannot change it.
-        cancel: Cancel
-        errors_title: Review the highlighted fields
-      detail:
-        summary_title: Role summary
-        members: Members
-        permissions: Active permissions
-        view_members: View users
-        manage_permissions: Manage permissions
-        status_title: Status and access
-        active_impact:
-          one: This role currently authorizes 1 member. Deactivating it removes the access granted by this role from that person.
-          other: This role currently authorizes %{count} members. Deactivating it removes the access granted by this role from those people.
-        inactive_impact:
-          one: This role is inactive. Its member keeps the assignment, but the role does not grant access.
-          other: This role is inactive. Its %{count} members keep their assignments, but the role does not grant access.
-        confirm_deactivate:
-          one: "Deactivate %{role}? 1 member will immediately lose the access granted by this role."
-          other: "Deactivate %{role}? %{count} members will immediately lose the access granted by this role."
-        deactivate: Deactivate role
-        deactivating: Deactivating…
-        activate: Activate role
-        activating: Activating…
-      empty_title: No roles available yet
-      empty_description: Create the first role to organize this account's users and permissions.
-      empty_filtered_title: No roles match these filters
-      empty_filtered_description: Try another search or clear the active filters.
-      empty_filtered_action: Clear filters
-      statuses:
-        active: Active
-        inactive: Inactive
-      types:
-        system: System
-        custom: Custom
-      filters:
-        search_label: Search roles
-        search_placeholder: Search by name or description
-        clear_search: Clear search
-        status_label: Status
-        status_all: All statuses
-        type_label: Type
-        type_all: All types
-        submit: Filter
-        loading: Filtering…
-      columns:
-        role: Role and description
-        status: Status
-        users: Users
-        permissions: Active permissions
-        modified_at: Last modified
-        deployment: Last deploy
-        actions: Actions
-      deployment_statuses:
-        pending: Changes pending
-        deployed: Applied
-        never_deployed: Never deployed
-      mobile:
-        users:
-          one: 1 user
-          other: "%{count} users"
-        permissions:
-          one: 1 permission
-          other: "%{count} permissions"
-        modified_at: "Modified: %{date}"
-        deployed_at: "Last deploy: %{date}"
-      pagination:
-        label: Roles pagination
-        summary: "Showing %{count} of %{total} roles"
-        page: Page %{page} of %{pages}
-        previous: Previous
-        next: Next
-      created_successfully: Role created successfully.
-      updated_successfully: Role updated successfully.
-      destroyed_successfully: Role deleted successfully.
-      permissions:
-        title: "%{role} permissions"
-        all_engines: All modules
-        custom_actions: Custom actions
-        tools: Permission tools
-        search_label: Search permissions
-        search_placeholder: Search module, resource, or action
-        search: Search
-        clear_search: Clear
-        toggle: "%{action}: %{state}"
-        engines: Modules
-        engine_navigation: Module navigation
-        resource: Resource
-        module_summary: "%{selected} of %{total} permissions enabled"
-        not_available: Not available
-        no_matches: No permissions match this search
-        no_matches_hint: Try another module, resource, or action.
-        update_success: Permission updated successfully.
-        deploy: Apply permissions (deploy)
-        deployed: Permissions were applied successfully.
-        empty: There are no permissions available in the catalog.
-        states:
-          enabled: Enabled
-          disabled: Disabled
-        standard_actions:
-          index: List
-          show: View
-          new: New
-          edit: Edit
-          create: Create
-          update: Update
-          destroy: Delete
-      errors:
-        duplicate_name: is already used by another role in this account
-        permission_level: The permission level must be between 0 and %{maximum}.
-        protected_role: The owner role is protected and cannot be modified.
-        system_role: System roles cannot be deleted.
-        assigned_users: Roles assigned to users cannot be deleted.
-        unknown_actions: "Unknown or unavailable permission actions: %{action_ids}."
-    invites:
-      title: Invitations
-      subtitle: Invite people to join your organization and track each invitation.
-      new_title: New invitation
-      new_description: Choose the recipient and the role they will receive after accepting.
-      button_create_and_send: Create and send invitation
-      button_creating_and_sending: Creating and sending invitation…
-      field_email: Email address
-      field_name: Name
-      field_role: Role
-      field_message: Personal message
-      field_optional: optional
-      field_name_hint: Helps your team identify the recipient before they accept.
-      field_message_hint: This message will be included in the invitation email.
-      role_prompt: Select a role
-      filters_label: Filter invitations by status
-      filter_all: All
-      statuses:
-        pending: Pending
-        accepted: Accepted
-        cancelled: Cancelled
-        expired: Expired
-      column_recipient: Recipient
-      column_role: Role
-      column_status: Status
-      column_sent_at: Sent
-      column_expires_at: Expires
-      column_actions: Actions
-      action_view: View
-      action_resend: Resend
-      action_cancel: Cancel
-      action_create: Create invitation
-      confirm_resend: Send a new invitation email?
-      confirm_cancel: Cancel this invitation? Its audit history will be preserved.
-      empty_title: No invitations yet
-      empty_description: Invite the first person to join this organization.
-      empty_action: Create an invitation
-      empty_filtered_title: No invitations match this filter
-      empty_filtered_description: Try another status or clear the active filter.
-      empty_filtered_action: Clear filter
-      detail_title: Invitation for %{recipient}
-      detail_recipient: Recipient
-      detail_email: Email
-      detail_name: Name
-      detail_role: Assigned role
-      detail_invited_by: Invited by
-      detail_sent_at: Sent at
-      detail_expires_at: Expires at
-      detail_accepted_at: Accepted at
-      detail_cancelled_at: Cancelled at
-      detail_message: Personal message
-      value_not_available: Not available
-      created_successfully: Invitation created and queued for delivery.
-      resent_successfully: Invitation queued for delivery.
-      cancelled_successfully: Invitation cancelled.
-      email_member: This person is already a member of the account.
-      email_other_account: This email address belongs to another account.
-      email_deleted: A deleted user already uses this email address.
-      email_existing_without_account: This email address cannot be invited.
-      role_account_mismatch: The selected role does not belong to this account.
-      role_required: Select a role for this invitation.
-      not_acceptable: This invitation is no longer available.
-      mailer_subject: You have been invited to Lesli
-      mailer_title: You have been invited
-      mailer_description: You have been invited to join %{account}.
-      mailer_invited_by: Invited by %{inviter}.
-      mailer_action: Accept invitation
-      mailer_expiration: This invitation expires on %{expiration}.
-      mailer_ignore_notice: If you did not expect this invitation, you can safely ignore this email.
-      acceptance_title: Accept your invitation
-      acceptance_description: Complete your profile to join %{account}.
-      acceptance_organization: Organization
-      acceptance_role: Role
-      acceptance_email: Email address
-      acceptance_first_name: First name
-      acceptance_last_name: Last name
-      acceptance_telephone: Telephone
-      acceptance_password: Password
-      acceptance_password_confirmation: Confirm password
-      acceptance_password_hint: Your password must contain between %{minimum} and %{maximum} characters.
-      acceptance_password_requirements: Password requirements
-      acceptance_password_length: Use between %{minimum} and %{maximum} characters.
-      acceptance_optional: optional
-      acceptance_action: Create account
-      acceptance_submitting: Creating account…
-      acceptance_success: Your account for %{email} was created successfully. You can now log in.
-      acceptance_invalid_title: Invalid invitation link
-      acceptance_invalid_description: This invitation link is invalid or has reached its cryptographic expiration. Ask an administrator for a new invitation.
-      acceptance_expired_title: Invitation expired
-      acceptance_expired_description: This invitation has expired. Ask an administrator to resend it.
-      acceptance_cancelled_title: Invitation cancelled
-      acceptance_cancelled_description: This invitation was cancelled and can no longer be accepted.
-      acceptance_used_title: Invitation already used
-      acceptance_used_description: This invitation has already been accepted. You can log in with the account that was created.
-      acceptance_unavailable_title: Invitation unavailable
-      acceptance_unavailable_description: This invitation can no longer be accepted. Its organization or assigned role may no longer be available.
-      invalid_status_transition: This invitation status transition is not allowed.
-    devise/sessions:
-      message_not_valid_credentials: Not valid credentials
-      message_too_many_attempts: Too many login attempts. Try again later.
-      view_title: Welcome to Lesli
-      button_log_in: Log in
-      demo_title: Demo account
-      demo_email: Email
-      demo_password: Password
-      view_still_not_registered: Still not registered?
-      button_create_account: Create account
-    devise/registrations:
-      view_title: Create an account to discover Lesli
-      view_description: Enter your email address and choose a password to create your account.
-      view_password_length: Your password must contain between %{minimum} and %{maximum} characters.
-      view_legal_notice: By creating an account, you agree to the Terms and acknowledge the Global Privacy Statement.
-      label_email: Email address
-      label_password: Password
-      label_password_confirmation: Confirm password
-      button_create_account: Create account
-      button_creating_account: Creating account…
-      view_already_have_an_account: Already have an account?
-      button_login: Log in
-      message_registration_not_allowed: Account registration is not available.
-      message_too_many_attempts: Too many account creation attempts. Try again later.
-    devise/confirmations:
-      view_title: Resend confirmation instructions
-      view_description: Enter your email address and, if confirmation is still pending, we will send you a new confirmation link.
-      view_success_title: Account confirmed
-      view_success_description: Your email address was confirmed successfully. You can now log in.
-      field_email: Email address
-      button_send_instructions: Resend confirmation instructions
-      button_sending: Sending instructions…
-      message_confirmation_failed: We could not finish confirming your account. Please try the confirmation link again.
-      message_too_many_attempts: Too many confirmation requests. Try again later.
-      mailer_confirmation_subject: Confirm your email address
-      mailer_welcome_subject: Welcome to Lesli
-    devise/passwords:
-      view_request_title: Forgot your password?
-      view_request_description: Enter the email address associated with your account. If the account exists, we will send you a password recovery link.
-      view_update_title: Create a new password
-      view_update_description: Choose a new password for your account and enter it twice to confirm it.
-      field_email: Email address
-      field_password: New password
-      field_password_confirmation: Confirm new password
-      field_password_hint:
-        one: Use at least one character.
-        other: Use at least %{count} characters.
-      button_send_instructions: Send recovery link
-      button_sending: Sending…
-      button_update_password: Change password
-      button_updating: Updating…
-      message_too_many_attempts: Too many password recovery attempts. Try again later.
-      mailer_subject: Password reset instructions
-    devise/shared:
-      button_login: Log in
-      button_reset_password: Reset password
-      button_magic_link: Magic link
-      button_one_time_password: One-time password
+    authentication:
+      logo_alt: "Application logo"
+      tagline: "A better way to manage your work."
     dashboards:
-      view_password_requirements_symbol: One symbol
-      view_password_requirements_number: One number
+      view_password_requirements_number: "One number"
+      view_password_requirements_symbol: "One symbol"
+    devise_confirmations:
+      button_send_instructions: "Resend confirmation instructions"
+      button_sending: "Sending instructions…"
+      field_email: "Email address"
+      mailer_confirmation_subject: "Confirm your email address"
+      mailer_welcome_subject: "Welcome to Lesli"
+      message_confirmation_failed: "We could not finish confirming your account. Please try the confirmation link again."
+      message_too_many_attempts: "Too many confirmation requests. Try again later."
+      view_description: "Enter your email address and, if confirmation is still pending, we will send you a new confirmation link."
+      view_success_description: "Your email address was confirmed successfully. You can now log in."
+      view_success_title: "Account confirmed"
+      view_title: "Resend confirmation instructions"
+    devise_passwords:
+      button_send_instructions: "Send recovery link"
+      button_sending: "Sending…"
+      button_update_password: "Change password"
+      button_updating: "Updating…"
+      field_email: "Email address"
+      field_password: "New password"
+      field_password_confirmation: "Confirm new password"
+      field_password_hint_one: "Use at least one character."
+      field_password_hint_other: "Use at least %{count} characters."
+      mailer_subject: "Password reset instructions"
+      message_too_many_attempts: "Too many password recovery attempts. Try again later."
+      view_request_description: "Enter the email address associated with your account. If the account exists, we will send you a password recovery link."
+      view_request_title: "Forgot your password?"
+      view_update_description: "Choose a new password for your account and enter it twice to confirm it."
+      view_update_title: "Create a new password"
+    devise_registrations:
+      button_create_account: "Create account"
+      button_creating_account: "Creating account…"
+      button_login: "Log in"
+      label_email: "Email address"
+      label_password: "Password"
+      label_password_confirmation: "Confirm password"
+      message_registration_not_allowed: "Account registration is not available."
+      message_too_many_attempts: "Too many account creation attempts. Try again later."
+      view_already_have_an_account: "Already have an account?"
+      view_description: "Enter your email address and choose a password to create your account."
+      view_legal_notice: "By creating an account, you agree to the Terms and acknowledge the Global Privacy Statement."
+      view_password_length: "Your password must contain between %{minimum} and %{maximum} characters."
+      view_title: "Create an account to discover Lesli"
+    devise_sessions:
+      button_create_account: "Create account"
+      button_log_in: "Log in"
+      demo_email: "Email"
+      demo_password: "Password"
+      demo_title: "Demo account"
+      label_email: "Email address"
+      label_password: "Password"
+      message_not_valid_credentials: "Not valid credentials"
+      message_too_many_attempts: "Too many login attempts. Try again later."
+      view_still_not_registered: "Still not registered?"
+      view_title: "Welcome to Lesli"
+    devise_shared:
+      button_login: "Log in"
+      button_magic_link: "Magic link"
+      button_one_time_password: "One-time password"
+      button_reset_password: "Reset password"
+    invites:
+      acceptance_action: "Create account"
+      acceptance_cancelled_description: "This invitation was cancelled and can no longer be accepted."
+      acceptance_cancelled_title: "Invitation cancelled"
+      acceptance_description: "Complete your profile to join %{account}."
+      acceptance_email: "Email address"
+      acceptance_expired_description: "This invitation has expired. Ask an administrator to resend it."
+      acceptance_expired_title: "Invitation expired"
+      acceptance_first_name: "First name"
+      acceptance_invalid_description: "This invitation link is invalid or has reached its cryptographic expiration. Ask an administrator for a new invitation."
+      acceptance_invalid_title: "Invalid invitation link"
+      acceptance_last_name: "Last name"
+      acceptance_optional: "optional"
+      acceptance_organization: "Organization"
+      acceptance_password: "Password"
+      acceptance_password_confirmation: "Confirm password"
+      acceptance_password_hint: "Your password must contain between %{minimum} and %{maximum} characters."
+      acceptance_password_length: "Use between %{minimum} and %{maximum} characters."
+      acceptance_password_requirements: "Password requirements"
+      acceptance_role: "Role"
+      acceptance_submitting: "Creating account…"
+      acceptance_success: "Your account for %{email} was created successfully. You can now log in."
+      acceptance_telephone: "Telephone"
+      acceptance_title: "Accept your invitation"
+      acceptance_unavailable_description: "This invitation can no longer be accepted. Its organization or assigned role may no longer be available."
+      acceptance_unavailable_title: "Invitation unavailable"
+      acceptance_used_description: "This invitation has already been accepted. You can log in with the account that was created."
+      acceptance_used_title: "Invitation already used"
+      action_cancel: "Cancel"
+      action_create: "Create invitation"
+      action_resend: "Resend"
+      action_view: "View"
+      button_create_and_send: "Create and send invitation"
+      button_creating_and_sending: "Creating and sending invitation…"
+      cancelled_successfully: "Invitation cancelled."
+      column_actions: "Actions"
+      column_expires_at: "Expires"
+      column_recipient: "Recipient"
+      column_role: "Role"
+      column_sent_at: "Sent"
+      column_status: "Status"
+      confirm_cancel: "Cancel this invitation? Its audit history will be preserved."
+      confirm_resend: "Send a new invitation email?"
+      created_successfully: "Invitation created and queued for delivery."
+      detail_accepted_at: "Accepted at"
+      detail_cancelled_at: "Cancelled at"
+      detail_email: "Email"
+      detail_expires_at: "Expires at"
+      detail_invited_by: "Invited by"
+      detail_message: "Personal message"
+      detail_name: "Name"
+      detail_recipient: "Recipient"
+      detail_role: "Assigned role"
+      detail_sent_at: "Sent at"
+      detail_title: "Invitation for %{recipient}"
+      email_deleted: "A deleted user already uses this email address."
+      email_existing_without_account: "This email address cannot be invited."
+      email_member: "This person is already a member of the account."
+      email_other_account: "This email address belongs to another account."
+      empty_action: "Create an invitation"
+      empty_description: "Invite the first person to join this organization."
+      empty_filtered_action: "Clear filter"
+      empty_filtered_description: "Try another status or clear the active filter."
+      empty_filtered_title: "No invitations match this filter"
+      empty_title: "No invitations yet"
+      field_email: "Email address"
+      field_message: "Personal message"
+      field_message_hint: "This message will be included in the invitation email."
+      field_name: "Name"
+      field_name_hint: "Helps your team identify the recipient before they accept."
+      field_optional: "optional"
+      field_role: "Role"
+      filter_all: "All"
+      filters_label: "Filter invitations by status"
+      invalid_status_transition: "This invitation status transition is not allowed."
+      mailer_action: "Accept invitation"
+      mailer_description: "You have been invited to join %{account}."
+      mailer_expiration: "This invitation expires on %{expiration}."
+      mailer_ignore_notice: "If you did not expect this invitation, you can safely ignore this email."
+      mailer_invited_by: "Invited by %{inviter}."
+      mailer_subject: "You have been invited to Lesli"
+      mailer_title: "You have been invited"
+      new_description: "Choose the recipient and the role they will receive after accepting."
+      new_title: "New invitation"
+      not_acceptable: "This invitation is no longer available."
+      resent_successfully: "Invitation queued for delivery."
+      role_account_mismatch: "The selected role does not belong to this account."
+      role_prompt: "Select a role"
+      role_required: "Select a role for this invitation."
+      statuses_accepted: "Accepted"
+      statuses_cancelled: "Cancelled"
+      statuses_expired: "Expired"
+      statuses_pending: "Pending"
+      subtitle: "Invite people to join your organization and track each invitation."
+      title: "Invitations"
+      value_not_available: "Not available"
     profiles:
-      information: Information
-      security: Security
-      password_description: Enter your current password to choose a new one. Changing it will sign out your other sessions.
-      current_password: Current password
-      new_password: New password
-      password_confirmation: Confirm new password
-      password_hint: Your password must contain between %{minimum} and %{maximum} characters.
-      change_password: Change password
-      changing_password: Changing password…
-      password_updated: Your password was changed successfully.
-      password_too_many_attempts: Too many password change attempts. Try again later.
-  devise:
-    confirmations:
-      confirmed: Your email address has been confirmed successfully. You can now log in.
-      send_paranoid_instructions: If your account is awaiting confirmation, you will receive a new confirmation link in a few minutes.
-    registrations:
-      signed_up_but_invalid: Account created. Check your email to continue.
+      change_password: "Change password"
+      changing_password: "Changing password…"
+      current_password: "Current password"
+      information: "Information"
+      new_password: "New password"
+      password_confirmation: "Confirm new password"
+      password_description: "Enter your current password to choose a new one. Changing it will sign out your other sessions."
+      password_hint: "Your password must contain between %{minimum} and %{maximum} characters."
+      password_too_many_attempts: "Too many password change attempts. Try again later."
+      password_updated: "Your password was changed successfully."
+      security: "Security"
+    roles:
+      action_create: "Create role"
+      action_delete: "Delete role"
+      action_deleting: "Deleting…"
+      action_duplicate: "Duplicate role"
+      action_duplicating: "Duplicating…"
+      action_manage: "Manage role"
+      action_menu: "Actions for %{role}"
+      action_permissions: "Manage permissions"
+      action_saving: "Saving…"
+      action_update: "Save changes"
+      action_view: "View role"
+      columns_actions: "Actions"
+      columns_deployment: "Last deploy"
+      columns_modified_at: "Last modified"
+      columns_permissions: "Active permissions"
+      columns_role: "Role and description"
+      columns_status: "Status"
+      columns_users: "Users"
+      confirm_delete: "Delete the %{role} role? This action cannot be undone."
+      created_successfully: "Role created successfully."
+      deployment_statuses_deployed: "Applied"
+      deployment_statuses_never_deployed: "Never deployed"
+      deployment_statuses_pending: "Changes pending"
+      description_missing: "No description"
+      destroyed_successfully: "Role deleted successfully."
+      detail_activate: "Activate role"
+      detail_activating: "Activating…"
+      detail_active_impact_one: "This role currently authorizes 1 member. Deactivating it removes the access granted by this role from that person."
+      detail_active_impact_other: "This role currently authorizes %{count} members. Deactivating it removes the access granted by this role from those people."
+      detail_confirm_deactivate_one: "Deactivate %{role}? 1 member will immediately lose the access granted by this role."
+      detail_confirm_deactivate_other: "Deactivate %{role}? %{count} members will immediately lose the access granted by this role."
+      detail_deactivate: "Deactivate role"
+      detail_deactivating: "Deactivating…"
+      detail_inactive_impact_one: "This role is inactive. Its member keeps the assignment, but the role does not grant access."
+      detail_inactive_impact_other: "This role is inactive. Its %{count} members keep their assignments, but the role does not grant access."
+      detail_manage_permissions: "Manage permissions"
+      detail_members: "Members"
+      detail_permissions: "Active permissions"
+      detail_status_title: "Status and access"
+      detail_summary_title: "Role summary"
+      detail_view_members: "View users"
+      duplicated_successfully: "The %{role} role was created as an inactive copy."
+      empty_description: "Create the first role to organize this account's users and permissions."
+      empty_filtered_action: "Clear filters"
+      empty_filtered_description: "Try another search or clear the active filters."
+      empty_filtered_title: "No roles match these filters"
+      empty_title: "No roles available yet"
+      errors_assigned_users: "Roles assigned to users cannot be deleted."
+      errors_duplicate_name: "is already used by another role in this account"
+      errors_permission_level: "The permission level must be between 0 and %{maximum}."
+      errors_protected_role: "The owner role is protected and cannot be modified."
+      errors_system_role: "System roles cannot be deleted."
+      errors_unknown_actions: "Unknown or unavailable permission actions: %{action_ids}."
+      fields_description: "Description"
+      fields_name: "Name"
+      fields_path_default: "Default path"
+      fields_permission_level: "Authorization level"
+      fields_status: "Status"
+      filters_clear_search: "Clear search"
+      filters_loading: "Filtering…"
+      filters_search_label: "Search roles"
+      filters_search_placeholder: "Search by name or description"
+      filters_status_all: "All statuses"
+      filters_status_label: "Status"
+      filters_submit: "Filter"
+      filters_type_all: "All types"
+      filters_type_label: "Type"
+      form_cancel: "Cancel"
+      form_description_hint: "A short description helps administrators assign the correct role."
+      form_errors_title: "Review the highlighted fields"
+      form_path_default_hint: "Route where users are sent after signing in."
+      form_permission_level_hint: "Enter an integer between 0 and %{maximum}. A role cannot have a level above your own."
+      form_protected_notice: "This role is protected. You can inspect its configuration but cannot change it."
+      form_status_active_hint: "The role can authorize its members after its permissions are deployed."
+      form_status_inactive_hint: "Keeps its configuration but does not authorize any member."
+      mobile_deployed_at: "Last deploy: %{date}"
+      mobile_modified_at: "Modified: %{date}"
+      mobile_permissions_one: "1 permission"
+      mobile_permissions_other: "%{count} permissions"
+      mobile_users_one: "1 user"
+      mobile_users_other: "%{count} users"
+      new_description: "Define a new role to group users and configure their permissions."
+      new_title: "Create role"
+      pagination_label: "Roles pagination"
+      pagination_next: "Next"
+      pagination_page: "Page %{page} of %{pages}"
+      pagination_previous: "Previous"
+      pagination_summary: "Showing %{count} of %{total} roles"
+      permissions_all_engines: "All modules"
+      permissions_clear_search: "Clear"
+      permissions_custom_actions: "Custom actions"
+      permissions_deploy: "Apply permissions (deploy)"
+      permissions_deployed: "Permissions were applied successfully."
+      permissions_empty: "There are no permissions available in the catalog."
+      permissions_engine_navigation: "Module navigation"
+      permissions_engines: "Modules"
+      permissions_module_summary: "%{selected} of %{total} permissions enabled"
+      permissions_no_matches: "No permissions match this search"
+      permissions_no_matches_hint: "Try another module, resource, or action."
+      permissions_not_available: "Not available"
+      permissions_resource: "Resource"
+      permissions_search: "Search"
+      permissions_search_label: "Search permissions"
+      permissions_search_placeholder: "Search module, resource, or action"
+      permissions_standard_actions_create: "Create"
+      permissions_standard_actions_destroy: "Delete"
+      permissions_standard_actions_edit: "Edit"
+      permissions_standard_actions_index: "List"
+      permissions_standard_actions_new: "New"
+      permissions_standard_actions_show: "View"
+      permissions_standard_actions_update: "Update"
+      permissions_states_disabled: "Disabled"
+      permissions_states_enabled: "Enabled"
+      permissions_title: "%{role} permissions"
+      permissions_toggle: "%{action}: %{state}"
+      permissions_tools: "Permission tools"
+      permissions_update_success: "Permission updated successfully."
+      statuses_active: "Active"
+      statuses_inactive: "Inactive"
+      subtitle: "Manage your organization's roles and define each team's access."
+      title: "Roles and permissions"
+      types_custom: "Custom"
+      types_system: "System"
+      updated_successfully: "Role updated successfully."

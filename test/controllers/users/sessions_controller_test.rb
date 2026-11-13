@@ -95,7 +95,7 @@ class Users::SessionsControllerTest < ActionController::TestCase
         assert_response :too_many_requests
         assert_equal "900", response.headers["Retry-After"]
         assert_equal(
-            I18n.t("lesli_shield.devise/sessions.message_too_many_attempts"),
+            I18n.t("lesli_shield.devise_sessions.message_too_many_attempts"),
             response.parsed_body["error"]
         )
     end

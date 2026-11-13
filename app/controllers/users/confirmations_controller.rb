@@ -128,7 +128,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
         failed_resource.errors.add(
             :base,
             I18n.t(
-                "lesli_shield.devise/confirmations.message_confirmation_failed"
+                "lesli_shield.devise_confirmations.message_confirmation_failed"
             )
         )
         failed_resource
@@ -179,7 +179,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
 
     def respond_to_confirmation_rate_limit
         message = I18n.t(
-            "lesli_shield.devise/confirmations.message_too_many_attempts"
+            "lesli_shield.devise_confirmations.message_too_many_attempts"
         )
 
         response.set_header(

@@ -10,9 +10,9 @@ end
 method = enabled ? :delete : :post
 request_params = enabled ? {} : { action_id: action[:id] }
 label = t(
-    "lesli_shield.roles.permissions.toggle",
+    "lesli_shield.roles.permissions_toggle",
     action: action[:display_label],
-    state: t("lesli_shield.roles.permissions.states.#{enabled ? 'enabled' : 'disabled'}")
+    state: t("lesli_shield.roles.permissions_states_#{enabled ? 'enabled' : 'disabled'}")
 )
 %>
 

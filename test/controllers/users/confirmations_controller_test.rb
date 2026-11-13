@@ -49,7 +49,7 @@ class Users::ConfirmationsControllerTest < ActionController::TestCase
         assert_equal "3600", response.headers["Retry-After"]
         assert_equal(
             I18n.t(
-                "lesli_shield.devise/confirmations.message_too_many_attempts"
+                "lesli_shield.devise_confirmations.message_too_many_attempts"
             ),
             response.parsed_body["error"]
         )

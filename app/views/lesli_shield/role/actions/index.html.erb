@@ -1,11 +1,11 @@
 <%= render LesliView::Layout::Container.new("shield-role-actions") do %>
     <%= render LesliView::Components::Header.new(
-        t("lesli_shield.roles.permissions.title", role: @role.name),
+        t("lesli_shield.roles.permissions_title", role: @role.name),
         back: role_path(@role)
     ) do %>
         <%= render "deployment_status" %>
         <%= render(LesliView::Elements::Button.new(
-            t("lesli_shield.roles.permissions.deploy"),
+            t("lesli_shield.roles.permissions_deploy"),
             solid: true,
             danger: true,
             icon: "shield",

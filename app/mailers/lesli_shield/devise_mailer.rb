@@ -40,7 +40,7 @@ module LesliShield
             # defaults for new accounts/users
             email_template = "devise/reset_password_instructions"
             email_subject = I18n.t(
-                "lesli_shield.devise/passwords.mailer_subject"
+                "lesli_shield.devise_passwords.mailer_subject"
             )
 
             # email parameters
@@ -65,7 +65,7 @@ module LesliShield
             # defaults for new accounts/users
             email_template = "devise/confirmation_instructions"
             email_subject = I18n.t(
-                "lesli_shield.devise/confirmations.mailer_confirmation_subject"
+                "lesli_shield.devise_confirmations.mailer_confirmation_subject"
             )
 
             # # custom email and subject if user is changin his email address
@@ -100,7 +100,7 @@ module LesliShield
                 options: opts,
                 to: email_recipient,
                 subject: I18n.t(
-                    "lesli_shield.devise/confirmations.mailer_welcome_subject"
+                    "lesli_shield.devise_confirmations.mailer_welcome_subject"
                 ),
                 template_name: "lesli/welcome"
             )

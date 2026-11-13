@@ -82,7 +82,7 @@ module LesliShield
 
         def deploy
             RolePrivilegeDeploymentService.new(current_user).deploy!(@role)
-            success(I18n.t("lesli_shield.roles.permissions.deployed"))
+            success(I18n.t("lesli_shield.roles.permissions_deployed"))
             respond_with_lesli(
                 json: { role_id: @role.id },
                 redirect: permission_index_path

@@ -200,7 +200,7 @@ module LesliShield
             assert_response :success
             assert_select "a[href='#{invites_path(status: "expired")}']"
             assert_select "span", text: I18n.t(
-                "lesli_shield.invites.statuses.pending"
+                "lesli_shield.invites.statuses_pending"
             )
             assert_select "form[action='#{cancel_invite_path(invite)}']"
 

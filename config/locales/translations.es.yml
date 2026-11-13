@@ -1,323 +1,301 @@
 ---
-:es:
+es:
   lesli_shield:
-    roles:
-      title: Roles y permisos
-      subtitle: Administra los roles de tu organización y define el acceso de cada equipo.
-      new_title: Crear rol
-      new_description: Define un nuevo rol para agrupar usuarios y configurar sus permisos.
-      action_create: Crear rol
-      action_update: Guardar cambios
-      action_saving: Guardando…
-      action_duplicate: Duplicar rol
-      action_duplicating: Duplicando…
-      action_manage: Administrar rol
-      action_view: Ver rol
-      action_permissions: Administrar permisos
-      action_delete: Eliminar rol
-      action_deleting: Eliminando…
-      action_menu: Acciones para %{role}
-      confirm_delete: "¿Eliminar el rol %{role}? Esta acción no se puede deshacer."
-      description_missing: Sin descripción
-      duplicated_successfully: Se creó el rol %{role} como una copia inactiva.
-      fields:
-        name: Nombre
-        description: Descripción
-        status: Estado
-        path_default: Ruta inicial
-        permission_level: Nivel de autorización
-      form:
-        description_hint: Una descripción breve ayuda a los administradores a asignar el rol correcto.
-        status_active_hint: El rol podrá autorizar a sus miembros después de aplicar sus permisos.
-        status_inactive_hint: Conserva su configuración, pero no autoriza a ningún miembro.
-        permission_level_hint: Ingresa un número entero entre 0 y %{maximum}. El rol no puede tener un nivel superior al tuyo.
-        path_default_hint: Ruta a la que se enviará al usuario después de iniciar sesión.
-        protected_notice: Este rol está protegido. Puedes consultar su configuración, pero no modificarla.
-        cancel: Cancelar
-        errors_title: Revisa los campos señalados
-      detail:
-        summary_title: Resumen del rol
-        members: Miembros
-        permissions: Permisos activos
-        view_members: Ver usuarios
-        manage_permissions: Administrar permisos
-        status_title: Estado y acceso
-        active_impact:
-          one: Este rol está autorizando actualmente a 1 miembro. Al desactivarlo, esa persona perderá los accesos concedidos por este rol.
-          other: Este rol está autorizando actualmente a %{count} miembros. Al desactivarlo, esas personas perderán los accesos concedidos por este rol.
-        inactive_impact:
-          one: Este rol está inactivo. Su miembro conserva la asignación, pero el rol no concede acceso.
-          other: Este rol está inactivo. Sus %{count} miembros conservan la asignación, pero el rol no concede acceso.
-        confirm_deactivate:
-          one: "¿Desactivar %{role}? 1 miembro perderá inmediatamente los accesos concedidos por este rol."
-          other: "¿Desactivar %{role}? %{count} miembros perderán inmediatamente los accesos concedidos por este rol."
-        deactivate: Desactivar rol
-        deactivating: Desactivando…
-        activate: Activar rol
-        activating: Activando…
-      empty_title: Aún no hay roles disponibles
-      empty_description: Crea el primer rol para organizar usuarios y permisos de esta cuenta.
-      empty_filtered_title: Ningún rol coincide con los filtros
-      empty_filtered_description: Prueba otra búsqueda o elimina los filtros activos.
-      empty_filtered_action: Limpiar filtros
-      statuses:
-        active: Activo
-        inactive: Inactivo
-      types:
-        system: Sistema
-        custom: Personalizado
-      filters:
-        search_label: Buscar roles
-        search_placeholder: Buscar por nombre o descripción
-        clear_search: Limpiar búsqueda
-        status_label: Estado
-        status_all: Todos los estados
-        type_label: Tipo
-        type_all: Todos los tipos
-        submit: Filtrar
-        loading: Filtrando…
-      columns:
-        role: Rol y descripción
-        status: Estado
-        users: Usuarios
-        permissions: Permisos activos
-        modified_at: Última modificación
-        deployment: Último deploy
-        actions: Acciones
-      deployment_statuses:
-        pending: Cambios pendientes
-        deployed: Aplicado
-        never_deployed: Nunca desplegado
-      mobile:
-        users:
-          one: 1 usuario
-          other: "%{count} usuarios"
-        permissions:
-          one: 1 permiso
-          other: "%{count} permisos"
-        modified_at: "Modificado: %{date}"
-        deployed_at: "Último deploy: %{date}"
-      pagination:
-        label: Paginación de roles
-        summary: "Mostrando %{count} de %{total} roles"
-        page: Página %{page} de %{pages}
-        previous: Anterior
-        next: Siguiente
-      created_successfully: Rol creado correctamente.
-      updated_successfully: Rol actualizado correctamente.
-      destroyed_successfully: Rol eliminado correctamente.
-      permissions:
-        title: Permisos de %{role}
-        all_engines: Todos los módulos
-        custom_actions: Acciones personalizadas
-        tools: Herramientas de permisos
-        search_label: Buscar permisos
-        search_placeholder: Buscar módulo, recurso o acción
-        search: Buscar
-        clear_search: Limpiar
-        toggle: "%{action}: %{state}"
-        engines: Módulos
-        engine_navigation: Navegación por módulos
-        resource: Recurso
-        module_summary: "%{selected} de %{total} permisos habilitados"
-        not_available: No disponible
-        no_matches: No encontramos permisos con esta búsqueda
-        no_matches_hint: Prueba con otro módulo, recurso o acción.
-        update_success: Permiso actualizado correctamente.
-        deploy: Aplicar permisos (deploy)
-        deployed: Los permisos fueron aplicados correctamente.
-        empty: No hay permisos disponibles en el catálogo.
-        states:
-          enabled: Habilitado
-          disabled: Deshabilitado
-        standard_actions:
-          index: Listar
-          show: Ver
-          new: Nuevo
-          edit: Editar
-          create: Crear
-          update: Actualizar
-          destroy: Eliminar
-      errors:
-        duplicate_name: ya está siendo utilizado por otro rol de esta cuenta
-        permission_level: El nivel de permiso debe estar entre 0 y %{maximum}.
-        protected_role: El rol owner está protegido y no puede modificarse.
-        system_role: Los roles del sistema no pueden eliminarse.
-        assigned_users: No se puede eliminar un rol asignado a usuarios.
-        unknown_actions: "Acciones de permiso desconocidas o no disponibles: %{action_ids}."
-    invites:
-      title: Invitaciones
-      subtitle: Invita personas a tu organización y consulta el estado de cada invitación.
-      new_title: Nueva invitación
-      new_description: Elige al destinatario y el rol que recibirá después de aceptar.
-      button_create_and_send: Crear y enviar invitación
-      button_creating_and_sending: Creando y enviando invitación…
-      field_email: Correo electrónico
-      field_name: Nombre
-      field_role: Rol
-      field_message: Mensaje personal
-      field_optional: opcional
-      field_name_hint: Ayuda a tu equipo a identificar al destinatario antes de que acepte.
-      field_message_hint: Este mensaje se incluirá en el correo de invitación.
-      role_prompt: Selecciona un rol
-      filters_label: Filtrar invitaciones por estado
-      filter_all: Todas
-      statuses:
-        pending: Pendiente
-        accepted: Aceptada
-        cancelled: Cancelada
-        expired: Expirada
-      column_recipient: Destinatario
-      column_role: Rol
-      column_status: Estado
-      column_sent_at: Enviada
-      column_expires_at: Expira
-      column_actions: Acciones
-      action_view: Ver
-      action_resend: Reenviar
-      action_cancel: Cancelar
-      action_create: Crear invitación
-      confirm_resend: "¿Enviar un nuevo correo de invitación?"
-      confirm_cancel: "¿Cancelar esta invitación? Su historial de auditoría se conservará."
-      empty_title: Aún no hay invitaciones
-      empty_description: Invita a la primera persona a unirse a esta organización.
-      empty_action: Crear una invitación
-      empty_filtered_title: Ninguna invitación coincide con este filtro
-      empty_filtered_description: Prueba otro estado o elimina el filtro activo.
-      empty_filtered_action: Limpiar filtro
-      detail_title: Invitación para %{recipient}
-      detail_recipient: Destinatario
-      detail_email: Correo electrónico
-      detail_name: Nombre
-      detail_role: Rol asignado
-      detail_invited_by: Invitado por
-      detail_sent_at: Enviada el
-      detail_expires_at: Expira el
-      detail_accepted_at: Aceptada el
-      detail_cancelled_at: Cancelada el
-      detail_message: Mensaje personal
-      value_not_available: No disponible
-      created_successfully: Invitación creada y puesta en cola para su envío.
-      resent_successfully: Invitación puesta en cola para su envío.
-      cancelled_successfully: Invitación cancelada.
-      email_member: Esta persona ya pertenece a la cuenta.
-      email_other_account: Este correo electrónico pertenece a otra cuenta.
-      email_deleted: Un usuario eliminado ya utiliza este correo electrónico.
-      email_existing_without_account: Este correo electrónico no puede ser invitado.
-      role_account_mismatch: El rol seleccionado no pertenece a esta cuenta.
-      role_required: Selecciona un rol para esta invitación.
-      not_acceptable: Esta invitación ya no está disponible.
-      mailer_subject: Te han invitado a Lesli
-      mailer_title: Has recibido una invitación
-      mailer_description: Te han invitado a unirte a %{account}.
-      mailer_invited_by: Invitación enviada por %{inviter}.
-      mailer_action: Aceptar invitación
-      mailer_expiration: Esta invitación vence el %{expiration}.
-      mailer_ignore_notice: Si no esperabas esta invitación, puedes ignorar este correo de forma segura.
-      acceptance_title: Acepta tu invitación
-      acceptance_description: Completa tu perfil para unirte a %{account}.
-      acceptance_organization: Organización
-      acceptance_role: Rol
-      acceptance_email: Correo electrónico
-      acceptance_first_name: Nombres
-      acceptance_last_name: Apellidos
-      acceptance_telephone: Teléfono
-      acceptance_password: Contraseña
-      acceptance_password_confirmation: Confirmar contraseña
-      acceptance_password_hint: Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres.
-      acceptance_password_requirements: Requisitos de contraseña
-      acceptance_password_length: Usa entre %{minimum} y %{maximum} caracteres.
-      acceptance_optional: opcional
-      acceptance_action: Crear cuenta
-      acceptance_submitting: Creando cuenta…
-      acceptance_success: Tu cuenta para %{email} fue creada correctamente. Ya puedes iniciar sesión.
-      acceptance_invalid_title: Enlace de invitación inválido
-      acceptance_invalid_description: Este enlace es inválido o alcanzó su vencimiento criptográfico. Solicita una nueva invitación a un administrador.
-      acceptance_expired_title: Invitación expirada
-      acceptance_expired_description: Esta invitación expiró. Solicita a un administrador que la reenvíe.
-      acceptance_cancelled_title: Invitación cancelada
-      acceptance_cancelled_description: Esta invitación fue cancelada y ya no puede aceptarse.
-      acceptance_used_title: Invitación ya utilizada
-      acceptance_used_description: Esta invitación ya fue aceptada. Puedes iniciar sesión con la cuenta creada.
-      acceptance_unavailable_title: Invitación no disponible
-      acceptance_unavailable_description: Esta invitación ya no puede aceptarse. Es posible que la organización o el rol asignado ya no estén disponibles.
-      invalid_status_transition: Este cambio de estado de la invitación no está permitido.
-    devise/sessions:
-      message_not_valid_credentials: Credenciales no validas
-      message_too_many_attempts: Demasiados intentos de inicio de sesión. Inténtalo de nuevo más tarde.
-      view_title: ":lesli_shield.devise/sessions.view_title:"
-      button_log_in: Iniciar sesión
-      demo_title: Cuenta de demostración
-      demo_email: Correo electrónico
-      demo_password: Contraseña
-      view_still_not_registered: "¿Aún no tienes cuenta?"
-      button_create_account: Crear cuenta
-    devise/registrations:
-      view_title: Crea una cuenta y descubre Lesli
-      view_description: Ingresa tu correo electrónico y elige una contraseña para crear tu cuenta.
-      view_password_length: Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres.
-      view_legal_notice: Al crear una cuenta, aceptas los Términos y reconoces la Declaración global de privacidad.
-      label_email: Correo electrónico
-      label_password: Contraseña
-      label_password_confirmation: Confirmar contraseña
-      button_create_account: Crear cuenta
-      button_creating_account: Creando cuenta…
-      view_already_have_an_account: "¿Ya tienes cuenta?"
-      button_login: Iniciar sesión
-      message_registration_not_allowed: La creación de cuentas no está disponible.
-      message_too_many_attempts: Demasiados intentos de creación de cuenta. Inténtalo de nuevo más tarde.
-    devise/confirmations:
-      view_title: Reenviar instrucciones de confirmación
-      view_description: Ingresa tu correo electrónico y, si la confirmación sigue pendiente, te enviaremos un nuevo enlace.
-      view_success_title: Cuenta confirmada
-      view_success_description: Tu correo electrónico fue confirmado correctamente. Ya puedes iniciar sesión.
-      field_email: Correo electrónico
-      button_send_instructions: Reenviar instrucciones de confirmación
-      button_sending: Enviando instrucciones…
-      message_confirmation_failed: No pudimos terminar de confirmar tu cuenta. Intenta utilizar nuevamente el enlace de confirmación.
-      message_too_many_attempts: Demasiadas solicitudes de confirmación. Inténtalo de nuevo más tarde.
-      mailer_confirmation_subject: Confirma tu correo electrónico
-      mailer_welcome_subject: Te damos la bienvenida a Lesli
-    devise/passwords:
-      view_request_title: "¿Olvidaste tu contraseña?"
-      view_request_description: Ingresa el correo electrónico asociado con tu cuenta. Si la cuenta existe, te enviaremos un enlace de recuperación.
-      view_update_title: Crea una nueva contraseña
-      view_update_description: Elige una nueva contraseña para tu cuenta e ingrésala dos veces para confirmarla.
-      field_email: Correo electrónico
-      field_password: Nueva contraseña
-      field_password_confirmation: Confirmar nueva contraseña
-      field_password_hint:
-        one: Usa al menos un carácter.
-        other: Usa al menos %{count} caracteres.
-      button_send_instructions: Enviar enlace de recuperación
-      button_sending: Enviando…
-      button_update_password: Cambiar contraseña
-      button_updating: Actualizando…
-      message_too_many_attempts: Demasiados intentos de recuperación de contraseña. Inténtalo de nuevo más tarde.
-      mailer_subject: Instrucciones para restablecer tu contraseña
-    devise/shared:
-      button_login: Iniciar sesión
-      button_reset_password: Restablecer contraseña
-      button_magic_link: Enlace mágico
-      button_one_time_password: Contraseña de un solo uso
+    authentication:
+      logo_alt: "Logotipo de la aplicación"
+      tagline: "Una mejor manera de gestionar tu trabajo."
     dashboards:
-      view_password_requirements_symbol: Un caracter especial
-      view_password_requirements_number: Un número
+      view_password_requirements_number: "Un número"
+      view_password_requirements_symbol: "Un caracter especial"
+    devise_confirmations:
+      button_send_instructions: "Reenviar instrucciones de confirmación"
+      button_sending: "Enviando instrucciones…"
+      field_email: "Correo electrónico"
+      mailer_confirmation_subject: "Confirma tu correo electrónico"
+      mailer_welcome_subject: "Te damos la bienvenida a Lesli"
+      message_confirmation_failed: "No pudimos terminar de confirmar tu cuenta. Intenta utilizar nuevamente el enlace de confirmación."
+      message_too_many_attempts: "Demasiadas solicitudes de confirmación. Inténtalo de nuevo más tarde."
+      view_description: "Ingresa tu correo electrónico y, si la confirmación sigue pendiente, te enviaremos un nuevo enlace."
+      view_success_description: "Tu correo electrónico fue confirmado correctamente. Ya puedes iniciar sesión."
+      view_success_title: "Cuenta confirmada"
+      view_title: "Reenviar instrucciones de confirmación"
+    devise_passwords:
+      button_send_instructions: "Enviar enlace de recuperación"
+      button_sending: "Enviando…"
+      button_update_password: "Cambiar contraseña"
+      button_updating: "Actualizando…"
+      field_email: "Correo electrónico"
+      field_password: "Nueva contraseña"
+      field_password_confirmation: "Confirmar nueva contraseña"
+      field_password_hint_one: "Usa al menos un carácter."
+      field_password_hint_other: "Usa al menos %{count} caracteres."
+      mailer_subject: "Instrucciones para restablecer tu contraseña"
+      message_too_many_attempts: "Demasiados intentos de recuperación de contraseña. Inténtalo de nuevo más tarde."
+      view_request_description: "Ingresa el correo electrónico asociado con tu cuenta. Si la cuenta existe, te enviaremos un enlace de recuperación."
+      view_request_title: "¿Olvidaste tu contraseña?"
+      view_update_description: "Elige una nueva contraseña para tu cuenta e ingrésala dos veces para confirmarla."
+      view_update_title: "Crea una nueva contraseña"
+    devise_registrations:
+      button_create_account: "Crear cuenta"
+      button_creating_account: "Creando cuenta…"
+      button_login: "Iniciar sesión"
+      label_email: "Correo electrónico"
+      label_password: "Contraseña"
+      label_password_confirmation: "Confirmar contraseña"
+      message_registration_not_allowed: "La creación de cuentas no está disponible."
+      message_too_many_attempts: "Demasiados intentos de creación de cuenta. Inténtalo de nuevo más tarde."
+      view_already_have_an_account: "¿Ya tienes cuenta?"
+      view_description: "Ingresa tu correo electrónico y elige una contraseña para crear tu cuenta."
+      view_legal_notice: "Al crear una cuenta, aceptas los Términos y reconoces la Declaración global de privacidad."
+      view_password_length: "Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres."
+      view_title: "Crea una cuenta y descubre Lesli"
+    devise_sessions:
+      button_create_account: "Crear cuenta"
+      button_log_in: "Iniciar sesión"
+      demo_email: "Correo electrónico"
+      demo_password: "Contraseña"
+      demo_title: "Cuenta de demostración"
+      label_email: "Correo electrónico"
+      label_password: "Contraseña"
+      message_not_valid_credentials: "Credenciales no validas"
+      message_too_many_attempts: "Demasiados intentos de inicio de sesión. Inténtalo de nuevo más tarde."
+      view_still_not_registered: "¿Aún no tienes cuenta?"
+      view_title: ":lesli_shield.devise_sessions.view_title:"
+    devise_shared:
+      button_login: "Iniciar sesión"
+      button_magic_link: "Enlace mágico"
+      button_one_time_password: "Contraseña de un solo uso"
+      button_reset_password: "Restablecer contraseña"
+    invites:
+      acceptance_action: "Crear cuenta"
+      acceptance_cancelled_description: "Esta invitación fue cancelada y ya no puede aceptarse."
+      acceptance_cancelled_title: "Invitación cancelada"
+      acceptance_description: "Completa tu perfil para unirte a %{account}."
+      acceptance_email: "Correo electrónico"
+      acceptance_expired_description: "Esta invitación expiró. Solicita a un administrador que la reenvíe."
+      acceptance_expired_title: "Invitación expirada"
+      acceptance_first_name: "Nombres"
+      acceptance_invalid_description: "Este enlace es inválido o alcanzó su vencimiento criptográfico. Solicita una nueva invitación a un administrador."
+      acceptance_invalid_title: "Enlace de invitación inválido"
+      acceptance_last_name: "Apellidos"
+      acceptance_optional: "opcional"
+      acceptance_organization: "Organización"
+      acceptance_password: "Contraseña"
+      acceptance_password_confirmation: "Confirmar contraseña"
+      acceptance_password_hint: "Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres."
+      acceptance_password_length: "Usa entre %{minimum} y %{maximum} caracteres."
+      acceptance_password_requirements: "Requisitos de contraseña"
+      acceptance_role: "Rol"
+      acceptance_submitting: "Creando cuenta…"
+      acceptance_success: "Tu cuenta para %{email} fue creada correctamente. Ya puedes iniciar sesión."
+      acceptance_telephone: "Teléfono"
+      acceptance_title: "Acepta tu invitación"
+      acceptance_unavailable_description: "Esta invitación ya no puede aceptarse. Es posible que la organización o el rol asignado ya no estén disponibles."
+      acceptance_unavailable_title: "Invitación no disponible"
+      acceptance_used_description: "Esta invitación ya fue aceptada. Puedes iniciar sesión con la cuenta creada."
+      acceptance_used_title: "Invitación ya utilizada"
+      action_cancel: "Cancelar"
+      action_create: "Crear invitación"
+      action_resend: "Reenviar"
+      action_view: "Ver"
+      button_create_and_send: "Crear y enviar invitación"
+      button_creating_and_sending: "Creando y enviando invitación…"
+      cancelled_successfully: "Invitación cancelada."
+      column_actions: "Acciones"
+      column_expires_at: "Expira"
+      column_recipient: "Destinatario"
+      column_role: "Rol"
+      column_sent_at: "Enviada"
+      column_status: "Estado"
+      confirm_cancel: "¿Cancelar esta invitación? Su historial de auditoría se conservará."
+      confirm_resend: "¿Enviar un nuevo correo de invitación?"
+      created_successfully: "Invitación creada y puesta en cola para su envío."
+      detail_accepted_at: "Aceptada el"
+      detail_cancelled_at: "Cancelada el"
+      detail_email: "Correo electrónico"
+      detail_expires_at: "Expira el"
+      detail_invited_by: "Invitado por"
+      detail_message: "Mensaje personal"
+      detail_name: "Nombre"
+      detail_recipient: "Destinatario"
+      detail_role: "Rol asignado"
+      detail_sent_at: "Enviada el"
+      detail_title: "Invitación para %{recipient}"
+      email_deleted: "Un usuario eliminado ya utiliza este correo electrónico."
+      email_existing_without_account: "Este correo electrónico no puede ser invitado."
+      email_member: "Esta persona ya pertenece a la cuenta."
+      email_other_account: "Este correo electrónico pertenece a otra cuenta."
+      empty_action: "Crear una invitación"
+      empty_description: "Invita a la primera persona a unirse a esta organización."
+      empty_filtered_action: "Limpiar filtro"
+      empty_filtered_description: "Prueba otro estado o elimina el filtro activo."
+      empty_filtered_title: "Ninguna invitación coincide con este filtro"
+      empty_title: "Aún no hay invitaciones"
+      field_email: "Correo electrónico"
+      field_message: "Mensaje personal"
+      field_message_hint: "Este mensaje se incluirá en el correo de invitación."
+      field_name: "Nombre"
+      field_name_hint: "Ayuda a tu equipo a identificar al destinatario antes de que acepte."
+      field_optional: "opcional"
+      field_role: "Rol"
+      filter_all: "Todas"
+      filters_label: "Filtrar invitaciones por estado"
+      invalid_status_transition: "Este cambio de estado de la invitación no está permitido."
+      mailer_action: "Aceptar invitación"
+      mailer_description: "Te han invitado a unirte a %{account}."
+      mailer_expiration: "Esta invitación vence el %{expiration}."
+      mailer_ignore_notice: "Si no esperabas esta invitación, puedes ignorar este correo de forma segura."
+      mailer_invited_by: "Invitación enviada por %{inviter}."
+      mailer_subject: "Te han invitado a Lesli"
+      mailer_title: "Has recibido una invitación"
+      new_description: "Elige al destinatario y el rol que recibirá después de aceptar."
+      new_title: "Nueva invitación"
+      not_acceptable: "Esta invitación ya no está disponible."
+      resent_successfully: "Invitación puesta en cola para su envío."
+      role_account_mismatch: "El rol seleccionado no pertenece a esta cuenta."
+      role_prompt: "Selecciona un rol"
+      role_required: "Selecciona un rol para esta invitación."
+      statuses_accepted: "Aceptada"
+      statuses_cancelled: "Cancelada"
+      statuses_expired: "Expirada"
+      statuses_pending: "Pendiente"
+      subtitle: "Invita personas a tu organización y consulta el estado de cada invitación."
+      title: "Invitaciones"
+      value_not_available: "No disponible"
     profiles:
-      information: Información
-      security: Seguridad
-      password_description: Ingresa tu contraseña actual para elegir una nueva. Al cambiarla se cerrarán tus otras sesiones.
-      current_password: Contraseña actual
-      new_password: Nueva contraseña
-      password_confirmation: Confirmar nueva contraseña
-      password_hint: Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres.
-      change_password: Cambiar contraseña
-      changing_password: Cambiando contraseña…
-      password_updated: Tu contraseña fue cambiada correctamente.
-      password_too_many_attempts: Demasiados intentos de cambio de contraseña. Inténtalo de nuevo más tarde.
-  devise:
-    confirmations:
-      confirmed: Tu correo electrónico fue confirmado correctamente. Ya puedes iniciar sesión.
-      send_paranoid_instructions: Si tu cuenta está pendiente de confirmación, recibirás un nuevo enlace en unos minutos.
-    registrations:
-      signed_up_but_invalid: Cuenta creada. Revisa tu correo electrónico para continuar.
+      change_password: "Cambiar contraseña"
+      changing_password: "Cambiando contraseña…"
+      current_password: "Contraseña actual"
+      information: "Información"
+      new_password: "Nueva contraseña"
+      password_confirmation: "Confirmar nueva contraseña"
+      password_description: "Ingresa tu contraseña actual para elegir una nueva. Al cambiarla se cerrarán tus otras sesiones."
+      password_hint: "Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres."
+      password_too_many_attempts: "Demasiados intentos de cambio de contraseña. Inténtalo de nuevo más tarde."
+      password_updated: "Tu contraseña fue cambiada correctamente."
+      security: "Seguridad"
+    roles:
+      action_create: "Crear rol"
+      action_delete: "Eliminar rol"
+      action_deleting: "Eliminando…"
+      action_duplicate: "Duplicar rol"
+      action_duplicating: "Duplicando…"
+      action_manage: "Administrar rol"
+      action_menu: "Acciones para %{role}"
+      action_permissions: "Administrar permisos"
+      action_saving: "Guardando…"
+      action_update: "Guardar cambios"
+      action_view: "Ver rol"
+      columns_actions: "Acciones"
+      columns_deployment: "Último deploy"
+      columns_modified_at: "Última modificación"
+      columns_permissions: "Permisos activos"
+      columns_role: "Rol y descripción"
+      columns_status: "Estado"
+      columns_users: "Usuarios"
+      confirm_delete: "¿Eliminar el rol %{role}? Esta acción no se puede deshacer."
+      created_successfully: "Rol creado correctamente."
+      deployment_statuses_deployed: "Aplicado"
+      deployment_statuses_never_deployed: "Nunca desplegado"
+      deployment_statuses_pending: "Cambios pendientes"
+      description_missing: "Sin descripción"
+      destroyed_successfully: "Rol eliminado correctamente."
+      detail_activate: "Activar rol"
+      detail_activating: "Activando…"
+      detail_active_impact_one: "Este rol está autorizando actualmente a 1 miembro. Al desactivarlo, esa persona perderá los accesos concedidos por este rol."
+      detail_active_impact_other: "Este rol está autorizando actualmente a %{count} miembros. Al desactivarlo, esas personas perderán los accesos concedidos por este rol."
+      detail_confirm_deactivate_one: "¿Desactivar %{role}? 1 miembro perderá inmediatamente los accesos concedidos por este rol."
+      detail_confirm_deactivate_other: "¿Desactivar %{role}? %{count} miembros perderán inmediatamente los accesos concedidos por este rol."
+      detail_deactivate: "Desactivar rol"
+      detail_deactivating: "Desactivando…"
+      detail_inactive_impact_one: "Este rol está inactivo. Su miembro conserva la asignación, pero el rol no concede acceso."
+      detail_inactive_impact_other: "Este rol está inactivo. Sus %{count} miembros conservan la asignación, pero el rol no concede acceso."
+      detail_manage_permissions: "Administrar permisos"
+      detail_members: "Miembros"
+      detail_permissions: "Permisos activos"
+      detail_status_title: "Estado y acceso"
+      detail_summary_title: "Resumen del rol"
+      detail_view_members: "Ver usuarios"
+      duplicated_successfully: "Se creó el rol %{role} como una copia inactiva."
+      empty_description: "Crea el primer rol para organizar usuarios y permisos de esta cuenta."
+      empty_filtered_action: "Limpiar filtros"
+      empty_filtered_description: "Prueba otra búsqueda o elimina los filtros activos."
+      empty_filtered_title: "Ningún rol coincide con los filtros"
+      empty_title: "Aún no hay roles disponibles"
+      errors_assigned_users: "No se puede eliminar un rol asignado a usuarios."
+      errors_duplicate_name: "ya está siendo utilizado por otro rol de esta cuenta"
+      errors_permission_level: "El nivel de permiso debe estar entre 0 y %{maximum}."
+      errors_protected_role: "El rol owner está protegido y no puede modificarse."
+      errors_system_role: "Los roles del sistema no pueden eliminarse."
+      errors_unknown_actions: "Acciones de permiso desconocidas o no disponibles: %{action_ids}."
+      fields_description: "Descripción"
+      fields_name: "Nombre"
+      fields_path_default: "Ruta inicial"
+      fields_permission_level: "Nivel de autorización"
+      fields_status: "Estado"
+      filters_clear_search: "Limpiar búsqueda"
+      filters_loading: "Filtrando…"
+      filters_search_label: "Buscar roles"
+      filters_search_placeholder: "Buscar por nombre o descripción"
+      filters_status_all: "Todos los estados"
+      filters_status_label: "Estado"
+      filters_submit: "Filtrar"
+      filters_type_all: "Todos los tipos"
+      filters_type_label: "Tipo"
+      form_cancel: "Cancelar"
+      form_description_hint: "Una descripción breve ayuda a los administradores a asignar el rol correcto."
+      form_errors_title: "Revisa los campos señalados"
+      form_path_default_hint: "Ruta a la que se enviará al usuario después de iniciar sesión."
+      form_permission_level_hint: "Ingresa un número entero entre 0 y %{maximum}. El rol no puede tener un nivel superior al tuyo."
+      form_protected_notice: "Este rol está protegido. Puedes consultar su configuración, pero no modificarla."
+      form_status_active_hint: "El rol podrá autorizar a sus miembros después de aplicar sus permisos."
+      form_status_inactive_hint: "Conserva su configuración, pero no autoriza a ningún miembro."
+      mobile_deployed_at: "Último deploy: %{date}"
+      mobile_modified_at: "Modificado: %{date}"
+      mobile_permissions_one: "1 permiso"
+      mobile_permissions_other: "%{count} permisos"
+      mobile_users_one: "1 usuario"
+      mobile_users_other: "%{count} usuarios"
+      new_description: "Define un nuevo rol para agrupar usuarios y configurar sus permisos."
+      new_title: "Crear rol"
+      pagination_label: "Paginación de roles"
+      pagination_next: "Siguiente"
+      pagination_page: "Página %{page} de %{pages}"
+      pagination_previous: "Anterior"
+      pagination_summary: "Mostrando %{count} de %{total} roles"
+      permissions_all_engines: "Todos los módulos"
+      permissions_clear_search: "Limpiar"
+      permissions_custom_actions: "Acciones personalizadas"
+      permissions_deploy: "Aplicar permisos (deploy)"
+      permissions_deployed: "Los permisos fueron aplicados correctamente."
+      permissions_empty: "No hay permisos disponibles en el catálogo."
+      permissions_engine_navigation: "Navegación por módulos"
+      permissions_engines: "Módulos"
+      permissions_module_summary: "%{selected} de %{total} permisos habilitados"
+      permissions_no_matches: "No encontramos permisos con esta búsqueda"
+      permissions_no_matches_hint: "Prueba con otro módulo, recurso o acción."
+      permissions_not_available: "No disponible"
+      permissions_resource: "Recurso"
+      permissions_search: "Buscar"
+      permissions_search_label: "Buscar permisos"
+      permissions_search_placeholder: "Buscar módulo, recurso o acción"
+      permissions_standard_actions_create: "Crear"
+      permissions_standard_actions_destroy: "Eliminar"
+      permissions_standard_actions_edit: "Editar"
+      permissions_standard_actions_index: "Listar"
+      permissions_standard_actions_new: "Nuevo"
+      permissions_standard_actions_show: "Ver"
+      permissions_standard_actions_update: "Actualizar"
+      permissions_states_disabled: "Deshabilitado"
+      permissions_states_enabled: "Habilitado"
+      permissions_title: "Permisos de %{role}"
+      permissions_toggle: "%{action}: %{state}"
+      permissions_tools: "Herramientas de permisos"
+      permissions_update_success: "Permiso actualizado correctamente."
+      statuses_active: "Activo"
+      statuses_inactive: "Inactivo"
+      subtitle: "Administra los roles de tu organización y define el acceso de cada equipo."
+      title: "Roles y permisos"
+      types_custom: "Personalizado"
+      types_system: "Sistema"
+      updated_successfully: "Rol actualizado correctamente."

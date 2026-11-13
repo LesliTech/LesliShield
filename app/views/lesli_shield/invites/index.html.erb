@@ -3,7 +3,7 @@ records = @invites.fetch(:records)
 status_filters = [
     [nil, I18n.t("lesli_shield.invites.filter_all")],
     *LesliShield::InviteService::STATUS_FILTERS.map do |status|
-        [status, I18n.t("lesli_shield.invites.statuses.#{status}")]
+        [status, I18n.t("lesli_shield.invites.statuses_#{status}")]
     end
 ]
 %>

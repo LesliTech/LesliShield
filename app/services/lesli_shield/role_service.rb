@@ -169,14 +169,14 @@ module LesliShield
 
                 if role.system_role?
                     raise SystemRoleError.new(
-                        I18n.t("lesli_shield.roles.errors.system_role"),
+                        I18n.t("lesli_shield.roles.errors_system_role"),
                         record: role
                     )
                 end
 
                 if role.assigned?
                     raise AssignedUsersError.new(
-                        I18n.t("lesli_shield.roles.errors.assigned_users"),
+                        I18n.t("lesli_shield.roles.errors_assigned_users"),
                         record: role
                     )
                 end
@@ -259,7 +259,7 @@ module LesliShield
 
             if role.protected_role?
                 raise ProtectedRoleError.new(
-                    I18n.t("lesli_shield.roles.errors.protected_role"),
+                    I18n.t("lesli_shield.roles.errors_protected_role"),
                     record: role
                 )
             end
@@ -267,7 +267,7 @@ module LesliShield
             unless role.manageable_by?(actor)
                 raise PermissionLevelError.new(
                     I18n.t(
-                        "lesli_shield.roles.errors.permission_level",
+                        "lesli_shield.roles.errors_permission_level",
                         maximum: actor.max_level_permission
                     ),
                     record: role
@@ -316,7 +316,7 @@ module LesliShield
             return if role.permission_level.between?(0, actor.max_level_permission)
 
             message = I18n.t(
-                "lesli_shield.roles.errors.permission_level",
+                "lesli_shield.roles.errors_permission_level",
                 maximum: actor.max_level_permission
             )
             role.errors.add(:permission_level, message)
@@ -337,7 +337,7 @@ module LesliShield
 
             role.errors.add(
                 :name,
-                I18n.t("lesli_shield.roles.errors.duplicate_name")
+                I18n.t("lesli_shield.roles.errors_duplicate_name")
             )
             raise DuplicateNameError.new(
                 role.errors.full_messages.to_sentence,

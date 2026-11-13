@@ -121,7 +121,7 @@ module LesliShield
                     "[target='role-permission-deployment-status']",
                     count: 1
                 assert_includes response.body,
-                    I18n.t("lesli_shield.roles.deployment_statuses.pending")
+                    I18n.t("lesli_shield.roles.deployment_statuses_pending")
             end
 
             assert_nil previous_selection.reload.deleted_at
@@ -208,7 +208,7 @@ module LesliShield
                 assert_select "section[id^='permission-engine-']", count: 0
                 assert_select "a[aria-current='page']", text: /LesliShield/
                 assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-audit", search: "no-match")}']", count: 1
-                assert_includes response.body, I18n.t("lesli_shield.roles.permissions.no_matches")
+                assert_includes response.body, I18n.t("lesli_shield.roles.permissions_no_matches")
             end
         end
 

@@ -31,8 +31,8 @@ Building a better future, one line of code at a time.
 %>
 
 <%
-title = I18n.t("overrides.lesli_shield.devise/sessions.view_title",
-        default: :"lesli_shield.devise/sessions.view_title")
+title = I18n.t("overrides.lesli_shield.devise_sessions.view_title",
+        default: :"lesli_shield.devise_sessions.view_title")
 
 demo_credentials = if Lesli.config.demo
     {
@@ -48,7 +48,7 @@ end
 
     <%
     email_field_options = {
-        label: I18n.t("lesli_shield.devise/sessions.label_email", default: "Email address"),
+        label: I18n.t("lesli_shield.devise_sessions.label_email", default: "Email address"),
         category: authentication_error.present? ? :danger : nil,
         icon: "person",
         autofocus: true,
@@ -58,7 +58,7 @@ end
     }
 
     password_field_options = {
-        label: I18n.t("lesli_shield.devise/sessions.label_password", default: "Password"),
+        label: I18n.t("lesli_shield.devise_sessions.label_password", default: "Password"),
         message: authentication_error,
         category: authentication_error.present? ? :danger : nil,
         icon: "key",
@@ -100,15 +100,15 @@ end
         <% end %>
 
         <%= form.field_control_button(
-            I18n.t("lesli_shield.devise/sessions.button_log_in"),
+            I18n.t("lesli_shield.devise_sessions.button_log_in"),
             { class: "is-fullwidth" },
             icon: "login"
         ) %>
 
         <% if Lesli.config.security.dig(:allow_registration) %>
             <p class="mt-1 text-center text-sm text-slate-600">
-                <%= I18n.t("lesli_shield.devise/sessions.view_still_not_registered") %>
-                <%= link_to I18n.t("lesli_shield.devise/sessions.button_create_account"),
+                <%= I18n.t("lesli_shield.devise_sessions.view_still_not_registered") %>
+                <%= link_to I18n.t("lesli_shield.devise_sessions.button_create_account"),
                     new_user_registration_path %>
             </p>
         <% end %>

@@ -80,7 +80,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         redirect_to(
             new_user_session_path,
             alert: I18n.t(
-                "lesli_shield.devise/registrations.message_registration_not_allowed"
+                "lesli_shield.devise_registrations.message_registration_not_allowed"
             ),
             status: request.post? ? :see_other : :found
         )
@@ -105,7 +105,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     def respond_to_registration_rate_limit
         message = I18n.t(
-            "lesli_shield.devise/registrations.message_too_many_attempts"
+            "lesli_shield.devise_registrations.message_too_many_attempts"
         )
 
         response.set_header(

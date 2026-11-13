@@ -188,7 +188,7 @@ class Users::PasswordsController < Devise::PasswordsController
 
     def respond_to_password_reset_rate_limit
         message = I18n.t(
-            "lesli_shield.devise/passwords.message_too_many_attempts"
+            "lesli_shield.devise_passwords.message_too_many_attempts"
         )
 
         response.set_header(

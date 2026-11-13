@@ -1,0 +1,8 @@
+---
+en:
+  devise:
+    confirmations:
+      confirmed: "Your email address has been confirmed successfully. You can now log in."
+      send_paranoid_instructions: "If your account is awaiting confirmation, you will receive a new confirmation link in a few minutes."
+    registrations:
+      signed_up_but_invalid: "Account created. Check your email to continue."

@@ -1,6 +1,6 @@
 <%= render(
     "devise/shared/application-devise-simple",
-    title: I18n.t("lesli_shield.devise/confirmations.view_success_title")
+    title: I18n.t("lesli_shield.devise_confirmations.view_success_title")
 ) do %>
     <section
         class="my-8 w-full max-w-lg rounded-xl border border-emerald-200 bg-white p-8 text-center shadow-sm"
@@ -15,12 +15,12 @@
 
         <p class="mt-4 text-sm leading-6 text-slate-600">
             <%= I18n.t(
-                "lesli_shield.devise/confirmations.view_success_description"
+                "lesli_shield.devise_confirmations.view_success_description"
             ) %>
         </p>
 
         <%= link_to(
-            I18n.t("lesli_shield.devise/shared.button_login"),
+            I18n.t("lesli_shield.devise_shared.button_login"),
             new_user_session_path,
             class: "mt-6 inline-flex min-h-11 items-center justify-center rounded-lg bg-[var(--lesli-color-primary)] px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lesli-color-primary)]"
         ) %>

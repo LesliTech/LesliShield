@@ -1,12 +1,12 @@
 <%
 engines = [
-    { slug: nil, label: t("lesli_shield.roles.permissions.all_engines"), count: @permission_engines.sum { |engine| engine[:count] } },
+    { slug: nil, label: t("lesli_shield.roles.permissions_all_engines"), count: @permission_engines.sum { |engine| engine[:count] } },
     *@permission_engines
 ]
 %>
-<nav class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm lg:sticky lg:top-4" aria-label="<%= t("lesli_shield.roles.permissions.engine_navigation") %>">
+<nav class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm lg:sticky lg:top-4" aria-label="<%= t("lesli_shield.roles.permissions_engine_navigation") %>">
     <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-        <%= t("lesli_shield.roles.permissions.engines") %>
+        <%= t("lesli_shield.roles.permissions_engines") %>
     </p>
     <ul class="space-y-1">
         <% engines.each do |engine| %>

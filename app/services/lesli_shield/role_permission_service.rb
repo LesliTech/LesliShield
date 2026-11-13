@@ -24,7 +24,7 @@ module LesliShield
                 @action_ids = action_ids
                 super(
                     I18n.t(
-                        "lesli_shield.roles.errors.unknown_actions",
+                        "lesli_shield.roles.errors_unknown_actions",
                         action_ids: action_ids.join(", ")
                     )
                 )
@@ -229,7 +229,7 @@ module LesliShield
             return fallback unless STANDARD_ACTION_ORDER.include?(action_name)
 
             I18n.t(
-                "lesli_shield.roles.permissions.standard_actions.#{action_name}",
+                "lesli_shield.roles.permissions_standard_actions_#{action_name}",
                 default: fallback
             )
         end

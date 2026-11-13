@@ -1,6 +1,6 @@
 <%= render(
     "devise/shared/application-devise-simple",
-    title: I18n.t("lesli_shield.devise/confirmations.view_title")
+    title: I18n.t("lesli_shield.devise_confirmations.view_title")
 ) do %>
 
     <%= form_for(
@@ -13,7 +13,7 @@
 
         <p class="mb-6 text-center text-sm leading-6 text-slate-600">
             <%= I18n.t(
-                "lesli_shield.devise/confirmations.view_description"
+                "lesli_shield.devise_confirmations.view_description"
             ) %>
         </p>
 
@@ -23,7 +23,7 @@
             :email,
             icon: "mail",
             label: I18n.t(
-                "lesli_shield.devise/confirmations.field_email"
+                "lesli_shield.devise_confirmations.field_email"
             ),
             message: resource.errors[:email].to_sentence.presence,
             category: resource.errors[:email].any? ? :danger : nil,
@@ -38,13 +38,13 @@
 
         <%= form.field_control_button(
             I18n.t(
-                "lesli_shield.devise/confirmations.button_send_instructions"
+                "lesli_shield.devise_confirmations.button_send_instructions"
             ),
             {
                 class: "w-full",
                 data: {
                     turbo_submits_with: I18n.t(
-                        "lesli_shield.devise/confirmations.button_sending"
+                        "lesli_shield.devise_confirmations.button_sending"
                     )
                 }
             },

@@ -1,0 +1,8 @@
+---
+es:
+  devise:
+    confirmations:
+      confirmed: "Tu correo electrónico fue confirmado correctamente. Ya puedes iniciar sesión."
+      send_paranoid_instructions: "Si tu cuenta está pendiente de confirmación, recibirás un nuevo enlace en unos minutos."
+    registrations:
+      signed_up_but_invalid: "Cuenta creada. Revisa tu correo electrónico para continuar."

@@ -2,6 +2,8 @@
 
 ## 1.1.7 (unreleased)
 
+- Share the timezone selector between profile and user administration. Login does not detect or change timezones.
+
 - Update compatibility for Lesli 5.1, Ruby 3.3.5, and Rails 8.1.
 - Add the authenticated user's profile and password-change flow.
 - Use the supported Devise authentication, confirmation, and password-reset

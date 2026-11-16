@@ -105,6 +105,16 @@ module LesliShield
             assert_nil @user.reload.time_zone
         end
 
+        test "administrators cannot change a timezone in another account" do
+            other_user = create_profile_user
+            LesliShield::Role::Privilege.create!(
+                role: @user.roles.first, controller: "lesli_shield/users", action: "update", active: true
+            )
+            patch lesli_shield.user_path(other_user), params: { user: { time_zone: "Europe/Berlin" } }, as: :json
+            assert_response :not_found
+            assert_nil other_user.reload.time_zone
+        end
+
         test "returns only public profile fields as json" do
             get lesli_shield.profile_path, as: :json
 

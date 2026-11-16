@@ -78,15 +78,18 @@ module LesliShield
 
             assert_empty Role::Privilege.with_deleted.where(role_id: role.id)
             assert_not_nil role.reload.deployed_at
-            event = LesliAudit::UserLog.find_by!(subject_id: role.id, operation: "role_privileges_deployed")
-            assert_empty event.details.fetch("permissions_added")
-            assert_equal(
-                [{ "controller" => "obsolete/controller", "action" => "index" }],
-                event.details.fetch("permissions_removed")
-            )
+            if defined?(LesliAudit)
+                event = LesliAudit::UserLog.find_by!(subject_id: role.id, operation: "role_privileges_deployed")
+                assert_empty event.details.fetch("permissions_added")
+                assert_equal(
+                    [{ "controller" => "obsolete/controller", "action" => "index" }],
+                    event.details.fetch("permissions_removed")
+                )
+            end
         end
 
         test "persists the effective permission difference and active affected users" do
+            skip "Persistent audit integration requires LesliAudit" unless defined?(LesliAudit)
             context = insert_account_context("deploy-audit-details")
             actor = context.fetch(:user)
             role = insert_role(context, name: "Audited permissions", permission_level: 40)
@@ -161,7 +164,9 @@ module LesliShield
                 raise ActiveRecord::RecordInvalid
             end
 
-            assert_no_difference -> { LesliAudit::UserLog.count } do
+            counts = [-> { Role::Privilege.count }]
+            counts << -> { LesliAudit::UserLog.count } if defined?(LesliAudit)
+            assert_no_difference counts do
                 assert_raises(ActiveRecord::RecordInvalid) do
                     RolePrivilegeDeploymentService.new(actor).deploy!(role)
                 end

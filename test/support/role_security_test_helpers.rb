@@ -41,8 +41,8 @@ module RoleSecurityTestHelpers
     # provided by the mounted engines. Build those extensions explicitly here
     # because insert_all! intentionally skips the production callbacks.
     def create_engine_accounts(account)
-        LesliAudit::Account.create!(account: account)
-        LesliBell::Account.create!(account: account)
+        LesliAudit::Account.create!(account: account) if defined?(LesliAudit)
+        LesliBell::Account.create!(account: account) if defined?(LesliBell)
     end
 
     def insert_role(context, name:, permission_level:, system_name: nil)

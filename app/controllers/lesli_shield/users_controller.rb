@@ -36,15 +36,21 @@ module LesliShield
 
         # GET /users
         def index
-            @users = respond_with_pagination(Lesli::UserService.new(current_user, query).index(params))
+            @users = respond_with_pagination(Lesli::UserService.new(current_user, query).index)
         end
 
         # GET /users/1
         def show
-            @user_roles = @user.roles
-            @activities = @user.logs
-            @sessions = @user.sessions
             @user = @user.show
+            @user_roles = @user.roles
+            @sessions = @user.sessions
+            @activities = if defined?(LesliAudit)
+                @user.logs.order(id: :desc)
+                    .select(:id, :operation, :description, Lesli::Date2.new.db_column("created_at", as: "date"))
+                    .limit(7).as_json
+            else
+                []
+            end
         end
 
         # GET /users/new

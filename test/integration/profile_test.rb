@@ -78,6 +78,22 @@ module LesliShield
             assert_redirected_to "/login?r=#{lesli_shield.profile_path}"
         end
 
+        test "authorized administrators can list users and render the scoped detail" do
+            %w[index show].each do |action|
+                LesliShield::Role::Privilege.create!(
+                    role: @user.roles.first, controller: "lesli_shield/users", action: action, active: true
+                )
+            end
+
+            get lesli_shield.users_path
+            assert_response :success
+            assert_select "a[href='#{lesli_shield.user_path(@user)}']"
+
+            get lesli_shield.user_path(@user)
+            assert_response :success
+            assert_select "form[action='#{lesli_shield.user_path(@user)}']"
+        end
+
         test "authorized administrators can update and clear the timezone of another user in their account" do
             target = create_profile_user
             target.update!(account: @user.account, alias: "TU")

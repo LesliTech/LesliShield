@@ -11,6 +11,7 @@ module LesliShield
 
         setup do
             @original_audit_config = Lesli.config.audit.dup
+            skip "Persistent audit integration requires LesliAudit" unless defined?(LesliAudit)
             Lesli.config.audit[:enable_logs] = true
             @context = insert_account_context("role-audit")
             @actor = @context.fetch(:user)

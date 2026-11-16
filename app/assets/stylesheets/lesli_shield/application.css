@@ -509,9 +509,6 @@
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
   }
-  .py-0\.5 {
-    padding-block: calc(var(--spacing) * 0.5);
-  }
   .py-1 {
     padding-block: var(--spacing);
   }
@@ -550,9 +547,6 @@
   }
   .pr-10 {
     padding-right: calc(var(--spacing) * 10);
-  }
-  .pb-2 {
-    padding-bottom: calc(var(--spacing) * 2);
   }
   .pb-3 {
     padding-bottom: calc(var(--spacing) * 3);
@@ -1009,17 +1003,11 @@
     }
   }
   @media (width >= 64rem) {
-    .lg\:sticky {
-      position: sticky;
-    }
-    .lg\:top-4 {
-      top: calc(var(--spacing) * 4);
-    }
-    .lg\:grid-cols-\[15rem_minmax\(0\,1fr\)\] {
-      grid-template-columns: 15rem minmax(0,1fr);
-    }
     .lg\:grid-cols-\[minmax\(16rem\,1fr\)_13rem_13rem_auto\] {
       grid-template-columns: minmax(16rem,1fr) 13rem 13rem auto;
+    }
+    .lg\:flex-row {
+      flex-direction: row;
     }
     .lg\:items-end {
       align-items: flex-end;

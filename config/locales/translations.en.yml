@@ -167,6 +167,10 @@ en:
     items/tasks: {}
     profile/passwords: {}
     profiles:
+      time_zone: "Time zone"
+      time_zone_help: "Choose the time zone used to display and enter dates and times."
+      time_zone_default: "Use the application time zone"
+      updated: "Profile updated successfully."
       change_password: "Change password"
       changing_password: "Changing password…"
       current_password: "Current password"

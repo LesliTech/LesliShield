@@ -11,6 +11,7 @@ module LesliShield
 
         def update(params)
             resource.assign_attributes(params)
+            resource.time_zone = resource.time_zone.presence
             resource.alias = resource.full_name_initials if resource.alias.blank?
 
             unless resource.save

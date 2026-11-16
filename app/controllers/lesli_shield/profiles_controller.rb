@@ -9,6 +9,7 @@ module LesliShield
             first_name
             last_name
             telephone
+            time_zone
         ].freeze
 
         skip_before_action :authorize_request
@@ -24,13 +25,17 @@ module LesliShield
 
             if @profile.successful?
                 respond_with_lesli(
-                    turbo: stream_notification_success("Profile updated successfully!"),
+                    turbo: stream_notification_success(t("lesli_shield.profiles.updated")),
                     json: profile_payload,
                     redirect: profile_path
                 )
             else
                 respond_with_lesli(
-                    turbo: stream_notification_danger(@profile.errors_as_sentence),
+                    turbo: [
+                        stream_notification_danger(@profile.errors_as_sentence),
+                        turbo_stream.replace("shield-profile-information-form",
+                            partial: "lesli_shield/profiles/information-form")
+                    ],
                     json: { errors: @profile.errors },
                     html: :show,
                     status: :unprocessable_content
@@ -52,7 +57,8 @@ module LesliShield
                 :email,
                 :first_name,
                 :last_name,
-                :telephone
+                :telephone,
+                :time_zone
             )
         end
 

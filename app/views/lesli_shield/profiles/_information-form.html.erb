@@ -1,0 +1,11 @@
+<div id="shield-profile-information-form">
+    <% if @user.errors.any? %>
+        <div role="alert">
+            <% @user.errors.full_messages.each do |message| %>
+                <p><%= message %></p>
+            <% end %>
+        </div>
+    <% end %>
+
+    <%= render "lesli_shield/users/information-form", form_url: profile_path %>
+</div>

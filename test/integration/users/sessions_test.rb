@@ -25,6 +25,22 @@ module Users
             assert_response :see_other
             assert_redirected_to "/dashboard"
             assert request.session[:user_session_id]
+            assert_nil request.session[:time_zone]
+            assert_nil user.reload.time_zone
+        end
+
+        test "login ignores submitted timezones and preserves the profile preference" do
+            user = create_login_user
+            user.update!(time_zone: "Europe/Berlin")
+            [nil, "America/Guatemala", "Invalid/Timezone"].each do |zone|
+                reset!
+                post "/login", params: login_params_for(user, time_zone: zone)
+
+                assert_response :see_other
+                assert request.session[:user_session_id]
+                assert_nil request.session[:time_zone]
+                assert_equal "Europe/Berlin", user.reload.time_zone
+            end
         end
 
         test "rejects an ineligible user before creating the application session" do
@@ -39,6 +55,7 @@ module Users
             assert_response :found
             assert_redirected_to new_user_session_path
             assert_nil request.session[:user_session_id]
+            assert_nil request.session[:time_zone]
         end
 
         test "preserves the requested destination after invalid credentials" do
@@ -65,6 +82,8 @@ module Users
                 count: 1
             )
             assert_nil request.session[:user_session_id]
+            assert_nil request.session[:time_zone]
+            assert_select 'input[name="user[time_zone]"]', count: 0
         end
 
         private
@@ -122,12 +141,13 @@ module Users
             Lesli::Role.find_by!(account: account, name: name)
         end
 
-        def login_params_for(user, password: "password-123", redirect: nil)
+        def login_params_for(user, password: "password-123", redirect: nil, time_zone: "America/Guatemala")
             {
                 user: {
                     email: user.email,
                     password: password,
-                    redirect: redirect
+                    redirect: redirect,
+                    time_zone: time_zone
                 }
             }
         end

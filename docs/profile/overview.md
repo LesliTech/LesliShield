@@ -14,10 +14,29 @@ The **Information** tab allows the current user to update these fields:
 - First name
 - Last name
 - Telephone
+- Time zone (IANA identifier, such as `America/Guatemala` or `Europe/Berlin`)
 
 Account ownership, activation status, roles, privileges, and other administrative attributes cannot be changed through the profile.
 
 When no alias is supplied, LesliShield generates one from the user's initials. Validation errors are displayed without persisting an incomplete update.
+
+## Time Zone Preference
+
+The Information tab includes a LesliView timezone selector with complete IANA
+identifiers. Choose **Use the application time zone** to clear the preference;
+this stores `nil`, allowing the configured fallback to apply. Unknown timezone
+identifiers are rejected. Only the authenticated user's preference can be
+updated through the profile endpoint, regardless of IDs submitted with the request.
+Authorized user administrators can also edit this preference for users in their
+account through the existing user administration screen. Both screens reuse
+the same LesliView information form and timezone selector.
+
+When another field fails validation, the submitted timezone remains selected.
+HTML and Turbo responses display validation errors without saving partial changes.
+Turbo replaces only the information form, preserving the current tab.
+
+Core applies this preference on each request, including LesliDate, Agenda and
+FullCalendar. Login and browser timezone changes never overwrite it.
 
 ## Password
 
@@ -69,7 +88,8 @@ Request JSON by sending `Accept: application/json`. The profile endpoint exposes
   "email": "user@example.com",
   "first_name": "Lesli",
   "last_name": "User",
-  "telephone": null
+  "telephone": null,
+  "time_zone": "Europe/Berlin"
 }
 ```
 
@@ -80,7 +100,8 @@ Update profile information with a `user` object:
   "user": {
     "first_name": "Lesli",
     "last_name": "User",
-    "telephone": "+502 5555 5555"
+    "telephone": "+502 5555 5555",
+    "time_zone": "Europe/Berlin"
   }
 }
 ```

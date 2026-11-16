@@ -167,7 +167,7 @@ module LesliShield
                 assert_select "form[action='#{role_action_path(role, standard.action_id)}']" do
                     assert_select "input[name='_method'][value='delete']", count: 1
                 end
-                assert_select "a[href='#{role_actions_path(role)}'][aria-current='page']", count: 1
+                assert_select "a[href='#{role_actions_path(role)}'][aria-current='page']", count: 2
                 assert_select "form[action='#{deploy_role_path(role)}']", count: 1
             end
         end
@@ -190,8 +190,8 @@ module LesliShield
                 assert_select "section[id^='permission-engine-']", count: 1
                 assert_select "#permission-engine-lesli_shield table", count: 1
                 assert_select "input[name='action_id'][value='#{custom.id}']", count: 1
-                assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-shield")}'][aria-current='page'][data-turbo-frame='_top']", count: 1
-                assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-audit")}']", count: 1
+                assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-shield")}'][aria-current='page'][data-turbo-frame='_top']", count: 2
+                assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-audit")}']", count: 2
                 assert_select "form[action='#{engine_role_actions_path(role, engine_slug: "lesli-shield")}'][method='get'][data-turbo-frame='_top']", count: 1
 
                 get :index, params: {
@@ -207,7 +207,7 @@ module LesliShield
                 assert_response :success
                 assert_select "section[id^='permission-engine-']", count: 0
                 assert_select "a[aria-current='page']", text: /LesliShield/
-                assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-audit", search: "no-match")}']", count: 1
+                assert_select "a[href='#{engine_role_actions_path(role, engine_slug: "lesli-audit", search: "no-match")}']", count: 2
                 assert_includes response.body, I18n.t("lesli_shield.roles.permissions_no_matches")
             end
         end

@@ -355,7 +355,7 @@ module LesliShield
                 assert_select "a[href='#{users_path}']"
                 assert_select "form[action='#{duplicate_role_path(role)}']"
                 assert_select "#role-form-fields button[name='role[active]'][value='false']"
-                assert_select "#role-detail-content.w-full"
+                assert_select "#role-detail-content.flex-1"
                 assert_select "#general input[name='role[permission_level]'][type='number']"
                 assert_select "#general input[name='role[path_default]']"
                 assert_select "#general details", count: 0

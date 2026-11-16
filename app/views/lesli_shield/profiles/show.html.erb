@@ -9,10 +9,7 @@
             title: I18n.t("lesli_shield.profiles.information"),
             icon: "info"
         ) do %>
-            <%= render(
-                "lesli_shield/users/information-form",
-                form_url: profile_path
-            ) %>
+            <%= render "lesli_shield/profiles/information-form" %>
         <% end %>
 
         <% tabs.with_tab(

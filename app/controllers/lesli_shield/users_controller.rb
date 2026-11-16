@@ -116,7 +116,8 @@ module LesliShield
                 :roles_id,
                 :first_name,
                 :last_name,
-                :telephone
+                :telephone,
+                :time_zone
             )
         end
     end

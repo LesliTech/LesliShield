@@ -44,3 +44,10 @@ bin/rails server
 Visit `http://127.0.0.1:3000/shield`. After signing in, visit `/shield/profile` to verify the authenticated user's [self-service profile](/engines/shield/profile/overview).
 
 Run the [privilege synchronization task](/engines/shield/about/tasks) after changing roles, actions, or protected resources.
+
+## Profile Timezone
+
+Users choose an optional IANA timezone in their profile. Login does not detect,
+submit or save the browser timezone. Core uses the profile preference, otherwise
+`Lesli.config.datetime[:time_zone]`, then the Rails application timezone.
+Timestamps remain stored in UTC. See [User Profile](/engines/shield/profile/overview).

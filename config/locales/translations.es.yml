@@ -167,6 +167,10 @@ es:
     items/tasks: {}
     profile/passwords: {}
     profiles:
+      time_zone: "Zona horaria"
+      time_zone_help: "Elige la zona horaria para mostrar e introducir fechas y horas."
+      time_zone_default: "Usar la zona horaria de la aplicación"
+      updated: "Perfil actualizado correctamente."
       change_password: "Cambiar contraseña"
       changing_password: "Cambiando contraseña…"
       current_password: "Contraseña actual"

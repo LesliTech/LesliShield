@@ -4,10 +4,41 @@ index_path = if @engine_slug
 else
     role_actions_path(@role)
 end
+
+navigation_items = [{
+    label: t("lesli_shield.roles.detail_summary_title"),
+    path: role_path(@role),
+    selected: false
+}]
+engines = [
+    {
+        slug: nil,
+        label: t("lesli_shield.roles.permissions_all_engines"),
+        count: @permission_engines.sum { |engine| engine[:count] }
+    },
+    *@permission_engines
+]
+engines.each do |engine|
+    path = if engine[:slug]
+        engine_role_actions_path(@role, engine_slug: engine[:slug], search: @search.presence)
+    else
+        role_actions_path(@role, search: @search.presence)
+    end
+    navigation_items << {
+        label: engine[:label],
+        count: engine[:count],
+        path: path,
+        selected: @engine_slug == engine[:slug]
+    }
+end
 %>
 
-<div id="shield-role-permissions">
-    <div class="space-y-6">
+<div id="shield-role-permissions" class="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start">
+    <%= render LesliView::Layout::NavigationSidebar.new(
+        items: navigation_items,
+        label: t("lesli_shield.roles.permissions_engine_navigation")
+    ) %>
+    <div class="min-w-0 flex-1 space-y-6">
         <section class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="permission-tools-title">
             <h2 id="permission-tools-title" class="sr-only">
                 <%= t("lesli_shield.roles.permissions_tools") %>
@@ -46,23 +77,19 @@ end
             <% end %>
         </section>
 
-        <div class="grid min-w-0 gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
-            <%= render "engine_navigation" %>
-
-            <div class="min-w-0 space-y-4">
-                <% if @permission_matrix.any? %>
-                    <%= render "matrix" %>
-                <% else %>
-                    <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
-                        <% if @search.present? %>
-                            <p class="text-sm font-semibold text-slate-800"><%= t("lesli_shield.roles.permissions_no_matches") %></p>
-                            <p class="mt-1 text-sm text-slate-500"><%= t("lesli_shield.roles.permissions_no_matches_hint") %></p>
-                        <% else %>
-                            <p class="text-sm font-medium text-slate-700"><%= t("lesli_shield.roles.permissions_empty") %></p>
-                        <% end %>
-                    </div>
-                <% end %>
-            </div>
+        <div class="min-w-0 space-y-4">
+            <% if @permission_matrix.any? %>
+                <%= render "matrix" %>
+            <% else %>
+                <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+                    <% if @search.present? %>
+                        <p class="text-sm font-semibold text-slate-800"><%= t("lesli_shield.roles.permissions_no_matches") %></p>
+                        <p class="mt-1 text-sm text-slate-500"><%= t("lesli_shield.roles.permissions_no_matches_hint") %></p>
+                    <% else %>
+                        <p class="text-sm font-medium text-slate-700"><%= t("lesli_shield.roles.permissions_empty") %></p>
+                    <% end %>
+                </div>
+            <% end %>
         </div>
     </div>
 </div>

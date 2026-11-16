@@ -14,6 +14,12 @@
         <%= form.field_control(:first_name) %>
         <%= form.field_control(:last_name) %>
         <%= form.field_control(:telephone) %>
+        <%= form.field_control_select(:time_zone,
+            TZInfo::Timezone.all_identifiers.sort.map { |zone| [zone, zone] },
+            humanize: false,
+            label: t("lesli_shield.profiles.time_zone"),
+            message: t("lesli_shield.profiles.time_zone_help"),
+            options: { include_blank: t("lesli_shield.profiles.time_zone_default") }) %>
         <hr/>
         <%= form.field_control_submit %>
     <% end %>        

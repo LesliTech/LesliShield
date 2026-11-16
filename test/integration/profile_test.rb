@@ -30,6 +30,44 @@ module LesliShield
             assert_select "input[name='user[password]'][type='password']"
             assert_select "input[name='user[password_confirmation]'][type='password']"
             assert_select "a", text: "Privileges", count: 0
+            assert_select "select[name='user[time_zone]'] option[value='America/Guatemala']", text: "America/Guatemala"
+            assert_select "select[name='user[time_zone]'] option[value='Europe/Berlin']", text: "Europe/Berlin"
+        end
+
+        test "updates only the authenticated user's timezone and returns it as JSON" do
+            other_user = create_profile_user
+            patch lesli_shield.profile_path, params: {
+                user: { id: other_user.id, account_id: other_user.account_id, time_zone: "Europe/Berlin" }
+            }, as: :json
+
+            assert_response :success
+            assert_equal "Europe/Berlin", response.parsed_body["time_zone"]
+            assert_equal "Europe/Berlin", @user.reload.time_zone
+            assert_nil other_user.reload.time_zone
+        end
+
+        test "preserves the timezone selection and renders errors for HTML and Turbo" do
+            [Mime[:html].to_s, Mime[:turbo_stream].to_s].each do |format|
+                patch lesli_shield.profile_path, params: {
+                    user: { time_zone: "Europe/Berlin", email: "invalid" }
+                }, headers: { "ACCEPT" => format }
+
+                assert_response :unprocessable_content
+                assert_select "#shield-profile-information-form [role='alert']"
+                assert_select "option[value='Europe/Berlin'][selected]"
+                assert_nil @user.reload.time_zone
+            end
+        end
+
+        test "rejects an invalid timezone and allows clearing the preference" do
+            @user.update!(time_zone: "America/Guatemala")
+            patch lesli_shield.profile_path, params: { user: { time_zone: "Invalid/Zone" } }, as: :json
+            assert_response :unprocessable_content
+            assert_equal "America/Guatemala", @user.reload.time_zone
+
+            patch lesli_shield.profile_path, params: { user: { time_zone: "" } }, as: :json
+            assert_response :success
+            assert_nil @user.reload.time_zone
         end
 
         test "requires authentication" do
@@ -38,6 +76,33 @@ module LesliShield
             get lesli_shield.profile_path
 
             assert_redirected_to "/login?r=#{lesli_shield.profile_path}"
+        end
+
+        test "authorized administrators can update and clear the timezone of another user in their account" do
+            target = create_profile_user
+            target.update!(account: @user.account, alias: "TU")
+            LesliShield::Role::Privilege.create!(
+                role: @user.roles.first, controller: "lesli_shield/users", action: "update", active: true
+            )
+
+            ["Europe/Berlin", ""].each do |zone|
+                patch lesli_shield.user_path(target), params: { user: { time_zone: zone } },
+                    headers: { "ACCEPT" => Mime[:turbo_stream].to_s }
+                assert_response :success
+                if zone.empty?
+                    assert_nil target.reload.time_zone
+                else
+                    assert_equal zone, target.reload.time_zone
+                end
+                assert_nil @user.reload.time_zone
+            end
+        end
+
+        test "administrative timezone changes require permission" do
+            patch lesli_shield.user_path(@user), params: { user: { time_zone: "Europe/Berlin" } },
+                as: :json
+            assert_response :forbidden
+            assert_nil @user.reload.time_zone
         end
 
         test "returns only public profile fields as json" do

@@ -1,4 +1,4 @@
 module LesliShield
-  VERSION = "1.1.7"
-  BUILD = "1792716731"
+  VERSION = "1.1.8"
+  BUILD = "1794796721"
 end

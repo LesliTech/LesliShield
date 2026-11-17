@@ -1,93 +1,33 @@
-/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.3.4 | MIT License | https://tailwindcss.com */
 @layer properties;
 @layer theme, utilities;
-@layer theme {
-  :root, :host {
-    --color-amber-50: oklch(98.7% 0.022 95.277);
-    --color-amber-200: oklch(92.4% 0.12 95.746);
-    --color-amber-500: oklch(76.9% 0.188 70.08);
-    --color-amber-600: oklch(66.6% 0.179 58.318);
-    --color-amber-700: oklch(55.5% 0.163 48.998);
-    --color-amber-950: oklch(27.9% 0.077 45.635);
-    --color-emerald-50: oklch(97.9% 0.021 166.113);
-    --color-emerald-200: oklch(90.5% 0.093 164.15);
-    --color-emerald-500: oklch(69.6% 0.17 162.48);
-    --color-emerald-600: oklch(59.6% 0.145 163.225);
-    --color-emerald-700: oklch(50.8% 0.118 165.612);
-    --color-emerald-900: oklch(37.8% 0.077 168.94);
-    --color-sky-50: oklch(97.7% 0.013 236.62);
-    --color-sky-200: oklch(90.1% 0.058 230.902);
-    --color-sky-500: oklch(68.5% 0.169 237.323);
-    --color-sky-600: oklch(58.8% 0.158 241.966);
-    --color-sky-700: oklch(50% 0.134 242.749);
-    --color-rose-50: oklch(96.9% 0.015 12.422);
-    --color-rose-200: oklch(89.2% 0.058 10.001);
-    --color-rose-400: oklch(71.2% 0.194 13.428);
-    --color-rose-500: oklch(64.5% 0.246 16.439);
-    --color-rose-600: oklch(58.6% 0.253 17.585);
-    --color-rose-700: oklch(51.4% 0.222 16.935);
-    --color-rose-900: oklch(41% 0.159 10.272);
-    --color-slate-50: oklch(98.4% 0.003 247.858);
-    --color-slate-100: oklch(96.8% 0.007 247.896);
-    --color-slate-200: oklch(92.9% 0.013 255.508);
-    --color-slate-300: oklch(86.9% 0.022 252.894);
-    --color-slate-400: oklch(70.4% 0.04 256.788);
-    --color-slate-500: oklch(55.4% 0.046 257.417);
-    --color-slate-600: oklch(44.6% 0.043 257.281);
-    --color-slate-700: oklch(37.2% 0.044 257.287);
-    --color-slate-800: oklch(27.9% 0.041 260.031);
-    --color-slate-900: oklch(20.8% 0.042 265.755);
-    --color-white: #fff;
-    --spacing: 0.25rem;
-    --container-lg: 32rem;
-    --text-sm: 0.875rem;
-    --text-sm--line-height: calc(1.25 / 0.875);
-    --text-lg: 1.125rem;
-    --text-lg--line-height: calc(1.75 / 1.125);
-    --text-xl: 1.25rem;
-    --text-xl--line-height: calc(1.75 / 1.25);
-    --text-2xl: 1.5rem;
-    --text-2xl--line-height: calc(2 / 1.5);
-    --text-5xl: 3rem;
-    --text-5xl--line-height: 1;
-    --font-weight-medium: 500;
-    --font-weight-semibold: 600;
-    --tracking-tight: -0.025em;
-    --radius-sm: 0.25rem;
-    --radius-lg: 0.5rem;
-    --radius-xl: 0.75rem;
-    --radius-2xl: 1rem;
-    --default-transition-duration: 150ms;
-    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  }
-}
 @layer utilities {
   .mx-auto {
     margin-inline: auto;
   }
   .my-8 {
-    margin-block: calc(var(--spacing) * 8);
+    margin-block: calc(var(--spacing, 0.25rem) * 8);
   }
   .mt-2 {
-    margin-top: calc(var(--spacing) * 2);
+    margin-top: calc(var(--spacing, 0.25rem) * 2);
   }
   .mt-4 {
-    margin-top: calc(var(--spacing) * 4);
+    margin-top: calc(var(--spacing, 0.25rem) * 4);
   }
   .mt-6 {
-    margin-top: calc(var(--spacing) * 6);
+    margin-top: calc(var(--spacing, 0.25rem) * 6);
   }
   .mr-1 {
-    margin-right: var(--spacing);
+    margin-right: var(--spacing, 0.25rem);
   }
   .mr-2 {
-    margin-right: calc(var(--spacing) * 2);
+    margin-right: calc(var(--spacing, 0.25rem) * 2);
   }
   .mb-4 {
-    margin-bottom: calc(var(--spacing) * 4);
+    margin-bottom: calc(var(--spacing, 0.25rem) * 4);
   }
   .mb-6 {
-    margin-bottom: calc(var(--spacing) * 6);
+    margin-bottom: calc(var(--spacing, 0.25rem) * 6);
   }
   .flex {
     display: flex;
@@ -102,7 +42,7 @@
     height: auto;
   }
   .min-h-11 {
-    min-height: calc(var(--spacing) * 11);
+    min-height: calc(var(--spacing, 0.25rem) * 11);
   }
   .min-h-screen {
     min-height: 100vh;
@@ -117,7 +57,7 @@
     max-width: 130px;
   }
   .max-w-lg {
-    max-width: var(--container-lg);
+    max-width: var(--container-lg, 32rem);
   }
   .flex-1 {
     flex: 1;
@@ -139,14 +79,14 @@
   }
   :where(.space-y-1 > :not(:last-child)) {
     --tw-space-y-reverse: 0;
-    margin-block-start: calc(var(--spacing) * var(--tw-space-y-reverse));
-    margin-block-end: calc(var(--spacing) * calc(1 - var(--tw-space-y-reverse)));
+    margin-block-start: calc(var(--spacing, 0.25rem) * var(--tw-space-y-reverse));
+    margin-block-end: calc(var(--spacing, 0.25rem) * calc(1 - var(--tw-space-y-reverse)));
   }
   .rounded-lg {
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-lg, 0.5rem);
   }
   .rounded-xl {
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-xl, 0.75rem);
   }
   .border {
     border-style: var(--tw-border-style);
@@ -157,58 +97,58 @@
     border-top-width: 1px;
   }
   .border-emerald-200 {
-    border-color: var(--color-emerald-200);
+    border-color: var(--color-emerald-200, oklch(90.5% 0.093 164.15));
   }
   .border-rose-200 {
-    border-color: var(--color-rose-200);
+    border-color: var(--color-rose-200, oklch(89.2% 0.058 10.001));
   }
   .border-slate-200 {
-    border-color: var(--color-slate-200);
+    border-color: var(--color-slate-200, oklch(92.9% 0.013 255.508));
   }
   .bg-\[var\(--lesli-color-primary\)\] {
     background-color: var(--lesli-color-primary);
   }
   .bg-emerald-50 {
-    background-color: var(--color-emerald-50);
+    background-color: var(--color-emerald-50, oklch(97.9% 0.021 166.113));
   }
   .bg-rose-50 {
-    background-color: var(--color-rose-50);
+    background-color: var(--color-rose-50, oklch(96.9% 0.015 12.422));
   }
   .bg-slate-50 {
-    background-color: var(--color-slate-50);
+    background-color: var(--color-slate-50, oklch(98.4% 0.003 247.858));
   }
   .bg-white {
-    background-color: var(--color-white);
+    background-color: var(--color-white, #fff);
   }
   .p-8 {
-    padding: calc(var(--spacing) * 8);
+    padding: calc(var(--spacing, 0.25rem) * 8);
   }
   .px-4 {
-    padding-inline: calc(var(--spacing) * 4);
+    padding-inline: calc(var(--spacing, 0.25rem) * 4);
   }
   .px-5 {
-    padding-inline: calc(var(--spacing) * 5);
+    padding-inline: calc(var(--spacing, 0.25rem) * 5);
   }
   .px-6 {
-    padding-inline: calc(var(--spacing) * 6);
+    padding-inline: calc(var(--spacing, 0.25rem) * 6);
   }
   .py-2\.5 {
-    padding-block: calc(var(--spacing) * 2.5);
+    padding-block: calc(var(--spacing, 0.25rem) * 2.5);
   }
   .py-3 {
-    padding-block: calc(var(--spacing) * 3);
+    padding-block: calc(var(--spacing, 0.25rem) * 3);
   }
   .py-8 {
-    padding-block: calc(var(--spacing) * 8);
+    padding-block: calc(var(--spacing, 0.25rem) * 8);
   }
   .pt-16 {
-    padding-top: calc(var(--spacing) * 16);
+    padding-top: calc(var(--spacing, 0.25rem) * 16);
   }
   .pb-10 {
-    padding-bottom: calc(var(--spacing) * 10);
+    padding-bottom: calc(var(--spacing, 0.25rem) * 10);
   }
   .pl-5 {
-    padding-left: calc(var(--spacing) * 5);
+    padding-left: calc(var(--spacing, 0.25rem) * 5);
   }
   .text-center {
     text-align: center;
@@ -217,46 +157,46 @@
     text-align: left;
   }
   .text-2xl {
-    font-size: var(--text-2xl);
-    line-height: var(--tw-leading, var(--text-2xl--line-height));
+    font-size: var(--text-2xl, 1.5rem);
+    line-height: var(--tw-leading, var(--text-2xl--line-height, calc(2 / 1.5)));
   }
   .text-5xl {
-    font-size: var(--text-5xl);
-    line-height: var(--tw-leading, var(--text-5xl--line-height));
+    font-size: var(--text-5xl, 3rem);
+    line-height: var(--tw-leading, var(--text-5xl--line-height, 1));
   }
   .text-sm {
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
+    font-size: var(--text-sm, 0.875rem);
+    line-height: var(--tw-leading, var(--text-sm--line-height, calc(1.25 / 0.875)));
   }
   .leading-6 {
-    --tw-leading: calc(var(--spacing) * 6);
-    line-height: calc(var(--spacing) * 6);
+    --tw-leading: calc(var(--spacing, 0.25rem) * 6);
+    line-height: calc(var(--spacing, 0.25rem) * 6);
   }
   .font-semibold {
-    --tw-font-weight: var(--font-weight-semibold);
-    font-weight: var(--font-weight-semibold);
+    --tw-font-weight: var(--font-weight-semibold, 600);
+    font-weight: var(--font-weight-semibold, 600);
   }
   .tracking-tight {
-    --tw-tracking: var(--tracking-tight);
-    letter-spacing: var(--tracking-tight);
+    --tw-tracking: var(--tracking-tight, -0.025em);
+    letter-spacing: var(--tracking-tight, -0.025em);
   }
   .text-\[var\(--lesli-color-primary\)\] {
     color: var(--lesli-color-primary);
   }
   .text-emerald-600 {
-    color: var(--color-emerald-600);
+    color: var(--color-emerald-600, oklch(59.6% 0.145 163.225));
   }
   .text-emerald-900 {
-    color: var(--color-emerald-900);
+    color: var(--color-emerald-900, oklch(37.8% 0.077 168.94));
   }
   .text-rose-900 {
-    color: var(--color-rose-900);
+    color: var(--color-rose-900, oklch(41% 0.159 10.272));
   }
   .text-slate-600 {
-    color: var(--color-slate-600);
+    color: var(--color-slate-600, oklch(44.6% 0.043 257.281));
   }
   .text-white {
-    color: var(--color-white);
+    color: var(--color-white, #fff);
   }
   .shadow-sm {
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
@@ -264,8 +204,8 @@
   }
   .transition-opacity {
     transition-property: opacity;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function, cubic-bezier(0.4, 0, 0.2, 1)));
+    transition-duration: var(--tw-duration, var(--default-transition-duration, 150ms));
   }
   @media (hover: hover) {
     .hover\:opacity-90:hover {
@@ -284,39 +224,39 @@
   }
   @media (width >= 40rem) {
     .sm\:px-6 {
-      padding-inline: calc(var(--spacing) * 6);
+      padding-inline: calc(var(--spacing, 0.25rem) * 6);
     }
     .sm\:pt-24 {
-      padding-top: calc(var(--spacing) * 24);
+      padding-top: calc(var(--spacing, 0.25rem) * 24);
     }
     .sm\:pb-12 {
-      padding-bottom: calc(var(--spacing) * 12);
+      padding-bottom: calc(var(--spacing, 0.25rem) * 12);
     }
   }
   .\[\&\>form\]\:my-6 > form {
-    margin-block: calc(var(--spacing) * 6);
+    margin-block: calc(var(--spacing, 0.25rem) * 6);
   }
   .\[\&\>form\]\:w-full > form {
     width: 100%;
   }
   .\[\&\>form\]\:max-w-lg > form {
-    max-width: var(--container-lg);
+    max-width: var(--container-lg, 32rem);
   }
   .\[\&\>form\]\:rounded-xl > form {
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-xl, 0.75rem);
   }
   .\[\&\>form\]\:border > form {
     border-style: var(--tw-border-style);
     border-width: 1px;
   }
   .\[\&\>form\]\:border-slate-200 > form {
-    border-color: var(--color-slate-200);
+    border-color: var(--color-slate-200, oklch(92.9% 0.013 255.508));
   }
   .\[\&\>form\]\:bg-white > form {
-    background-color: var(--color-white);
+    background-color: var(--color-white, #fff);
   }
   .\[\&\>form\]\:p-6 > form {
-    padding: calc(var(--spacing) * 6);
+    padding: calc(var(--spacing, 0.25rem) * 6);
   }
   .\[\&\>form\]\:shadow-sm > form {
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
@@ -324,29 +264,29 @@
   }
   @media (width >= 40rem) {
     .sm\:\[\&\>form\]\:my-8 > form {
-      margin-block: calc(var(--spacing) * 8);
+      margin-block: calc(var(--spacing, 0.25rem) * 8);
     }
     .sm\:\[\&\>form\]\:p-10 > form {
-      padding: calc(var(--spacing) * 10);
+      padding: calc(var(--spacing, 0.25rem) * 10);
     }
   }
 }
 @layer components {
   .lesli-form-field {
-    margin-bottom: calc(var(--spacing) * 4);
+    margin-bottom: calc(var(--spacing, 0.25rem) * 4);
   }
   .lesli-form-label-wrapper {
-    margin-bottom: calc(var(--spacing) * 2);
+    margin-bottom: calc(var(--spacing, 0.25rem) * 2);
   }
   .lesli-form-label {
     display: block;
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
-    --tw-leading: calc(var(--spacing) * 5);
-    line-height: calc(var(--spacing) * 5);
-    --tw-font-weight: var(--font-weight-medium);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-slate-700);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: var(--tw-leading, var(--text-sm--line-height, calc(1.25 / 0.875)));
+    --tw-leading: calc(var(--spacing, 0.25rem) * 5);
+    line-height: calc(var(--spacing, 0.25rem) * 5);
+    --tw-font-weight: var(--font-weight-medium, 500);
+    font-weight: var(--font-weight-medium, 500);
+    color: var(--color-slate-700, oklch(37.2% 0.044 257.287));
   }
   .lesli-form-field-body {
     min-width: 0px;
@@ -357,62 +297,62 @@
   .lesli-form-input, .lesli-form-select, .lesli-form-control textarea, .lesli-form-control trix-editor {
     display: block;
     width: 100%;
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-xl, 0.75rem);
     border-style: var(--tw-border-style);
     border-width: 1px;
-    border-color: var(--color-slate-300);
-    background-color: var(--color-white);
-    padding-inline: calc(var(--spacing) * 3.5);
-    padding-block: calc(var(--spacing) * 2.5);
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
-    color: var(--color-slate-900);
+    border-color: var(--color-slate-300, oklch(86.9% 0.022 252.894));
+    background-color: var(--color-white, #fff);
+    padding-inline: calc(var(--spacing, 0.25rem) * 3.5);
+    padding-block: calc(var(--spacing, 0.25rem) * 2.5);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: var(--tw-leading, var(--text-sm--line-height, calc(1.25 / 0.875)));
+    color: var(--color-slate-900, oklch(20.8% 0.042 265.755));
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function, cubic-bezier(0.4, 0, 0.2, 1)));
+    transition-duration: var(--tw-duration, var(--default-transition-duration, 150ms));
     --tw-outline-style: none;
     outline-style: none;
     &::placeholder {
-      color: var(--color-slate-400);
+      color: var(--color-slate-400, oklch(70.4% 0.04 256.788));
     }
     &:hover {
       @media (hover: hover) {
-        border-color: var(--color-slate-400);
+        border-color: var(--color-slate-400, oklch(70.4% 0.04 256.788));
       }
     }
     &:focus {
-      border-color: var(--color-sky-500);
+      border-color: var(--color-sky-500, oklch(68.5% 0.169 237.323));
     }
     &:focus {
-      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+      --tw-ring-shadow: var(--tw-ring-inset, ) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
     &:focus {
       --tw-ring-color: color-mix(in srgb, oklch(68.5% 0.169 237.323) 10%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
-        --tw-ring-color: color-mix(in oklab, var(--color-sky-500) 10%, transparent);
+        --tw-ring-color: color-mix(in oklab, var(--color-sky-500, oklch(68.5% 0.169 237.323)) 10%, transparent);
       }
     }
     &:disabled {
       cursor: not-allowed;
     }
     &:disabled {
-      background-color: var(--color-slate-100);
+      background-color: var(--color-slate-100, oklch(96.8% 0.007 247.896));
     }
     &:disabled {
-      color: var(--color-slate-500);
+      color: var(--color-slate-500, oklch(55.4% 0.046 257.417));
     }
     &:disabled {
       opacity: 75%;
     }
   }
   .lesli-form-input, .lesli-form-select {
-    height: calc(var(--spacing) * 11);
+    height: calc(var(--spacing, 0.25rem) * 11);
   }
   .lesli-form-control textarea, .lesli-form-control trix-editor {
-    min-height: calc(var(--spacing) * 32);
+    min-height: calc(var(--spacing, 0.25rem) * 32);
     resize: vertical;
   }
   .lesli-form-select-wrapper {
@@ -421,46 +361,46 @@
   .lesli-form-select {
     cursor: pointer;
     appearance: none;
-    padding-right: calc(var(--spacing) * 10);
+    padding-right: calc(var(--spacing, 0.25rem) * 10);
   }
   .lesli-form-select-wrapper::after {
     pointer-events: none;
     position: absolute;
     top: calc(1 / 2 * 100%);
-    right: calc(var(--spacing) * 3.5);
-    height: calc(var(--spacing) * 2);
-    width: calc(var(--spacing) * 2);
-    --tw-translate-y: calc(var(--spacing) * -2);
+    right: calc(var(--spacing, 0.25rem) * 3.5);
+    height: calc(var(--spacing, 0.25rem) * 2);
+    width: calc(var(--spacing, 0.25rem) * 2);
+    --tw-translate-y: calc(var(--spacing, 0.25rem) * -2);
     translate: var(--tw-translate-x) var(--tw-translate-y);
     rotate: 45deg;
     border-right-style: var(--tw-border-style);
     border-right-width: 2px;
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 2px;
-    border-color: var(--color-slate-400);
+    border-color: var(--color-slate-400, oklch(70.4% 0.04 256.788));
     --tw-content: '';
     content: var(--tw-content);
   }
   .lesli-form-checkbox {
-    height: calc(var(--spacing) * 4);
-    width: calc(var(--spacing) * 4);
+    height: calc(var(--spacing, 0.25rem) * 4);
+    width: calc(var(--spacing, 0.25rem) * 4);
     cursor: pointer;
     border-radius: 0.25rem;
-    border-color: var(--color-slate-300);
-    accent-color: var(--color-sky-600);
+    border-color: var(--color-slate-300, oklch(86.9% 0.022 252.894));
+    accent-color: var(--color-sky-600, oklch(58.8% 0.158 241.966));
     &:focus {
-      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+      --tw-ring-shadow: var(--tw-ring-inset, ) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
     &:focus {
       --tw-ring-color: color-mix(in srgb, oklch(68.5% 0.169 237.323) 30%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
-        --tw-ring-color: color-mix(in oklab, var(--color-sky-500) 30%, transparent);
+        --tw-ring-color: color-mix(in oklab, var(--color-sky-500, oklch(68.5% 0.169 237.323)) 30%, transparent);
       }
     }
     &:focus {
       --tw-ring-offset-width: 2px;
-      --tw-ring-offset-shadow: var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+      --tw-ring-offset-shadow: var(--tw-ring-inset, ) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
     }
     &:disabled {
       cursor: not-allowed;
@@ -473,89 +413,89 @@
     display: inline-flex;
     cursor: pointer;
     align-items: center;
-    gap: calc(var(--spacing) * 2.5);
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
-    color: var(--color-slate-600);
+    gap: calc(var(--spacing, 0.25rem) * 2.5);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: var(--tw-leading, var(--text-sm--line-height, calc(1.25 / 0.875)));
+    color: var(--color-slate-600, oklch(44.6% 0.043 257.281));
   }
   .lesli-form-control.has-icon .lesli-form-input, .lesli-form-control.has-icon .lesli-form-select {
-    padding-left: calc(var(--spacing) * 11);
+    padding-left: calc(var(--spacing, 0.25rem) * 11);
   }
   .lesli-form-icon {
     pointer-events: none;
     position: absolute;
     top: calc(1 / 2 * 100%);
-    left: calc(var(--spacing) * 3.5);
+    left: calc(var(--spacing, 0.25rem) * 3.5);
     display: inline-flex;
-    height: calc(var(--spacing) * 5);
-    width: calc(var(--spacing) * 5);
+    height: calc(var(--spacing, 0.25rem) * 5);
+    width: calc(var(--spacing, 0.25rem) * 5);
     --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
     align-items: center;
     justify-content: center;
-    color: var(--color-slate-400);
+    color: var(--color-slate-400, oklch(70.4% 0.04 256.788));
   }
   .lesli-form-icon .material-symbols-outlined {
-    font-size: var(--text-xl);
-    line-height: var(--tw-leading, var(--text-xl--line-height));
+    font-size: var(--text-xl, 1.25rem);
+    line-height: var(--tw-leading, var(--text-xl--line-height, calc(1.75 / 1.25)));
     --tw-leading: 1;
     line-height: 1;
   }
   .lesli-form-help {
-    margin-top: calc(var(--spacing) * 2);
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
-    --tw-leading: calc(var(--spacing) * 5);
-    line-height: calc(var(--spacing) * 5);
-    color: var(--color-slate-500);
+    margin-top: calc(var(--spacing, 0.25rem) * 2);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: var(--tw-leading, var(--text-sm--line-height, calc(1.25 / 0.875)));
+    --tw-leading: calc(var(--spacing, 0.25rem) * 5);
+    line-height: calc(var(--spacing, 0.25rem) * 5);
+    color: var(--color-slate-500, oklch(55.4% 0.046 257.417));
   }
   .lesli-form-field.is-danger .lesli-form-input, .lesli-form-field.is-danger .lesli-form-select, .lesli-form-field.is-danger textarea, .lesli-form-field.is-danger trix-editor {
-    border-color: var(--color-rose-400);
+    border-color: var(--color-rose-400, oklch(71.2% 0.194 13.428));
     &:focus {
-      border-color: var(--color-rose-500);
+      border-color: var(--color-rose-500, oklch(64.5% 0.246 16.439));
     }
     &:focus {
       --tw-ring-color: color-mix(in srgb, oklch(64.5% 0.246 16.439) 10%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
-        --tw-ring-color: color-mix(in oklab, var(--color-rose-500) 10%, transparent);
+        --tw-ring-color: color-mix(in oklab, var(--color-rose-500, oklch(64.5% 0.246 16.439)) 10%, transparent);
       }
     }
   }
   .lesli-form-help.is-danger {
-    color: var(--color-rose-700);
+    color: var(--color-rose-700, oklch(51.4% 0.222 16.935));
   }
   .lesli-form-help.is-warning {
-    color: var(--color-amber-700);
+    color: var(--color-amber-700, oklch(55.5% 0.163 48.998));
   }
   .lesli-form-help.is-success {
-    color: var(--color-emerald-700);
+    color: var(--color-emerald-700, oklch(50.8% 0.118 165.612));
   }
   .lesli-form-help.is-info {
-    color: var(--color-sky-700);
+    color: var(--color-sky-700, oklch(50% 0.134 242.749));
   }
   .lesli-form-button {
     display: inline-flex;
-    height: calc(var(--spacing) * 11);
+    height: calc(var(--spacing, 0.25rem) * 11);
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    gap: calc(var(--spacing) * 2);
-    border-radius: var(--radius-xl);
+    gap: calc(var(--spacing, 0.25rem) * 2);
+    border-radius: var(--radius-xl, 0.75rem);
     border-style: var(--tw-border-style);
     border-width: 1px;
     border-color: transparent;
-    padding-inline: calc(var(--spacing) * 4);
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
-    --tw-font-weight: var(--font-weight-semibold);
-    font-weight: var(--font-weight-semibold);
+    padding-inline: calc(var(--spacing, 0.25rem) * 4);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: var(--tw-leading, var(--text-sm--line-height, calc(1.25 / 0.875)));
+    --tw-font-weight: var(--font-weight-semibold, 600);
+    font-weight: var(--font-weight-semibold, 600);
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function, cubic-bezier(0.4, 0, 0.2, 1)));
+    transition-duration: var(--tw-duration, var(--default-transition-duration, 150ms));
     &:focus {
-      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+      --tw-ring-shadow: var(--tw-ring-inset, ) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
     &:focus {
@@ -573,62 +513,62 @@
     }
   }
   .lesli-form-button.is-primary, .lesli-form-button.is-info {
-    background-color: var(--color-sky-600);
-    color: var(--color-white);
+    background-color: var(--color-sky-600, oklch(58.8% 0.158 241.966));
+    color: var(--color-white, #fff);
     &:hover {
       @media (hover: hover) {
-        background-color: var(--color-sky-700);
+        background-color: var(--color-sky-700, oklch(50% 0.134 242.749));
       }
     }
     &:focus {
       --tw-ring-color: color-mix(in srgb, oklch(68.5% 0.169 237.323) 20%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
-        --tw-ring-color: color-mix(in oklab, var(--color-sky-500) 20%, transparent);
+        --tw-ring-color: color-mix(in oklab, var(--color-sky-500, oklch(68.5% 0.169 237.323)) 20%, transparent);
       }
     }
   }
   .lesli-form-button.is-success {
-    background-color: var(--color-emerald-600);
-    color: var(--color-white);
+    background-color: var(--color-emerald-600, oklch(59.6% 0.145 163.225));
+    color: var(--color-white, #fff);
     &:hover {
       @media (hover: hover) {
-        background-color: var(--color-emerald-700);
+        background-color: var(--color-emerald-700, oklch(50.8% 0.118 165.612));
       }
     }
     &:focus {
       --tw-ring-color: color-mix(in srgb, oklch(69.6% 0.17 162.48) 20%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
-        --tw-ring-color: color-mix(in oklab, var(--color-emerald-500) 20%, transparent);
+        --tw-ring-color: color-mix(in oklab, var(--color-emerald-500, oklch(69.6% 0.17 162.48)) 20%, transparent);
       }
     }
   }
   .lesli-form-button.is-warning {
-    background-color: var(--color-amber-500);
-    color: var(--color-amber-950);
+    background-color: var(--color-amber-500, oklch(76.9% 0.188 70.08));
+    color: var(--color-amber-950, oklch(27.9% 0.077 45.635));
     &:hover {
       @media (hover: hover) {
-        background-color: var(--color-amber-600);
+        background-color: var(--color-amber-600, oklch(66.6% 0.179 58.318));
       }
     }
     &:focus {
       --tw-ring-color: color-mix(in srgb, oklch(76.9% 0.188 70.08) 20%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
-        --tw-ring-color: color-mix(in oklab, var(--color-amber-500) 20%, transparent);
+        --tw-ring-color: color-mix(in oklab, var(--color-amber-500, oklch(76.9% 0.188 70.08)) 20%, transparent);
       }
     }
   }
   .lesli-form-button.is-danger {
-    background-color: var(--color-rose-600);
-    color: var(--color-white);
+    background-color: var(--color-rose-600, oklch(58.6% 0.253 17.585));
+    color: var(--color-white, #fff);
     &:hover {
       @media (hover: hover) {
-        background-color: var(--color-rose-700);
+        background-color: var(--color-rose-700, oklch(51.4% 0.222 16.935));
       }
     }
     &:focus {
       --tw-ring-color: color-mix(in srgb, oklch(64.5% 0.246 16.439) 20%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
-        --tw-ring-color: color-mix(in oklab, var(--color-rose-500) 20%, transparent);
+        --tw-ring-color: color-mix(in oklab, var(--color-rose-500, oklch(64.5% 0.246 16.439)) 20%, transparent);
       }
     }
   }
@@ -637,64 +577,64 @@
   }
   .lesli-form-button-icon {
     display: inline-flex;
-    height: calc(var(--spacing) * 5);
-    width: calc(var(--spacing) * 5);
+    height: calc(var(--spacing, 0.25rem) * 5);
+    width: calc(var(--spacing, 0.25rem) * 5);
     align-items: center;
     justify-content: center;
   }
   .lesli-form-button-icon .material-symbols {
-    font-size: var(--text-xl);
-    line-height: var(--tw-leading, var(--text-xl--line-height));
+    font-size: var(--text-xl, 1.25rem);
+    line-height: var(--tw-leading, var(--text-xl--line-height, calc(1.75 / 1.25)));
     --tw-leading: 1;
     line-height: 1;
   }
   .lesli-form-fieldset {
-    margin-bottom: calc(var(--spacing) * 6);
-    border-radius: var(--radius-2xl);
+    margin-bottom: calc(var(--spacing, 0.25rem) * 6);
+    border-radius: var(--radius-2xl, 1rem);
     border-style: var(--tw-border-style);
     border-width: 1px;
-    border-color: var(--color-slate-200);
-    background-color: var(--color-white);
-    padding: calc(var(--spacing) * 6);
+    border-color: var(--color-slate-200, oklch(92.9% 0.013 255.508));
+    background-color: var(--color-white, #fff);
+    padding: calc(var(--spacing, 0.25rem) * 6);
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .lesli-form-legend {
-    margin-bottom: calc(var(--spacing) * 5);
-    margin-left: calc(var(--spacing) * -1);
-    padding-inline: var(--spacing);
-    font-size: var(--text-lg);
-    line-height: var(--tw-leading, var(--text-lg--line-height));
-    --tw-font-weight: var(--font-weight-semibold);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-slate-800);
+    margin-bottom: calc(var(--spacing, 0.25rem) * 5);
+    margin-left: calc(var(--spacing, 0.25rem) * -1);
+    padding-inline: var(--spacing, 0.25rem);
+    font-size: var(--text-lg, 1.125rem);
+    line-height: var(--tw-leading, var(--text-lg--line-height, calc(1.75 / 1.125)));
+    --tw-font-weight: var(--font-weight-semibold, 600);
+    font-weight: var(--font-weight-semibold, 600);
+    color: var(--color-slate-800, oklch(27.9% 0.041 260.031));
   }
   .lesli-form-fieldset.is-info {
-    border-color: var(--color-sky-200);
+    border-color: var(--color-sky-200, oklch(90.1% 0.058 230.902));
     background-color: color-mix(in srgb, oklch(97.7% 0.013 236.62) 40%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-sky-50) 40%, transparent);
+      background-color: color-mix(in oklab, var(--color-sky-50, oklch(97.7% 0.013 236.62)) 40%, transparent);
     }
   }
   .lesli-form-fieldset.is-success {
-    border-color: var(--color-emerald-200);
+    border-color: var(--color-emerald-200, oklch(90.5% 0.093 164.15));
     background-color: color-mix(in srgb, oklch(97.9% 0.021 166.113) 40%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-emerald-50) 40%, transparent);
+      background-color: color-mix(in oklab, var(--color-emerald-50, oklch(97.9% 0.021 166.113)) 40%, transparent);
     }
   }
   .lesli-form-fieldset.is-warning {
-    border-color: var(--color-amber-200);
+    border-color: var(--color-amber-200, oklch(92.4% 0.12 95.746));
     background-color: color-mix(in srgb, oklch(98.7% 0.022 95.277) 50%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-amber-50) 50%, transparent);
+      background-color: color-mix(in oklab, var(--color-amber-50, oklch(98.7% 0.022 95.277)) 50%, transparent);
     }
   }
   .lesli-form-fieldset.is-danger {
-    border-color: var(--color-rose-200);
+    border-color: var(--color-rose-200, oklch(89.2% 0.058 10.001));
     background-color: color-mix(in srgb, oklch(96.9% 0.015 12.422) 40%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-rose-50) 40%, transparent);
+      background-color: color-mix(in oklab, var(--color-rose-50, oklch(96.9% 0.015 12.422)) 40%, transparent);
     }
   }
   @media (min-width: 768px) {
@@ -702,11 +642,11 @@
       display: grid;
       grid-template-columns: minmax(8rem,1fr) minmax(0,3fr);
       align-items: flex-start;
-      gap: calc(var(--spacing) * 5);
+      gap: calc(var(--spacing, 0.25rem) * 5);
     }
     .lesli-form-field.is-horizontal > .lesli-form-label-wrapper {
       margin-bottom: 0px;
-      padding-top: calc(var(--spacing) * 2.5);
+      padding-top: calc(var(--spacing, 0.25rem) * 2.5);
       text-align: right;
     }
     .lesli-form-field.is-horizontal > .lesli-form-field-body {
@@ -714,25 +654,25 @@
     }
   }
   .links {
-    margin-top: calc(var(--spacing) * 5);
+    margin-top: calc(var(--spacing, 0.25rem) * 5);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    column-gap: calc(var(--spacing) * 4);
-    row-gap: calc(var(--spacing) * 2);
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
+    column-gap: calc(var(--spacing, 0.25rem) * 4);
+    row-gap: calc(var(--spacing, 0.25rem) * 2);
+    font-size: var(--text-sm, 0.875rem);
+    line-height: var(--tw-leading, var(--text-sm--line-height, calc(1.25 / 0.875)));
   }
   .links > a {
     display: inline-flex;
     align-items: center;
-    --tw-font-weight: var(--font-weight-medium);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-slate-700);
+    --tw-font-weight: var(--font-weight-medium, 500);
+    font-weight: var(--font-weight-medium, 500);
+    color: var(--color-slate-700, oklch(37.2% 0.044 257.287));
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function, cubic-bezier(0.4, 0, 0.2, 1)));
+    transition-duration: var(--tw-duration, var(--default-transition-duration, 150ms));
     &:hover {
       @media (hover: hover) {
         color: var(--lesli-color-primary);
@@ -743,7 +683,7 @@
       outline-style: none;
     }
     &:focus-visible {
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-sm, 0.25rem);
     }
     &:focus-visible {
       outline-style: var(--tw-outline-style);
@@ -759,16 +699,16 @@
   .links .icon {
     margin-right: 0px;
     display: inline-flex;
-    height: calc(var(--spacing) * 7);
-    width: calc(var(--spacing) * 7);
+    height: calc(var(--spacing, 0.25rem) * 7);
+    width: calc(var(--spacing, 0.25rem) * 7);
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
   }
   .links .icon svg {
     display: block;
-    max-height: calc(var(--spacing) * 6);
-    max-width: calc(var(--spacing) * 6);
+    max-height: calc(var(--spacing, 0.25rem) * 6);
+    max-width: calc(var(--spacing, 0.25rem) * 6);
   }
   .links > a > span:not(.icon) {
     font-family: "Domine", "OpenSans", sans-serif;
@@ -887,7 +827,7 @@
   initial-value: "";
 }
 @layer properties {
-  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: block))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
       --tw-space-y-reverse: 0;
       --tw-border-style: solid;

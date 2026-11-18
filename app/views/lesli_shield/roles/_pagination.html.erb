@@ -1,6 +1,6 @@
 <% if pagination[:total].positive? %>
-    <nav class="mt-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between" aria-label="<%= t("lesli_shield.roles.pagination_label") %>">
-        <p class="text-sm text-slate-600">
+    <nav class="mt-6 flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between" aria-label="<%= t("lesli_shield.roles.pagination_label") %>">
+        <p class="text-sm text-neutral-600">
             <%= t(
                 "lesli_shield.roles.pagination_summary",
                 count: pagination[:results],
@@ -12,15 +12,15 @@
             <% if pagination[:page] > 1 %>
                 <%= link_to t("lesli_shield.roles.pagination_previous"),
                     roles_path(request.query_parameters.merge(page: pagination[:page] - 1)),
-                    class: "inline-flex h-9 items-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700",
+                    class: "inline-flex h-9 items-center rounded-lg border border-neutral-300 bg-white px-3 text-sm font-medium text-neutral-700 transition hover:border-primary-muted hover:bg-primary-soft hover:text-primary-strong",
                     data: { turbo_frame: "_top" } %>
             <% else %>
-                <span class="inline-flex h-9 cursor-not-allowed items-center rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-400">
+                <span class="inline-flex h-9 cursor-not-allowed items-center rounded-lg border border-neutral-200 bg-neutral-50 px-3 text-sm font-medium text-neutral-400">
                     <%= t("lesli_shield.roles.pagination_previous") %>
                 </span>
             <% end %>
 
-            <span class="text-sm font-medium text-slate-600">
+            <span class="text-sm font-medium text-neutral-600">
                 <%= t(
                     "lesli_shield.roles.pagination_page",
                     page: pagination[:page],
@@ -31,10 +31,10 @@
             <% if pagination[:page] < pagination[:pages] %>
                 <%= link_to t("lesli_shield.roles.pagination_next"),
                     roles_path(request.query_parameters.merge(page: pagination[:page] + 1)),
-                    class: "inline-flex h-9 items-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700",
+                    class: "inline-flex h-9 items-center rounded-lg border border-neutral-300 bg-white px-3 text-sm font-medium text-neutral-700 transition hover:border-primary-muted hover:bg-primary-soft hover:text-primary-strong",
                     data: { turbo_frame: "_top" } %>
             <% else %>
-                <span class="inline-flex h-9 cursor-not-allowed items-center rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-400">
+                <span class="inline-flex h-9 cursor-not-allowed items-center rounded-lg border border-neutral-200 bg-neutral-50 px-3 text-sm font-medium text-neutral-400">
                     <%= t("lesli_shield.roles.pagination_next") %>
                 </span>
             <% end %>

@@ -33,12 +33,12 @@ Building a better future, one line of code at a time.
 <% title = local_assigns.fetch(:title, "") %>
 <% back_to_login = local_assigns.fetch(:back_to_login, false) %>
 
-<main id="lesli-application" class="min-h-screen bg-slate-50 lg:grid lg:grid-cols-3">
+<main id="lesli-application" class="min-h-screen bg-neutral-50 lg:grid lg:grid-cols-3">
     <section class="flex min-h-screen flex-col bg-white">
         <% if back_to_login %>
             <div class="px-6 pt-6 sm:px-10 sm:pt-8">
                 <%= link_to new_user_session_path,
-                    class: "inline-flex items-center gap-2 rounded-lg text-sm font-medium text-sky-700 transition hover:text-sky-900 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:ring-offset-4" do %>
+                    class: "inline-flex items-center gap-2 rounded-lg text-sm font-medium text-primary-strong transition hover:text-primary-strong focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-4" do %>
                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                         <path d="m12.5 15-5-5 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -57,7 +57,7 @@ Building a better future, one line of code at a time.
                     ) %>
 
                     <% if title.present? %>
-                        <h1 class="text-3xl font-semibold tracking-tight text-slate-900"><%= title %></h1>
+                        <h1 class="text-3xl font-semibold tracking-tight text-neutral-900"><%= title %></h1>
                     <% end %>
                 </div>
 
@@ -67,7 +67,7 @@ Building a better future, one line of code at a time.
     </section>
 
     <aside class="lesli-auth-visual relative hidden min-h-screen overflow-hidden lg:col-span-2 lg:block" aria-hidden="true">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/10 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/70 via-neutral-900/10 to-transparent"></div>
         <div class="absolute inset-x-0 bottom-0 p-12 text-white">
             <p class="max-w-lg text-3xl font-semibold leading-tight">
                 <%= I18n.t("lesli_shield.authentication.tagline", default: "A better way to manage your work.") %>

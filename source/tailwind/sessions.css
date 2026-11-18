@@ -3,12 +3,11 @@
 
 
 /* Theme values are loaded once by LesliAssets. */
-@reference "tailwindcss/theme.css";
+@import "tailwindcss/theme.css" theme(reference);
+@reference "../../../../gems/LesliAssets/source/tailwind/settings/theme.css";
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
 
-@import "../../../../gems/LesliView/lib/lesli_view/forms/form.css";
-@source "../../../../gems/LesliView/lib/lesli_view/forms/*.rb";
 
 
 @source "../../app/views/devise/shared/_application-devise.html.erb";
@@ -18,15 +17,15 @@
 
 @layer components {
     .links {
-        @apply mt-5 overflow-hidden rounded-xl border border-slate-200 bg-white;
+        @apply mt-5 overflow-hidden rounded-xl border border-neutral-200 bg-white;
     }
 
     .links > a {
-        @apply flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 hover:text-sky-700 focus:outline-none focus-visible:bg-sky-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500/30;
+        @apply flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-primary-strong focus:outline-none focus-visible:bg-primary-soft focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30;
     }
 
     .links > a:not(:last-child) {
-        @apply border-b border-slate-200;
+        @apply border-b border-neutral-200;
     }
 
     .links .icon {

@@ -12,7 +12,7 @@
         builder: LesliView::Forms::Builder
     ) do |form| %>
 
-        <p class="mb-6 text-center text-sm leading-6 text-slate-600">
+        <p class="mb-6 text-center text-sm leading-6 text-neutral-600">
             <%= I18n.t("lesli_shield.devise_passwords.view_request_description") %>
         </p>
 
@@ -43,7 +43,7 @@
         ) %>
 
         <% if Lesli.config.security.dig(:allow_registration) %>
-            <p class="mt-6 text-center text-sm text-slate-600">
+            <p class="mt-6 text-center text-sm text-neutral-600">
                 <%= I18n.t(
                     "lesli_shield.devise_sessions.view_still_not_registered"
                 ) %>

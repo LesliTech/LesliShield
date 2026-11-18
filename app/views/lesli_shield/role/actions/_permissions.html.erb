@@ -39,7 +39,7 @@ end
         label: t("lesli_shield.roles.permissions_engine_navigation")
     ) %>
     <div class="min-w-0 flex-1 space-y-6">
-        <section class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="permission-tools-title">
+        <section class="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="permission-tools-title">
             <h2 id="permission-tools-title" class="sr-only">
                 <%= t("lesli_shield.roles.permissions_tools") %>
             </h2>
@@ -53,15 +53,15 @@ end
                 <div class="min-w-0 flex-1">
                     <%= form.label :search,
                         t("lesli_shield.roles.permissions_search_label"),
-                        class: "block text-sm font-medium text-slate-700" %>
+                        class: "block text-sm font-medium text-neutral-700" %>
                     <div class="relative mt-1.5">
-                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400" aria-hidden="true">
+                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-neutral-400" aria-hidden="true">
                             <span class="material-symbols">search</span>
                         </span>
                         <%= form.search_field :search,
                             value: @search,
                             autocomplete: "off",
-                            class: "block min-h-11 w-full rounded-xl border border-slate-300 bg-white py-2.5 pl-10 pr-3 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10",
+                            class: "block min-h-11 w-full rounded-xl border border-neutral-300 bg-white py-2.5 pl-10 pr-3 text-sm text-neutral-900 shadow-sm outline-none transition placeholder:text-neutral-400 focus:border-primary focus:ring-4 focus:ring-primary/10",
                             placeholder: t("lesli_shield.roles.permissions_search_placeholder") %>
                     </div>
                 </div>
@@ -71,7 +71,7 @@ end
                         <%= link_to t("lesli_shield.roles.permissions_clear_search"),
                             index_path,
                             data: { turbo_frame: "_top" },
-                            class: "inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-500/20" %>
+                            class: "inline-flex min-h-11 items-center justify-center rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20" %>
                     <% end %>
                 </div>
             <% end %>
@@ -81,12 +81,12 @@ end
             <% if @permission_matrix.any? %>
                 <%= render "matrix" %>
             <% else %>
-                <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+                <div class="rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-6 py-10 text-center">
                     <% if @search.present? %>
-                        <p class="text-sm font-semibold text-slate-800"><%= t("lesli_shield.roles.permissions_no_matches") %></p>
-                        <p class="mt-1 text-sm text-slate-500"><%= t("lesli_shield.roles.permissions_no_matches_hint") %></p>
+                        <p class="text-sm font-semibold text-neutral-800"><%= t("lesli_shield.roles.permissions_no_matches") %></p>
+                        <p class="mt-1 text-sm text-neutral-500"><%= t("lesli_shield.roles.permissions_no_matches_hint") %></p>
                     <% else %>
-                        <p class="text-sm font-medium text-slate-700"><%= t("lesli_shield.roles.permissions_empty") %></p>
+                        <p class="text-sm font-medium text-neutral-700"><%= t("lesli_shield.roles.permissions_empty") %></p>
                     <% end %>
                 </div>
             <% end %>

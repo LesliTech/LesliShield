@@ -7,7 +7,7 @@ administrator's highest active level.
 
 ## Role categories
 
-LesliShield recognizes `owner`, `admin`, and `guest` as system roles. System
+LesliShield recognizes `owner`, `lesliadmin`, and `guest` as system roles. System
 roles are part of account initialization and cannot be deleted. The `owner`
 role is additionally protected: it may be inspected, but it cannot be changed
 through role administration.

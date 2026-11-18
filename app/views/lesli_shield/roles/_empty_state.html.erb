@@ -6,12 +6,12 @@ action_key = filtered ? "empty_filtered_action" : "action_create"
 action_path = filtered ? roles_path : new_role_path
 %>
 
-<section class="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center shadow-sm">
-    <span class="material-symbols mx-auto block text-5xl text-slate-300" aria-hidden="true">admin_panel_settings</span>
-    <h2 class="mt-4 text-lg font-semibold text-slate-900">
+<section class="rounded-2xl border border-dashed border-neutral-300 bg-white px-6 py-16 text-center shadow-sm">
+    <span class="material-symbols mx-auto block text-5xl text-neutral-300" aria-hidden="true">admin_panel_settings</span>
+    <h2 class="mt-4 text-lg font-semibold text-neutral-900">
         <%= t("lesli_shield.roles.#{title_key}") %>
     </h2>
-    <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+    <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-neutral-500">
         <%= t("lesli_shield.roles.#{description_key}") %>
     </p>
     <%= render LesliView::Elements::Button.new(t("lesli_shield.roles.#{action_key}"),

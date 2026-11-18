@@ -1,12 +1,12 @@
 <div
     id="role-permission-deployment-status"
-    class="flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 shadow-sm"
+    class="flex min-h-10 items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 shadow-sm"
 >
     <%= render "lesli_shield/roles/deployment_badge", role: @role %>
     <% if @role.deployed_at.present? %>
         <time
             datetime="<%= @role.deployed_at.iso8601 %>"
-            class="hidden text-xs text-slate-500 sm:inline"
+            class="hidden text-xs text-neutral-500 sm:inline"
         >
             <%= l(@role.deployed_at, format: :short) %>
         </time>

@@ -4,7 +4,7 @@ LesliShield registers three shared dashboard components:
 
 | Component | Current presentation |
 | --- | --- |
-| `calendar` | Calendar widget |
+| `leslicalendar` | Calendar widget |
 | `chart_bar` | Bar-chart widget |
 | `weather` | Weather widget |
 

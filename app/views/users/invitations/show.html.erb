@@ -7,27 +7,27 @@ title = I18n.t("lesli_shield.invites.acceptance_title")
     title: title,
     back_to_login: true
 ) do %>
-    <p class="mb-6 text-center text-sm leading-6 text-slate-600">
+    <p class="mb-6 text-center text-sm leading-6 text-neutral-600">
         <%= I18n.t(
             "lesli_shield.invites.acceptance_description",
             account: @invitation.account.account.name
         ) %>
     </p>
 
-    <dl class="mb-6 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 text-sm">
-        <div class="grid grid-cols-3 gap-4 border-b border-slate-200 px-4 py-3">
-            <dt class="font-medium text-slate-500">
+    <dl class="mb-6 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 text-sm">
+        <div class="grid grid-cols-3 gap-4 border-b border-neutral-200 px-4 py-3">
+            <dt class="font-medium text-neutral-500">
                 <%= I18n.t("lesli_shield.invites.acceptance_organization") %>
             </dt>
-            <dd class="col-span-2 font-medium text-slate-900">
+            <dd class="col-span-2 font-medium text-neutral-900">
                 <%= @invitation.account.account.name %>
             </dd>
         </div>
         <div class="grid grid-cols-3 gap-4 px-4 py-3">
-            <dt class="font-medium text-slate-500">
+            <dt class="font-medium text-neutral-500">
                 <%= I18n.t("lesli_shield.invites.acceptance_role") %>
             </dt>
-            <dd class="col-span-2 font-medium text-slate-900">
+            <dd class="col-span-2 font-medium text-neutral-900">
                 <%= @invitation.role.name %>
             </dd>
         </div>
@@ -80,11 +80,11 @@ title = I18n.t("lesli_shield.invites.acceptance_title")
             autocomplete: "tel"
         ) %>
 
-        <div class="mb-4 rounded-xl border border-sky-100 bg-sky-50 px-4 py-3" role="note">
-            <p class="text-sm font-semibold text-sky-900">
+        <div class="mb-4 rounded-xl border border-info-100 bg-info-50 px-4 py-3" role="note">
+            <p class="text-sm font-semibold text-info-900">
                 <%= I18n.t("lesli_shield.invites.acceptance_password_requirements") %>
             </p>
-            <p class="mt-1 text-sm leading-5 text-sky-700">
+            <p class="mt-1 text-sm leading-5 text-info-700">
                 <%= I18n.t(
                     "lesli_shield.invites.acceptance_password_length",
                     minimum: @minimum_password_length,

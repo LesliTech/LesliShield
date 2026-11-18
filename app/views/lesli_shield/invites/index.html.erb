@@ -14,7 +14,7 @@ status_filters = [
         I18n.t("lesli_shield.invites.subtitle")
     ) do %>
         <%= link_to new_invite_path,
-            class: "inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20" do %>
+            class: "inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-strong focus:outline-none focus:ring-4 focus:ring-primary/20" do %>
             <span class="material-symbols" aria-hidden="true">person_add</span>
             <span><%= I18n.t("lesli_shield.invites.action_create") %></span>
         <% end %>
@@ -27,10 +27,10 @@ status_filters = [
             <%
             active = @status_filter == status
             filter_classes = class_names(
-                "inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-medium transition focus:outline-none focus:ring-4 focus:ring-sky-500/10",
+                "inline-flex items-center rounded-full border px-3 py-1.5 text-sm font-medium transition focus:outline-none focus:ring-4 focus:ring-primary/10",
                 active ?
-                    "border-sky-600 bg-sky-600 text-white" :
-                    "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                    "border-primary bg-primary text-white" :
+                    "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:text-neutral-900"
             )
             %>
             <%= link_to label,
@@ -41,41 +41,41 @@ status_filters = [
     </nav>
 
     <% if records.any? %>
-        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-slate-200">
-                    <thead class="bg-slate-50">
+                <table class="min-w-full divide-y divide-neutral-200">
+                    <thead class="bg-neutral-50">
                         <tr>
                             <% %w[recipient role status sent_at expires_at actions].each do |column| %>
-                                <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                <th scope="col" class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">
                                     <%= I18n.t("lesli_shield.invites.column_#{column}") %>
                                 </th>
                             <% end %>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
+                    <tbody class="divide-y divide-neutral-100 bg-white">
                         <% records.each do |invite| %>
-                            <tr class="transition hover:bg-slate-50/80">
+                            <tr class="transition hover:bg-neutral-50/80">
                                 <td class="whitespace-nowrap px-5 py-4">
                                     <%= link_to invite_path(invite), class: "block focus:outline-none" do %>
-                                        <span class="block text-sm font-semibold text-slate-900">
+                                        <span class="block text-sm font-semibold text-neutral-900">
                                             <%= invite.full_name.presence || invite.email %>
                                         </span>
                                         <% if invite.full_name.present? %>
-                                            <span class="mt-0.5 block text-sm text-slate-500"><%= invite.email %></span>
+                                            <span class="mt-0.5 block text-sm text-neutral-500"><%= invite.email %></span>
                                         <% end %>
                                     <% end %>
                                 </td>
-                                <td class="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+                                <td class="whitespace-nowrap px-5 py-4 text-sm text-neutral-600">
                                     <%= invite.role&.name || I18n.t("lesli_shield.invites.value_not_available") %>
                                 </td>
                                 <td class="whitespace-nowrap px-5 py-4">
                                     <%= render "status_badge", invite: invite %>
                                 </td>
-                                <td class="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+                                <td class="whitespace-nowrap px-5 py-4 text-sm text-neutral-600">
                                     <%= invite.sent_at.present? ? I18n.l(invite.sent_at, format: :short) : "—" %>
                                 </td>
-                                <td class="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+                                <td class="whitespace-nowrap px-5 py-4 text-sm text-neutral-600">
                                     <%= invite.expires_at.present? ? I18n.l(invite.expires_at, format: :short) : "—" %>
                                 </td>
                                 <td class="whitespace-nowrap px-5 py-4">
@@ -107,17 +107,17 @@ status_filters = [
             empty_action_path = new_invite_path
         end
         %>
-        <section class="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center shadow-sm">
-            <span class="material-symbols mx-auto mb-4 block text-5xl text-slate-300" aria-hidden="true">person_add</span>
-            <h2 class="text-lg font-semibold text-slate-900">
+        <section class="rounded-2xl border border-dashed border-neutral-300 bg-white px-6 py-16 text-center shadow-sm">
+            <span class="material-symbols mx-auto mb-4 block text-5xl text-neutral-300" aria-hidden="true">person_add</span>
+            <h2 class="text-lg font-semibold text-neutral-900">
                 <%= empty_title %>
             </h2>
-            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-neutral-500">
                 <%= empty_description %>
             </p>
             <%= link_to empty_action,
                 empty_action_path,
-                class: "mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-sky-500/20" %>
+                class: "mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-strong focus:outline-none focus:ring-4 focus:ring-primary/20" %>
         </section>
     <% end %>
 <% end %>

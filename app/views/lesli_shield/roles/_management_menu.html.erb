@@ -1,13 +1,13 @@
 <details class="group inline-block text-left">
     <summary
-        class="inline-flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus:outline-none focus:ring-4 focus:ring-sky-500/10 [&::-webkit-details-marker]:hidden"
+        class="inline-flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-lg text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-800 focus:outline-none focus:ring-4 focus:ring-primary/10 [&::-webkit-details-marker]:hidden"
         aria-label="<%= t("lesli_shield.roles.action_menu", role: role.name) %>">
         <span class="material-symbols" aria-hidden="true">more_vert</span>
     </summary>
 
-    <div class="absolute right-5 z-20 mt-2 w-52 overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 text-left shadow-xl">
+    <div class="absolute right-5 z-20 mt-2 w-52 overflow-hidden rounded-xl border border-neutral-200 bg-white p-1.5 text-left shadow-xl">
         <%= link_to role_path(role),
-            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950",
+            class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 hover:text-neutral-900",
             data: { turbo_frame: "_top" } do %>
             <span class="material-symbols text-lg" aria-hidden="true"><%= role.protected_role? ? "visibility" : "settings" %></span>
             <span><%= role.protected_role? ? t("lesli_shield.roles.action_view") : t("lesli_shield.roles.action_manage") %></span>
@@ -15,7 +15,7 @@
 
         <% unless role.protected_role? %>
             <%= link_to role_actions_path(role),
-                class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-950",
+                class: "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 hover:text-neutral-900",
                 data: { turbo_frame: "_top" } do %>
                 <span class="material-symbols text-lg" aria-hidden="true">key</span>
                 <span><%= t("lesli_shield.roles.action_permissions") %></span>
@@ -23,7 +23,7 @@
         <% end %>
 
         <% if role.deletable_by?(current_user) %>
-            <div class="my-1 border-t border-slate-100"></div>
+            <div class="my-1 border-t border-neutral-100"></div>
             <%= render LesliView::Elements::Button.new(
                 t("lesli_shield.roles.action_delete"), url: role_path(role),
                 method: :delete, icon: "delete", danger: true, solid: false,

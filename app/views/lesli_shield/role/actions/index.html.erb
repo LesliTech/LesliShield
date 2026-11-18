@@ -7,7 +7,6 @@
         <%= render(LesliView::Elements::Button.new(
             t("lesli_shield.roles.permissions_deploy"),
             solid: true,
-            danger: true,
             icon: "shield",
             url: deploy_role_path(@role, engine_slug: @engine_slug, search: @search.presence),
             method: :post

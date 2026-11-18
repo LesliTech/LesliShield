@@ -2,11 +2,10 @@
 @layer theme, utilities;
 
 /* Theme values are loaded once by LesliAssets. */
-@reference "tailwindcss/theme.css";
+@import "tailwindcss/theme.css" theme(reference);
+@reference "../../../../gems/LesliAssets/source/tailwind/settings/theme.css";
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 
-@import "../../../../gems/LesliView/lib/lesli_view/forms/form.css";
-@source "../../../../gems/LesliView/lib/lesli_view/forms/*.rb";
 
 @source "../../app/views/devise/registrations/*.html.erb";
 @source "../../app/views/devise/shared/_application-devise.html.erb";

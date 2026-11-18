@@ -34,9 +34,9 @@ members_plural = members_count == 1 ? "one" : "other"
     <div class="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start">
         <%= render LesliView::Layout::NavigationSidebar.new(items: navigation_items, label: @role.name) %>
         <div id="role-detail-content" class="min-w-0 flex-1 space-y-6">
-            <section id="members" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="role-summary-title">
+            <section id="members" class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="role-summary-title">
                 <div class="flex items-center justify-between gap-3">
-                    <h2 id="role-summary-title" class="text-base font-semibold text-slate-900">
+                    <h2 id="role-summary-title" class="text-base font-semibold text-neutral-900">
                         <%= t("lesli_shield.roles.detail_summary_title") %>
                     </h2>
                     <%= render "status_badge", role: @role %>
@@ -44,28 +44,28 @@ members_plural = members_count == 1 ? "one" : "other"
 
                 <dl class="mt-3 flex flex-wrap gap-8">
                     <div>
-                        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">
+                        <dt class="text-xs font-medium uppercase tracking-wide text-neutral-500">
                             <%= t("lesli_shield.roles.detail_members") %>
                         </dt>
-                        <dd class="mt-1 text-2xl font-semibold text-slate-900">
+                        <dd class="mt-1 text-2xl font-semibold text-neutral-900">
                             <%= @role_summary.fetch(:members) %>
                         </dd>
                     </div>
                     <div>
-                        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">
+                        <dt class="text-xs font-medium uppercase tracking-wide text-neutral-500">
                             <%= t("lesli_shield.roles.detail_permissions") %>
                         </dt>
-                        <dd class="mt-1 text-2xl font-semibold text-slate-900">
+                        <dd class="mt-1 text-2xl font-semibold text-neutral-900">
                             <%= @role_summary.fetch(:permissions) %>
                         </dd>
                     </div>
                 </dl>
 
-                <div class="mt-5 border-t border-slate-200 pt-5">
-                    <h3 id="role-status-title" class="text-sm font-semibold text-slate-800">
+                <div class="mt-5 border-t border-neutral-200 pt-5">
+                    <h3 id="role-status-title" class="text-sm font-semibold text-neutral-800">
                         <%= t("lesli_shield.roles.detail_status_title") %>
                     </h3>
-                    <p class="mt-2 text-sm leading-6 text-slate-500">
+                    <p class="mt-2 text-sm leading-6 text-neutral-500">
                         <%= @role.active? ?
                             t("lesli_shield.roles.detail_active_impact_#{members_plural}", count: members_count) :
                             t("lesli_shield.roles.detail_inactive_impact_#{members_plural}", count: members_count) %>
@@ -73,7 +73,7 @@ members_plural = members_count == 1 ? "one" : "other"
                 </div>
             </section>
 
-            <section id="general" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+            <section id="general" class="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-8">
                 <%= render "form" %>
             </section>
 

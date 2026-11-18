@@ -10,11 +10,11 @@ standard_action_names = LesliShield::RolePermissionService::STANDARD_ACTION_ORDE
     %>
     <section
         id="permission-engine-<%= engine[:engine].parameterize %>"
-        class="scroll-mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+        class="scroll-mt-4 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm"
     >
-        <header class="flex items-center justify-between gap-4 border-b border-slate-200 bg-slate-50 px-4 py-4 sm:px-5">
-            <h2 class="font-semibold text-slate-900"><%= engine[:label] %></h2>
-            <p class="text-right text-xs text-slate-600">
+        <header class="flex items-center justify-between gap-4 border-b border-neutral-200 bg-neutral-50 px-4 py-4 sm:px-5">
+            <h2 class="font-semibold text-neutral-900"><%= engine[:label] %></h2>
+            <p class="text-right text-xs text-neutral-600">
                 <%= t(
                     "lesli_shield.roles.permissions_module_summary",
                     selected: engine_actions.count { |action| action[:assigned] },
@@ -25,35 +25,35 @@ standard_action_names = LesliShield::RolePermissionService::STANDARD_ACTION_ORDE
 
         <% if standard_resources.any? %>
             <table class="block w-full xl:table">
-                <thead class="hidden bg-slate-50 xl:table-header-group">
+                <thead class="hidden bg-neutral-50 xl:table-header-group">
                     <tr>
-                        <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 sm:px-5">
+                        <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500 sm:px-5">
                             <%= t("lesli_shield.roles.permissions_resource") %>
                         </th>
                         <% standard_action_names.each do |action_name| %>
-                            <th scope="col" class="px-2 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            <th scope="col" class="px-2 py-3 text-center text-xs font-semibold uppercase tracking-wide text-neutral-500">
                                 <%= t("lesli_shield.roles.permissions_standard_actions_#{action_name}") %>
                             </th>
                         <% end %>
                     </tr>
                 </thead>
-                <tbody class="block divide-y divide-slate-200 xl:table-row-group">
+                <tbody class="block divide-y divide-neutral-200 xl:table-row-group">
                     <% standard_resources.each do |resource| %>
                         <tr class="block p-4 xl:table-row xl:p-0">
                             <th scope="row" class="block pb-3 text-left xl:table-cell xl:px-5 xl:py-4 xl:align-middle">
-                                <span class="block text-sm font-semibold text-slate-900"><%= resource[:label] %></span>
-                                <span class="mt-0.5 block break-all font-mono text-xs font-normal text-slate-500"><%= resource[:route] %></span>
+                                <span class="block text-sm font-semibold text-neutral-900"><%= resource[:label] %></span>
+                                <span class="mt-0.5 block break-all font-mono text-xs font-normal text-neutral-500"><%= resource[:route] %></span>
                             </th>
                             <% standard_action_names.each do |action_name| %>
                                 <% action = resource[:actions].find { |candidate| candidate[:action] == action_name } %>
                                 <td class="block py-1 xl:table-cell xl:px-2 xl:py-4 xl:text-center xl:align-middle">
                                     <% if action %>
-                                        <div class="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2 py-2 transition hover:bg-sky-50 xl:flex-col xl:justify-center">
-                                            <span class="text-sm font-medium text-slate-700 xl:sr-only"><%= action[:display_label] %></span>
+                                        <div class="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2 py-2 transition hover:bg-primary-soft xl:flex-col xl:justify-center">
+                                            <span class="text-sm font-medium text-neutral-700 xl:sr-only"><%= action[:display_label] %></span>
                                             <%= render "toggle", action: action %>
                                         </div>
                                     <% else %>
-                                        <span class="hidden text-slate-300 xl:inline" aria-label="<%= t("lesli_shield.roles.permissions_not_available") %>">—</span>
+                                        <span class="hidden text-neutral-300 xl:inline" aria-label="<%= t("lesli_shield.roles.permissions_not_available") %>">—</span>
                                     <% end %>
                                 </td>
                             <% end %>

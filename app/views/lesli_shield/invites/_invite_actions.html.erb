@@ -7,7 +7,7 @@ action_classes = "inline-flex h-9 items-center justify-center rounded-lg border 
     <% if show_view %>
         <%= link_to I18n.t("lesli_shield.invites.action_view"),
             invite_path(invite),
-            class: "#{action_classes} border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-500/10" %>
+            class: "#{action_classes} border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 focus:ring-neutral-500/10" %>
     <% end %>
 
     <% if invite.resend_available? %>
@@ -15,7 +15,7 @@ action_classes = "inline-flex h-9 items-center justify-center rounded-lg border 
             resend_invite_path(invite),
             method: :post,
             form: { class: "inline" },
-            class: "#{action_classes} border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 focus:ring-emerald-500/10",
+            class: "#{action_classes} border-primary-muted bg-primary-soft text-primary-strong hover:border-primary focus:ring-primary/20",
             data: {
                 turbo_confirm: I18n.t("lesli_shield.invites.confirm_resend")
             } %>
@@ -26,7 +26,7 @@ action_classes = "inline-flex h-9 items-center justify-center rounded-lg border 
             cancel_invite_path(invite),
             method: :patch,
             form: { class: "inline" },
-            class: "#{action_classes} border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 focus:ring-rose-500/10",
+            class: "#{action_classes} border-danger-200 bg-danger-50 text-danger-700 hover:bg-danger-100 focus:ring-danger-500/10",
             data: {
                 turbo_confirm: I18n.t("lesli_shield.invites.confirm_cancel")
             } %>

@@ -106,7 +106,7 @@ end
         ) %>
 
         <% if Lesli.config.security.dig(:allow_registration) %>
-            <p class="mt-1 text-center text-sm text-slate-600">
+            <p class="mt-1 text-center text-sm text-neutral-600">
                 <%= I18n.t("lesli_shield.devise_sessions.view_still_not_registered") %>
                 <%= link_to I18n.t("lesli_shield.devise_sessions.button_create_account"),
                     new_user_registration_path %>

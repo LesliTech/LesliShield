@@ -13,13 +13,10 @@
 
 @layer components {
     .lesli-auth-visual {
-        background:
-            linear-gradient(
-                0deg,
-                rgb(49 106 255 / 40%),
-                rgb(49 106 255 / 40%)
-            ),
-            url("/lesli_shield/register-background.jpg");
+        background: linear-gradient(0deg, 
+            rgba(49, 106, 255, 0.4), 
+            rgba(49, 106, 255, 0.4)), 
+            url("/lesli_shield/register-background.webp");
         background-position: center;
         background-size: cover;
     }

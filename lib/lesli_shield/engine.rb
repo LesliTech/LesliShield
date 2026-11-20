@@ -58,6 +58,10 @@ module LesliShield
                 Lesli::User.include(LesliShield::UserSecurity)
             end
 
+            unless Lesli::User < LesliShield::UserLegalAcceptance
+                Lesli::User.include(LesliShield::UserLegalAcceptance)
+            end
+
             unless Lesli::Role < LesliShield::RoleManagement
                 Lesli::Role.include(LesliShield::RoleManagement)
             end

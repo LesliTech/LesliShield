@@ -354,7 +354,8 @@
     font-family: "Domine", "OpenSans", sans-serif;
   }
   .lesli-auth-visual {
-    background: linear-gradient(0deg, rgba(49, 106, 255, 0.4), rgba(49, 106, 255, 0.4)), url("/lesli_shield/login-background.jpg");
+    background-image: url("/lesli_shield/login-background.webp");
+    background: linear-gradient(0deg, rgba(49, 106, 255, 0.4), rgba(49, 106, 255, 0.4)), url("/lesli_shield/login-background.webp");
     background-position: center;
     background-size: cover;
   }

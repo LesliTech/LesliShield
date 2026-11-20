@@ -182,6 +182,9 @@ ActiveRecord::Schema[8.1].define(version: 801120110) do
   end
 
   create_table "lesli_users", force: :cascade do |t|
+    t.datetime "terms_accepted_at"
+    t.string "terms_version"
+    t.string "privacy_version"
     t.string "time_zone"
     t.integer "account_id"
     t.boolean "active", default: true, null: false

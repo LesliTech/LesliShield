@@ -97,11 +97,9 @@ title = I18n.t("overrides.lesli_shield.devise_registrations.view_title",
             value: ""
         ) %>
 
-        <div class="mb-4">
-            <p class="text-left text-xs leading-5 text-neutral-500">
-                <%= I18n.t("lesli_shield.devise_registrations.view_legal_notice") %>
-            </p>
-        </div>
+        <% if Lesli.config.shield[:require_terms_acceptance] %>
+            <%= render "devise/registrations/terms", form: form %>
+        <% end %>
 
         <%= form.field_control_button(
             I18n.t(

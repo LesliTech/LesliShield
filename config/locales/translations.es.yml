@@ -36,6 +36,14 @@ es:
       view_update_description: "Elige una nueva contraseña para tu cuenta e ingrésala dos veces para confirmarla."
       view_update_title: "Crea una nueva contraseña"
     devise_registrations:
+      label_terms_html: "Acepto los %{terms}."
+      link_terms: "Términos y condiciones"
+      link_terms_new_tab: "Términos y condiciones (abre una pestaña nueva)"
+      link_privacy: "Política de privacidad"
+      link_privacy_new_tab: "Política de privacidad (abre una pestaña nueva)"
+      message_terms_required: "Debes aceptar los términos y condiciones para registrarte."
+      message_legal_documents_changed: "Los documentos legales cambiaron. Revísalos y vuelve a confirmar."
+      view_privacy_notice_html: "Consulta la %{privacy} para conocer cómo usamos tus datos. Conservamos la versión presentada; esto no supone consentimiento para publicidad u otros usos opcionales."
       button_create_account: "Crear cuenta"
       button_creating_account: "Creando cuenta…"
       button_login: "Iniciar sesión"
@@ -46,7 +54,6 @@ es:
       message_too_many_attempts: "Demasiados intentos de creación de cuenta. Inténtalo de nuevo más tarde."
       view_already_have_an_account: "¿Ya tienes cuenta?"
       view_description: "Ingresa tu correo electrónico y elige una contraseña para crear tu cuenta."
-      view_legal_notice: "Al crear una cuenta, aceptas los Términos y reconoces la Declaración global de privacidad."
       view_password_length: "Tu contraseña debe contener entre %{minimum} y %{maximum} caracteres."
       view_title: "Crea una cuenta y descubre Lesli"
     devise_sessions:

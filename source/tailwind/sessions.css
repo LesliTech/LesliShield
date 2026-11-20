@@ -44,7 +44,7 @@
         background: linear-gradient(0deg, 
             rgba(49, 106, 255, 0.4), 
             rgba(49, 106, 255, 0.4)), 
-            url("/lesli_shield/login-background.jpg");
+            url("/lesli_shield/login-background.webp");
         background-position: center;
         background-size: cover;
     }

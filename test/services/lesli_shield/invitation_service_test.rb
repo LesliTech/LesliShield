@@ -280,10 +280,10 @@ module LesliShield
                 assert_equal Invite.expiration_period.from_now,
                     invitation.expires_at
                 assert_equal Time.current, invitation.sent_at
-            end
-
-            assert_raises(Invite::InvalidStatusTransition) do
-                @service.resend!(invitation)
+                # Keep time frozen: once it expires again, resending is valid.
+                assert_raises(Invite::InvalidStatusTransition) do
+                    @service.resend!(invitation)
+                end
             end
         end
 

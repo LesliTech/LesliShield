@@ -308,7 +308,7 @@ module LesliShield
                 assert_response :unprocessable_content
                 assert_select "#role-form [role='alert']"
                 assert_select "input[name='role[permission_level]'][value='101']"
-                assert_select "p.text-red-600", minimum: 1
+                assert_select "p.text-danger-600", minimum: 1
             end
         end
 

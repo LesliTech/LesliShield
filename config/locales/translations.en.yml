@@ -36,6 +36,14 @@ en:
       view_update_description: "Choose a new password for your account and enter it twice to confirm it."
       view_update_title: "Create a new password"
     devise_registrations:
+      label_terms_html: "I accept the %{terms}."
+      link_terms: "Terms and conditions"
+      link_terms_new_tab: "Terms and conditions (opens a new tab)"
+      link_privacy: "Privacy policy"
+      link_privacy_new_tab: "Privacy policy (opens a new tab)"
+      message_terms_required: "You must accept the terms and conditions to register."
+      message_legal_documents_changed: "The legal documents have changed. Review them and confirm again."
+      view_privacy_notice_html: "Read the %{privacy} to learn how your data is used. We record the version presented; this is not consent to advertising or other optional uses."
       button_create_account: "Create account"
       button_creating_account: "Creating account…"
       button_login: "Log in"
@@ -46,7 +54,6 @@ en:
       message_too_many_attempts: "Too many account creation attempts. Try again later."
       view_already_have_an_account: "Already have an account?"
       view_description: "Enter your email address and choose a password to create your account."
-      view_legal_notice: "By creating an account, you agree to the Terms and acknowledge the Global Privacy Statement."
       view_password_length: "Your password must contain between %{minimum} and %{maximum} characters."
       view_title: "Create an account to discover Lesli"
     devise_sessions:

@@ -54,7 +54,8 @@ end
         autofocus: true,
         autocomplete: "email",
         required: true,
-        placeholder: Lesli.config.company[:email]
+        placeholder: I18n.t("lesli_shield.devise_sessions.placeholder_email",
+            default: Lesli.config.company[:email])
     }
 
     password_field_options = {

@@ -1,0 +1,34 @@
+<%# locals: (form:) %>
+<% legal = Lesli.config.shield %>
+
+<%= form.hidden_field :terms_version, value: legal.fetch(:terms_version) %>
+<%= form.hidden_field :privacy_version, value: legal.fetch(:privacy_version) %>
+
+<div class="my-6 text-sm leading-relaxed text-neutral-600">
+    <div class="flex items-start gap-3">
+        <%= form.check_box :terms_accepted,
+            required: true,
+            class: "mt-1 size-4 shrink-0 accent-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary",
+            checked: (["1", true].include?(resource.terms_accepted) && resource.current_registration_documents?),
+            aria: { describedby: "registration-privacy-notice", invalid: resource.errors.any? } %>
+        <%= form.label :terms_accepted, class: "cursor-pointer" do %>
+            <%= t("overrides.lesli_shield.devise_registrations.label_terms_html",
+                default: :"lesli_shield.devise_registrations.label_terms_html",
+                terms: link_to(
+                    t("lesli_shield.devise_registrations.link_terms"),
+                    legal.fetch(:terms_url), target: "_blank", rel: "noopener",
+                    class: "text-primary-strong underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary",
+                    aria: { label: t("lesli_shield.devise_registrations.link_terms_new_tab") }
+                )) %>
+        <% end %>
+    </div>
+    <p id="registration-privacy-notice" class="mt-3 text-xs leading-relaxed">
+        <%= t("lesli_shield.devise_registrations.view_privacy_notice_html",
+            privacy: link_to(
+                t("lesli_shield.devise_registrations.link_privacy"),
+                legal.fetch(:privacy_url), target: "_blank", rel: "noopener",
+                class: "text-primary-strong underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary",
+                aria: { label: t("lesli_shield.devise_registrations.link_privacy_new_tab") }
+            )) %>
+    </p>
+</div>

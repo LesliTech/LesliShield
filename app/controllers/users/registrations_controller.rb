@@ -36,6 +36,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     REGISTRATION_RATE_LIMIT_WINDOW = 1.hour
 
     before_action :ensure_registration_allowed!, only: %i[new create]
+    before_action :ensure_registration_terms_configured!, only: %i[new create]
 
     rate_limit(
         to: 10,
@@ -65,6 +66,20 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     protected
 
+    def sign_up_params
+        attributes = super
+        return attributes unless Lesli.config.shield[:require_terms_acceptance]
+
+        attributes.merge(params.require(resource_name).permit(
+            :terms_accepted, :terms_version, :privacy_version
+        ))
+    end
+
+    def build_resource(attributes = {})
+        super
+        resource.legal_acceptance_required = Lesli.config.shield[:require_terms_acceptance]
+    end
+
     # Standalone registrations remain inactive until confirmation creates the
     # account and role. Preserve the existing UX by returning to the form with
     # Devise's success notice instructing the user to check their email.
@@ -73,6 +88,18 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
 
     private
+
+    def ensure_registration_terms_configured!
+        return unless Lesli.config.shield[:require_terms_acceptance]
+
+        # An incomplete host configuration is a developer error, not an
+        # acceptance of empty versions or links to documents that do not exist.
+        %i[terms_url terms_version privacy_url privacy_version].each do |key|
+            next if Lesli.config.shield[key].present?
+
+            raise ArgumentError, "config.shield[:#{key}] is required when require_terms_acceptance is enabled"
+        end
+    end
 
     def ensure_registration_allowed!
         return if Lesli.config.security.dig(:allow_registration)

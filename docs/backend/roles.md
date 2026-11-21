@@ -205,3 +205,27 @@ The initial role administration UI exposes name, description, active state,
 permission level, and default path. `isolated` and `path_limited` remain hidden
 until their behavior is implemented, documented, and enforced by the
 authorization layer.
+
+## Assigning roles to users
+
+Open a user in Shield and select the **Roles** tab. Choose an available role
+and click **Add role**. The same tab lists assigned roles and offers **Remove**
+for assignments within the administrator's permission level. Turbo updates the
+roles section without resetting the other user tabs.
+
+Assignments are scoped to the authenticated account. Only active roles at or
+below the administrator's highest active permission level can be added.
+Inactive roles may still be removed within that level. Repeated additions do
+not create duplicate assignments.
+
+The endpoints are `GET /users/:user_id/roles`,
+`POST /users/:user_id/roles` (with `user_role[role_id]`), and
+`DELETE /users/:user_id/roles/:id`. The deletion ID identifies the assignment,
+not the role. Shield authorization applies separately to index, create and
+destroy; deploy these privileges to the administrative roles that need them.
+
+The Roles tab uses a compact LesliView form followed by a list of assigned
+roles with descriptions. Alpine enables **Add role** after a selection; Turbo
+refreshes only the roles frame. Inactive assignments remain visible with an
+explanation, and assignments above the administrator's level are read only.
+Removing an assignment asks for confirmation naming the role and user.

@@ -1,0 +1,16 @@
+en:
+  lesli_shield:
+    user_roles:
+      title: "Roles"
+      role: "Role"
+      select_role: "Select a role"
+      add: "Add role"
+      assigned: "Assigned roles"
+      remove: "Remove"
+      confirm_remove: "Remove the role %{role} from %{user}?"
+      empty: "This user has no assigned roles."
+      no_available_roles: "All available roles are already assigned."
+      description: "Roles determine what this user can see and do."
+      inactive: "Inactive"
+      inactive_help: "This role does not grant access while inactive."
+      read_only: "Read only"

@@ -7,7 +7,7 @@
         <% tabs.with_tab(title:"information", icon:"info") do %>
             <%= render("information-form") %>
         <% end %>
-        <% tabs.with_tab(title:"Privileges", icon:"security") do %>
+        <% tabs.with_tab(title: t("lesli_shield.user_roles.title"), icon:"security") do %>
             <%= render("management-privileges") %>
         <% end %>
 

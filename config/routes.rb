@@ -60,7 +60,7 @@ LesliShield::Engine.routes.draw do
             resources :sessions, only: [:index, :destroy]
 
             # assign and remove roles to users 
-            resources :roles, only: [:index, :create, :update, :destroy]
+            resources :roles, only: [:index, :create, :destroy]
 
             # shortcuts
             resources :shortcuts, only: [:index, :create, :update, :destroy]

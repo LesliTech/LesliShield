@@ -100,6 +100,39 @@ class Users::SessionsControllerTest < ActionController::TestCase
         )
     end
 
+    test "accepts a login allowed by Shield" do
+        validator = Object.new
+        def validator.validate; self; end
+        def validator.valid?; true; end
+
+        replace_singleton_method(LesliShield::UserValidatorService, :new, ->(*) { validator }) do
+            assert_nil @controller.send(:validate_login_user!, Object.new)
+        end
+    end
+
+    test "rejects an invalid Shield login and removes the web session" do
+        validator = Object.new
+        def validator.validate; self; end
+        def validator.valid?; false; end
+        events = []
+        session[:user_session_id] = 42
+
+        replace_singleton_method(LesliShield::UserValidatorService, :new, ->(*) { validator }) do
+            replace_singleton_method(@controller, :sign_out, ->(*) { events << :signed_out }) do
+                replace_singleton_method(@controller, :resource_name, -> { :user }) do
+                    replace_singleton_method(@controller, :auth_options, -> { { scope: :user } }) do
+                        failure = catch(:warden) { @controller.send(:validate_login_user!, Object.new) }
+                        assert_equal :invalid, failure.fetch(:message)
+                        assert_equal :user, failure.fetch(:scope)
+                    end
+                end
+            end
+        end
+
+        assert_equal [:signed_out], events
+        assert_nil session[:user_session_id]
+    end
+
     test "creates the application session and one successful audit event" do
         events = []
         logs = []

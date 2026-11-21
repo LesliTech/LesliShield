@@ -30,8 +30,8 @@ Building a better future, one line of code at a time.
 // · 
 %>
 
-<%= navigation_item(lesli_shield.dashboard_path, "Dashboard", "ri-dashboard-3-line"); %>
-<%= navigation_item(lesli_shield.users_path, "Users", "ri-user-line"); %>
-<%= navigation_item(lesli_shield.sessions_path, "Sessions", "ri-lock-line") %>
-<%= navigation_item(lesli_shield.roles_path, "Roles", "ri-shield-user-line") %>
-<%= navigation_item(lesli_shield.invites_path, "Invites", "ri-user-add-line") %>
+<%= navigation_item(lesli_shield.dashboard_path, "Dashboard", "ri-dashboard-3-line", access: ["lesli_shield/dashboards", :show]); %>
+<%= navigation_item(lesli_shield.users_path, "Users", "ri-user-line", access: ["lesli_shield/users", :index]); %>
+<%= navigation_item(lesli_shield.sessions_path, "Sessions", "ri-lock-line", access: ["lesli_shield/sessions", :index]) %>
+<%= navigation_item(lesli_shield.roles_path, "Roles", "ri-shield-user-line", access: ["lesli_shield/roles", :index]) %>
+<%= navigation_item(lesli_shield.invites_path, "Invites", "ri-user-add-line", access: ["lesli_shield/invites", :index]) %>

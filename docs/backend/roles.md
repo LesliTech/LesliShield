@@ -229,3 +229,41 @@ roles with descriptions. Alpine enables **Add role** after a selection; Turbo
 refreshes only the roles frame. Inactive assignments remain visible with an
 explanation, and assignments above the administrator's level are read only.
 Removing an assignment asks for confirmation naming the role and user.
+
+## Request permissions and navigation
+
+During an authenticated Core request, Shield loads the user's effective
+controller/action privileges once. Authorization and navigation reuse that
+request-local set. Only active privileges from active roles contribute.
+The set is discarded when the request finishes, including when an exception
+occurs. Role changes and deployed permission changes are visible on the next
+request; background jobs and direct model calls do not retain this cache.
+
+Engine navigation declares the required screen privilege through Core's
+`navigation_item` helper:
+
+```erb
+<%= navigation_item(lesli_shield.users_path, "Users", "ri-user-line",
+    access: ["lesli_shield/users", :index]) %>
+```
+
+Core applies the same check to the Applications and Notifications header
+links. Personal profile and logout remain available: the profile controller
+intentionally does not require an administrative screen privilege.
+Without Shield, Core renders navigation normally. Hiding a link never
+replaces authorization in its destination controller.
+
+Deploy the updated Core helper together with engines using the `access:`
+option; older Core releases do not accept that keyword.
+
+## Login eligibility
+
+Shield checks that the user has an account, is active and not temporarily
+blocked, and has at least one active role only in `Users::SessionsController#create`.
+A failed check signs out the Devise session and rejects the login before Shield
+creates its application session or records success.
+
+Restoring an existing session does not run `UserValidatorService`. Devise retains
+its own authentication checks. Screen authorization still checks effective
+privileges separately; inactive roles do not contribute privileges. Changes to
+Shield's login eligibility alone do not invalidate an existing session.

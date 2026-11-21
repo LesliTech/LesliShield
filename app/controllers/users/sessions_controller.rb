@@ -59,6 +59,7 @@ class Users::SessionsController < Devise::SessionsController
     # without reimplementing Devise's create action.
     def create
         super do |user|
+            validate_login_user!(user)
             persist_application_session!(user)
             record_successful_login_analytics
             # Devise sets the successful-login notice before yielding.
@@ -76,6 +77,16 @@ class Users::SessionsController < Devise::SessionsController
     end
 
     private
+
+    # Shield's account, active-user and role rules run only during login.
+    # Devise has already signed in the user before yielding to our create block.
+    def validate_login_user!(user)
+        return if LesliShield::UserValidatorService.new(user).validate.valid?
+
+        flash.delete(:notice)
+        rollback_web_session
+        throw(:warden, auth_options.merge(message: :invalid))
+    end
 
     # Devise has already established the web session when its create action
     # yields. If either mandatory write fails, remove that session so the request

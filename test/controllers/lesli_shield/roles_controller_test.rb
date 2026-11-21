@@ -9,6 +9,21 @@ module LesliShield
 
         tests RolesController
 
+        test "navigation hides unavailable screens and preserves personal account actions" do
+            context = insert_account_context("navigation-permissions")
+            grant_privilege(context, controller: "lesli_shield/roles", action: "index")
+
+            with_authenticated_request(context.fetch(:user)) do
+                get :index
+                assert_response :success
+
+                navigation = @controller.view_context
+                assert navigation.navigation_item(roles_path, "Roles", access: ["lesli_shield/roles", :index])
+                assert_nil navigation.navigation_item(users_path, "Users", access: ["lesli_shield/users", :index])
+                assert_select "a[href='#{profile_path}']", minimum: 1
+            end
+        end
+
         test "loads roles only from the current account and permission boundary" do
             current_context = insert_account_context("roles-current")
             other_context = insert_account_context("roles-other")

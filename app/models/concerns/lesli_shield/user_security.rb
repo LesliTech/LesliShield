@@ -47,22 +47,31 @@ module LesliShield
             !roles.intersection(self.roles.map{ |r| r[:name] }).empty?
         end
 
-        # check the privilege cache to check if user is able 
-        # to perform a specific action in a specific controller
-        def has_privileges_for?(controller, action)
-            begin
-                active_role_ids = roles.where(active: true).select(:id)
+        # Cache only while handling an HTTP request. Jobs and standalone model
+        # calls keep querying current privileges, and ensure clears state on errors.
+        def with_privileges
+            @request_privileges = nil
+            @request_privileges_enabled = true
+            yield
+        ensure
+            @request_privileges = nil
+            @request_privileges_enabled = false
+        end
 
-                return Role::Privilege.where(
-                    role_id: active_role_ids,
-                    controller: controller,
-                    action: action,
-                    active: true
-                ).exists?
-            rescue => exception
-                Termline.danger(exception.to_s)
-                return false
+        def has_privileges_for?(controller, action)
+            privileges = Role::Privilege.where(
+                role_id: roles.where(active: true).select(:id), active: true
+            )
+
+            if @request_privileges_enabled
+                @request_privileges ||= privileges.distinct.pluck(:controller, :action).to_set
+                @request_privileges.include?([controller.to_s, action.to_s])
+            else
+                privileges.exists?(controller: controller, action: action)
             end
+        rescue StandardError => exception
+            Termline.danger(exception.to_s)
+            false
         end
 
         # A user can assign only active roles from their own account and never

@@ -48,7 +48,7 @@ module LesliShield
             @sessions = @user.sessions
             @activities = if defined?(LesliAudit)
                 @user.logs.order(id: :desc)
-                    .select(:id, :operation, :description, Date2.new.db_column("created_at", as: "date"))
+                    .select(:id, :operation, :description, Date2.new(zone: current_user.effective_time_zone).db_column("created_at", as: "date"))
                     .limit(7).as_json
             else
                 []

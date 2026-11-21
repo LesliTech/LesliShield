@@ -9,6 +9,14 @@ module LesliShield
                 @roles = roles
             end
 
+            def distinct
+                self
+            end
+
+            def pluck(attribute)
+                @roles.map(&:active).uniq
+            end
+
             def exists?(attributes = nil)
                 return @roles.any? unless attributes
 

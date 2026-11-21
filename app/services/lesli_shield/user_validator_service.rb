@@ -42,7 +42,12 @@ module LesliShield
         def validate
             account_present?()
             active?()
-            active_roles?() unless roles_empty?()
+            role_states = current_user.roles.distinct.pluck(:active)
+            if role_states.empty?
+                log_failure("user_has_no_assigned_role")
+            elsif !role_states.include?(true)
+                log_failure("user_has_no_active_role")
+            end
             self
         end
 
@@ -178,33 +183,6 @@ module LesliShield
 
                 return false
 
-            end
-
-            return true
-        end
-
-        def roles_empty?
-
-            # check if user has roles assigned
-            unless current_user.roles.exists?
-
-                log_failure("user_has_no_assigned_role")
-
-                return true
-
-            end
-
-            return false
-
-        end
-
-        def active_roles?
-
-            # check user has at least one active role before authorize the sign-in request
-            unless current_user.roles.exists?(active: true)
-                log_failure("user_has_no_active_role")
-
-                return false
             end
 
             return true

@@ -10,6 +10,16 @@ module LesliShield
 
             reset!
             @user = create_profile_user
+            {
+                "lesli_shield/profiles" => %w[show update],
+                "lesli_shield/profile/passwords" => %w[update]
+            }.each do |controller, actions|
+                actions.each do |action|
+                    LesliShield::Role::Privilege.create!(
+                        role: @user.roles.first, controller: controller, action: action, active: true
+                    )
+                end
+            end
             sign_in @user
         end
 
@@ -17,7 +27,7 @@ module LesliShield
             Lesli.config.audit[:enable_analytics] = @audit_analytics_enabled
         end
 
-        test "shows the authenticated user profile without administrative privileges" do
+        test "shows the authenticated user profile with profile privileges" do
             get lesli_shield.profile_path
 
             assert_response :success
@@ -76,6 +86,19 @@ module LesliShield
             get lesli_shield.profile_path
 
             assert_redirected_to "/login?r=#{lesli_shield.profile_path}"
+        end
+
+        test "requires privileges for profile and password operations" do
+            LesliShield::Role::Privilege.where(role: @user.roles).delete_all
+
+            get lesli_shield.profile_path
+            assert_response :forbidden
+
+            patch lesli_shield.profile_path, params: { user: { first_name: "Not applied" } }
+            assert_response :forbidden
+
+            patch lesli_shield.profile_password_path, params: { user: { password: "Not applied" } }
+            assert_response :forbidden
         end
 
         test "authorized administrators can list users and render the scoped detail" do

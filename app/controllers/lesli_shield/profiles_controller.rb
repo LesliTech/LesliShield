@@ -12,7 +12,6 @@ module LesliShield
             time_zone
         ].freeze
 
-        skip_before_action :authorize_request
         before_action :set_profile
 
         def show

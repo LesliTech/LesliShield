@@ -3,8 +3,6 @@ module LesliShield
         class PasswordsController < ApplicationController
             PASSWORD_CHANGE_RATE_LIMIT_WINDOW = 15.minutes
 
-            skip_before_action :authorize_request
-
             rate_limit(
                 to: 10,
                 within: PASSWORD_CHANGE_RATE_LIMIT_WINDOW,

@@ -186,6 +186,7 @@ ActiveRecord::Schema[8.1].define(version: 801120110) do
     t.string "terms_version"
     t.string "privacy_version"
     t.string "time_zone"
+    t.string "locale"
     t.integer "account_id"
     t.boolean "active", default: true, null: false
     t.string "alias"

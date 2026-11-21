@@ -38,8 +38,7 @@ module LesliShield
         end
 
         test "Lesli base controller loads Shield security interfaces directly" do
-            assert Lesli::ApplicationLesliController < LesliShield::AuthenticationInterface
-            assert Lesli::ApplicationLesliController < LesliShield::AuthorizationInterface
+            assert Lesli::ApplicationLesliController < LesliShield::SecurityInterface
             assert_includes Lesli::ApplicationLesliController._process_action_callbacks.map(&:filter),
                 :authenticate_request
             assert_includes Lesli::ApplicationLesliController._process_action_callbacks.map(&:filter),

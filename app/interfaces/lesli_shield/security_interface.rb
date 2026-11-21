@@ -41,7 +41,7 @@ module LesliShield
             end
         end
 
-                # Validate user authentication and session status
+        # Validate user authentication and session status
         def authenticate_request
 
             # this version Lesli requires to be mounted as root "/"
@@ -101,7 +101,7 @@ module LesliShield
 
         end
 
-                # Check if current_user has privileges to complete this request
+        # Check if current_user has privileges to complete this request
         def authorize_request
 
             # check if user has access to the requested controller

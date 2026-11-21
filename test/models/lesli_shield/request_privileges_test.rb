@@ -16,7 +16,7 @@ module LesliShield
                     payload[:sql].start_with?("SELECT")
             end
             ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
-                user.with_request_privileges do
+                user.with_privileges do
                     assert user.has_privileges_for?("profiles", "show")
                     refute user.has_privileges_for?("profiles", "update")
                     assert user.has_privileges_for?("profiles", "show")
@@ -25,7 +25,7 @@ module LesliShield
             assert_equal 1, queries.size
 
             context.fetch(:manager_role).update!(active: false)
-            user.with_request_privileges do
+            user.with_privileges do
                 refute user.has_privileges_for?("profiles", "show")
             end
         end
@@ -35,7 +35,7 @@ module LesliShield
             user = context.fetch(:user)
             grant_privilege(context, controller: "profiles", action: "show")
             assert_raises(RuntimeError) do
-                user.with_request_privileges do
+                user.with_privileges do
                     assert user.has_privileges_for?("profiles", "show")
                     raise "render failed"
                 end

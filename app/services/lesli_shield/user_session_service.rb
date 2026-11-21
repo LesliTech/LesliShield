@@ -41,9 +41,9 @@ module LesliShield
                 :user_id,
                 :first_name,
                 :session_source,
-                Date2.new(zone: current_user.effective_time_zone).date_time.db_column("created_at", "lesli_shield_user_sessions"),
-                Date2.new(zone: current_user.effective_time_zone).date_time.db_column("last_used_at"),
-                Date2.new(zone: current_user.effective_time_zone).date_time.db_column("expiration_at"),
+                Date2.new.date_time.db_column("created_at", "lesli_shield_user_sessions"),
+                Date2.new.date_time.db_column("last_used_at"),
+                Date2.new.date_time.db_column("expiration_at"),
                 "CONCAT_WS(' ', agent_platform, agent_os, '/', agent_browser, agent_version) as device"
             )
             .page(query[:pagination][:page])
@@ -64,7 +64,7 @@ module LesliShield
                 :agent_version => user_agent&.dig(:version) || "unknown",
                 
                 :session_source => session_source,
-                :last_used_at => Date2.new(zone: current_user.effective_time_zone).get,
+                :last_used_at => Date2.new.get,
 
                 :usage_count => 1
             })
